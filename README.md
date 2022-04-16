@@ -10,12 +10,12 @@ Diamond Charts is a charting library for Android Jetpack Compose.
 
 The library is available from the Maven Central repository with the current version
 of ![ver](https://img.shields.io/maven-central/v/com.diamondedge/charts-android)
-You should use at least version `1.6.10` of the kotlin plugin.
+You should use at least version `1.6.10` of the kotlin plugin and version `1.1.1` of Jetpack Compose.
 
 build.gradle(.kts):
 
 ```kotlin
     dependencies {
-        api("org.lighthousegames:logging:$logging_version")
+        api("com.diamondedge:charts-android:$charts_version")
     }
 ```
