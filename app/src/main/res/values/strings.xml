@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Compose Chart App</string>
+
+    <!-- Bottom Nav Tabs -->
+    <string name="home_tab">Home</string>
+    <string name="chart1_tab">Chart 1</string>
+    <string name="charts_tab">More</string>
+
+</resources>
