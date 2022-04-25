@@ -8,13 +8,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import com.diamondedge.chart.ChartContainer
-import com.diamondedge.chart.ChartData
-import com.diamondedge.chart.DefaultData
-import com.diamondedge.chart.TickLabelPosition
-import com.diamondedge.chart.XYGraph
-import com.diamondedge.chart.compose.Charts
-import com.diamondedge.chart.compose.ComposeGC
+import com.diamondedge.charts.ChartContainer
+import com.diamondedge.charts.ChartData
+import com.diamondedge.charts.Charts
+import com.diamondedge.charts.DefaultData
+import com.diamondedge.charts.TickLabelPosition
+import com.diamondedge.charts.XYGraph
+import com.diamondedge.charts.compose.ComposeGC
 
 @Composable
 fun FunctionGraph(
@@ -27,7 +27,6 @@ fun FunctionGraph(
     Canvas(modifier = modifier) {
         val charts = Charts(size.width, size.height, ChartContainer.LEGEND_NONE)
         charts.add(XYGraph(createData(fn, minX, maxX)))
-        charts.recalcAxis()  // get min/max values into axis
 
         charts.vertAxis?.apply {
             majorTickLabelPosition = TickLabelPosition.BelowTick
@@ -59,7 +58,7 @@ private fun FunctionGraphPreview() {
 
 fun createData(fn: (Double) -> Double, minX: Double, maxX: Double): ChartData {
 
-    val data = DefaultData(DefaultData.XY_SERIES)
+    val data = DefaultData("fn", DefaultData.XY_SERIES)
     data.seriesCount = 1
     data.dataCount = 100
     val xInc = (maxX - minX) / data.dataCount

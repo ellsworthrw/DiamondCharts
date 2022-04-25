@@ -1,2 +1,1 @@
--keepnames class org.lighthousegames.logging.KmLog
--keepnames class org.lighthousegames.logging.KmLogKt
+-keep class com.diamondedge.charts.ChartsLoggingKt

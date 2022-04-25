@@ -8,12 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import com.diamondedge.chart.ChartContainer
-import com.diamondedge.chart.ChartData
-import com.diamondedge.chart.DefaultData
-import com.diamondedge.chart.RandomData
-import com.diamondedge.chart.compose.Charts
-import com.diamondedge.chart.compose.ComposeGC
+import com.diamondedge.charts.ChartContainer
+import com.diamondedge.charts.ChartData
+import com.diamondedge.charts.Charts
+import com.diamondedge.charts.DefaultData
+import com.diamondedge.charts.RandomData
+import com.diamondedge.charts.compose.ComposeGC
 
 @Composable
 fun BarChart(
@@ -23,7 +23,7 @@ fun BarChart(
     val density = LocalDensity.current
     Canvas(modifier = modifier) {
         val chart = Charts(size.width, size.height - 50, ChartContainer.LEGEND_NONE)
-        chart.add(com.diamondedge.chart.StackedAreaGraph(data))
+        chart.add(com.diamondedge.charts.StackedAreaGraph(data))
 
         drawIntoCanvas { canvas ->
             chart.draw(ComposeGC(canvas, density))

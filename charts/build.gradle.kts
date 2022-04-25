@@ -41,7 +41,7 @@ android {
 dependencies {
     implementation("androidx.compose.ui:ui:1.1.1")
     implementation("androidx.compose.foundation:foundation:1.1.1")
-    implementation("org.lighthousegames:logging-android:1.1.2")
+    implementation("org.lighthousegames:logging-android:1.2.0")
 }
 
 tasks {
@@ -53,7 +53,7 @@ tasks {
 }
 
 extra["artifactID"] = "charts-android"
-extra["artifactVersion"] = "0.1.0"
+extra["artifactVersion"] = "0.3.0"
 extra["libraryName"] = "Diamond Charts"
 extra["libraryDescription"] = "Diamond Charts: charting library for Android Jetpack Compose"
 extra["gitUrl"] = "https://github.com/ellsworthrw/DiamondCharts"

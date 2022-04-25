@@ -1,12 +1,13 @@
 package com.diamondedge.chartapp.ui
 
 import androidx.lifecycle.ViewModel
-import timber.log.Timber
+import org.lighthousegames.logging.logging
 
 class HomeViewModel : ViewModel() {
+    val log = logging()
 
     init {
-        Timber.d("Initializing")
+        log.d { "Initializing" }
     }
 
 }
