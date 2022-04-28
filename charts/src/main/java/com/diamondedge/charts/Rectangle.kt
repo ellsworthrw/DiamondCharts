@@ -10,6 +10,24 @@ class Rectangle(var x: Int = 0, var y: Int = 0, var width: Int = 0, var height: 
     val center: Pair<Int, Int>
         get() = Pair(x + width / 2, y + height / 2)
 
+    fun copy(): Rectangle {
+        return Rectangle().also { it.set(this) }
+    }
+
+    fun set(x: Int, y: Int, width: Int, height: Int) {
+        this.x = x
+        this.y = y
+        this.width = width
+        this.height = height
+    }
+
+    fun set(rect: Rectangle) {
+        x = rect.x
+        y = rect.y
+        width = rect.width
+        height = rect.height
+    }
+
     fun contains(x: Int, y: Int): Boolean {
         var w = this.width
         var h = this.height
@@ -26,10 +44,19 @@ class Rectangle(var x: Int = 0, var y: Int = 0, var width: Int = 0, var height: 
         }
     }
 
+    /**
+     * Returns true iff the this and the other rectangle intersect.
+     *
+     * @param other The second rectangle being tested for intersection
+     * @return true iff the two rectangles intersect.
+     */
+    fun intersects(other: Rectangle): Boolean {
+        return this.x < other.right && other.x < this.right && this.y < other.bottom && other.y < this.bottom
+    }
+
     override fun toString(): String {
         return "Rectangle(x=$x, y=$y, width=$width, height=$height)"
     }
-
 }
 
 class RectangleF(
@@ -87,6 +114,16 @@ class RectangleF(
                 false
             }
         }
+    }
+
+    /**
+     * Returns true iff the this and the other rectangle intersect.
+     *
+     * @param other The second rectangle being tested for intersection
+     * @return true iff the two rectangles intersect.
+     */
+    fun intersects(other: Rectangle): Boolean {
+        return this.x < other.right && other.x < this.right && this.y < other.bottom && other.y < this.bottom
     }
 
     override fun toString(): String {

@@ -8,10 +8,10 @@ package com.diamondedge.charts
 class GraphicAttributes(
     var color: Long = Color.blue,
     var gradient: Gradient? = null,
-    var symbol: Int = 0,
+    var symbol: SymbolType = SymbolType.NONE,
     var fill: Boolean = true,
     var drawBorder: Boolean = true,
-    var borderColor: Long = Color.black
+    var borderColor: Long = Color.defaultTextColor
 ) {
     var draw3D: Boolean = false
     internal var flags = 0

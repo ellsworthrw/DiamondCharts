@@ -29,6 +29,7 @@ import com.diamondedge.charts.Gradient
 import com.diamondedge.charts.GradientType
 import com.diamondedge.charts.GraphicsContext
 import com.diamondedge.charts.StrokeStyle
+import com.diamondedge.charts.Symbol
 import kotlin.math.roundToInt
 
 class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsContext {
@@ -52,7 +53,6 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
         }
 
     init {
-        val a = density.density
         paint.asFrameworkPaint().typeface = installTypeface(font)
         _fontMetrics = installFontMetrics(font)
         textSize = font.size
@@ -397,12 +397,26 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
     }
 
     /**
-     * Draws the given [Bitmap] into the canvas with its top-left corner at the
-     * given x,y offset. The image is composited into the canvas using the given [Paint].
+     * Draws the given image (Bitmap or Symbol) into the canvas with its top-left corner at the
+     * given x,y offset.
      */
-    fun drawImage(bitmap: Bitmap, x: Int, y: Int) {
-        val image = bitmap.asImageBitmap()
-        g.drawImage(image, Offset(x.toFloat(), y.toFloat()), paint)
+    override fun drawImage(image: Any, x: Int, y: Int) {
+        if (image is Bitmap) {
+            val image = image.asImageBitmap()
+            g.drawImage(image, Offset(x.toFloat(), y.toFloat()), paint)
+        } else if (image is Symbol) {
+            image.draw(this, x, y)
+        }
+    }
+
+    override fun getImageSize(image: Any): Pair<Int, Int> {
+        if (image is Bitmap) {
+            return Pair(image.width, image.height)
+        } else if (image is Symbol) {
+            val size = dpToPixel(image.sizeDp)
+            return Pair(size, size)
+        }
+        return Pair(0, 0)
     }
 
     companion object {

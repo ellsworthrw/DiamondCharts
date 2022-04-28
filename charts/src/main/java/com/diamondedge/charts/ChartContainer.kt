@@ -21,7 +21,7 @@ abstract class ChartContainer {
             return null
         }
 
-    var backgroundColor = Color.white
+    var backgroundColor = Color.defaultBackgroundColor
     var legend: Legend? = null
     // setLegendAutoPlacement
 

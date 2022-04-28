@@ -95,37 +95,30 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
     }
 
     private fun setup() {
-
         log.d { "setup: $data" }
         data.recalc()
         log.d { "setup after: $data" }
         val dataCount = data.dataCount
+        vertAxis?.apply {
+            if (this is LabelAxis) {
+                labels = createLabels(dataCount)
+                setDataCount(dataCount)
+            }
+        }
+        horAxis?.apply {
+            if (this is LabelAxis) {
+                labels = createLabels(dataCount)
+                setDataCount(dataCount)
+            }
+        }
+    }
+
+    private fun createLabels(dataCount: Int): ArrayList<Any?> {
         val labels = ArrayList<Any?>(dataCount)
         for (i in 0 until dataCount) {
             labels.add(data.getDataLabel(i))
         }
-
-        val min = data.minValue
-        val max = data.maxValue
-        if (isVertical) {
-            if (vertAxis != null && vertAxis!!.isAutoScaling) {
-                vertAxis!!.minValue = min
-                vertAxis!!.maxValue = max
-            }
-            if (horAxis != null) {
-                horAxis!!.setLabels(labels)
-                horAxis!!.setDataCount(dataCount)
-            }
-        } else {
-            if (horAxis != null && horAxis!!.isAutoScaling) {
-                horAxis!!.minValue = min
-                horAxis!!.maxValue = max
-            }
-            if (vertAxis != null) {
-                vertAxis!!.setLabels(labels)
-                vertAxis!!.setDataCount(dataCount)
-            }
-        }
+        return labels
     }
 
     override fun hitTest(x: Int, y: Int): Hotspot? {

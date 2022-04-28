@@ -74,7 +74,7 @@ class RandomData : DefaultData {
                 setSeriesLabel(i, (i + 1).toString())
 
             getGraphicAttributes(i).color = Draw.getColor(i)
-            getGraphicAttributes(i).symbol = i % 18 + 1
+            getGraphicAttributes(i).symbol = getSymbolFor(i)
 
             for (j in 0 until dataCount) {
                 for (k in 0 until valueCount)
@@ -89,6 +89,12 @@ class RandomData : DefaultData {
         for (j in 0 until dataCount)
             setDataLabel(j, months[j])
         super.recalc()
+    }
+
+    private fun getSymbolFor(i: Int): SymbolType {
+        val values = SymbolType.values()
+        // skip the 0th symbol type which is NONE
+        return values[i % (values.size - 1) + 1]
     }
 
     private fun recalcHLOC() {
@@ -155,7 +161,7 @@ class RandomData : DefaultData {
 
         setSeriesLabel(0, "Bell Curve")
         getGraphicAttributes(0).color = Draw.getColor(0)
-        getGraphicAttributes(0).symbol = 1
+        getGraphicAttributes(0).symbol = SymbolType.SQUARE
         val div = 20
 
         for (j in 0 until dataCount) {

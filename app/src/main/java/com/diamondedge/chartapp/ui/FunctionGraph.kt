@@ -11,7 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.diamondedge.charts.ChartContainer
 import com.diamondedge.charts.ChartData
 import com.diamondedge.charts.Charts
-import com.diamondedge.charts.DefaultData
+import com.diamondedge.charts.DefaultXYData
 import com.diamondedge.charts.TickLabelPosition
 import com.diamondedge.charts.XYGraph
 import com.diamondedge.charts.compose.ComposeGC
@@ -58,14 +58,12 @@ private fun FunctionGraphPreview() {
 
 fun createData(fn: (Double) -> Double, minX: Double, maxX: Double): ChartData {
 
-    val data = DefaultData("fn", DefaultData.XY_SERIES)
-    data.seriesCount = 1
+    val data = DefaultXYData("fn")
     data.dataCount = 100
     val xInc = (maxX - minX) / data.dataCount
     for (i in 0 until data.dataCount) {
         val x = minX + (i + 1) * xInc
-        data.setDouble(0, i, ChartData.xIndex, x)
-        data.setDouble(0, i, ChartData.yIndex, fn(x))
+        data.setValue(i, x, fn(x))
     }
     return data
 }

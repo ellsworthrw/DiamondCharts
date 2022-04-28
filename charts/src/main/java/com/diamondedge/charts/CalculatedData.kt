@@ -81,11 +81,11 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
         setSeriesLabel(0, label)
         val gattr = getGraphicAttributes(0)
         gattr.color = Color.black
-        if (symbol >= Draw.SMALL_DOT)
-            symbol = Draw.SQUARE
+        if (symbol >= SymbolType.SMALL_DOT)
+            symbol = SymbolType.SQUARE
         gattr.symbol = symbol
         println("symbol: $symbol")
-        symbol++
+//TODO:        symbol++
     }
 
     /** Returns the period or set of data over which the function will be calculated.
@@ -356,7 +356,7 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
         val MONTH = RANGE or Calendar.MONTH
         val YEAR = RANGE or Calendar.YEAR
 
-        private var symbol = Draw.SQUARE_SMALL
+        private var symbol = SymbolType.SQUARE_SMALL
         private val cal = Calendar.getInstance()
 
         internal fun nextInc(pos: Double, range: Int, cal: Calendar): Double {

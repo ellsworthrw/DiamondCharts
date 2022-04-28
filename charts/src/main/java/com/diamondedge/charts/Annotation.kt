@@ -6,15 +6,10 @@
 package com.diamondedge.charts
 
 class Annotation(val text: String, val x: Int, val y: Int) : ChartObject() {
-    private var foreground = Color.black
-    private var backgroundPaint: Any = Color.white
+    private var foreground = Color.defaultTextColor
 
     fun setForeground(c: Long) {
         foreground = c
-    }
-
-    fun setBackgroundPaint(paint: Any) {
-        backgroundPaint = paint
     }
 
     override fun draw(g: GraphicsContext) {
@@ -23,7 +18,7 @@ class Annotation(val text: String, val x: Int, val y: Int) : ChartObject() {
         val h = g.fontMetrics.height + margin
         //if( isOpaque() )
         run {
-            g.color = Color.white //g.paint = backgroundPaint
+            g.color = Color.defaultBackgroundColor //g.paint = backgroundPaint
             g.fillRect(x, y, w, h)
         }
         g.color = foreground

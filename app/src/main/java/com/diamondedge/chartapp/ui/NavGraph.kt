@@ -33,6 +33,7 @@ fun NavGraph(
     ) {
         composable(MainDestinations.HOME_ROUTE) {
             FunctionGraphScreen()
+//            CookSessionScreen()
         }
         composable(MainDestinations.CHART1_ROUTE) {
             FunctionGraphScreen()

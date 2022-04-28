@@ -66,7 +66,7 @@ open class Axis protected constructor() {
     /**
      * The color of the label drawn along the axis.
      */
-    var axisLabelColor = Color.black
+    var axisLabelColor = Color.defaultTextColor
 
     /**
      * The font used for the label drawn along the axis.
@@ -76,8 +76,6 @@ open class Axis protected constructor() {
     var majorTickFont: Font = Font.Default
 
     var numberFormatter: NumberFormatter? = null
-
-    protected var labels: ArrayList<Any?>? = null
 
     private val majorTickLabelShowing = true
     private var minVal = 0.0
@@ -222,7 +220,7 @@ open class Axis protected constructor() {
      */
     var majorTickLabelPosition = TickLabelPosition.TickCenter
 
-    var majorTickLabelColor = Color.black
+    var majorTickLabelColor = Color.defaultTextColor
 
     /**
      * Set the scale, minimum, and maximum values based on the current data.
@@ -572,10 +570,6 @@ open class Axis protected constructor() {
 
     open fun tickLabel(value: Double): String {
         return numberFormatter?.invoke(value) ?: value.toString()
-    }
-
-    internal fun setLabels(value: ArrayList<Any?>) {
-        labels = value
     }
 
     internal fun setLabelPosition(value: TickLabelPosition) {

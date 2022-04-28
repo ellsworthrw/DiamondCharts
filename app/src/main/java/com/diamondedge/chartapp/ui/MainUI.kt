@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.diamondedge.chartapp.R
-import com.diamondedge.chartapp.ui.theme.MovieAppTheme
+import com.diamondedge.chartapp.ui.theme.AppTheme
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
 import java.util.Locale
@@ -32,7 +32,7 @@ import java.util.Locale
 
 @Composable
 fun MainUI() {
-    MovieAppTheme {
+    AppTheme {
         val tabs = remember { NavTabs.values() }
         val navController = rememberNavController()
 

@@ -9,6 +9,8 @@ class LabelAxis : Axis() {
 
     private var dataCount: Int = 0
 
+    internal var labels: ArrayList<Any?>? = null
+
     override fun calcMetrics(rangePix: Int, g: GraphicsContext, font: Font?) {
         minValue = 0.0
         maxValue = (dataCount - 1).toDouble()

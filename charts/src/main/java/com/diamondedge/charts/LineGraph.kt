@@ -5,24 +5,31 @@
  */
 package com.diamondedge.charts
 
-open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea: Boolean = false) : Chart(data) {
+open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea: Boolean = false, val showBubble: Boolean = false) :
+    Chart(data) {
 
     /** The size that the symbol on each data point is drawn.
      */
     var symbolSize = 4f
     private val isBubble3D = true
-    protected var showBubble = false
 
     override fun createHorizontalAxis(): Axis {
         return LabelAxis()
     }
 
     open fun getX(series: Int, dataPt: Int): Double {
-        return dataPt.toDouble()
+        return when (data.valueCount) {
+            1 -> dataPt.toDouble()   // use the dataPtNum as the value on the x axis when only one value is supplied in the dataset
+            5 -> data.getDouble(series, dataPt, ChartData.dateIndex)
+            else -> data.getDouble(series, dataPt, ChartData.xIndex)
+        }
     }
 
     open fun getY(series: Int, dataPt: Int): Double {
-        return data.getDouble(series, dataPt)
+        return when (data.valueCount) {
+            5 -> data.getDouble(series, dataPt, ChartData.closeIndex)
+            else -> data.getDouble(series, dataPt, ChartData.yIndex)
+        }
     }
 
     var lineWidth = 2f
@@ -88,10 +95,10 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
                         g.fillOval(x - bubble / 2, y - bubble / 2, bubble, bubble)
                     } else {
                         g.stroke = symbolStroke
-                        Draw.drawSymbol(g, x, y, bubble.toFloat(), Draw.CIRCLE, gattr.color)
+                        Draw.drawSymbol(g, x, y, bubble.toFloat(), SymbolType.CIRCLE, gattr.color)
                     }
                     ptSize = bubble
-                } else if (gattr.symbol != Draw.NONE) {
+                } else if (gattr.symbol != SymbolType.NONE) {
                     g.stroke = symbolStroke
                     Draw.drawSymbol(g, x, y, symbolSize, gattr.symbol, gattr.color)
                 }
@@ -123,10 +130,10 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
 
     override fun drawLegendSymbol(g: GraphicsContext, x: Int, y: Int, width: Int, height: Int, series: Int, dataPtNum: Int): Boolean {
         val gattr = data.getGraphicAttributes(series)
-        if ((gattr.symbol != Draw.NONE || drawLine) && symbolSize > 0 && !showBubble) {
+        if ((gattr.symbol != SymbolType.NONE || drawLine) && symbolSize > 0 && !showBubble) {
             val yc = y + height / 2
             g.color = gattr.color
-            if (gattr.symbol == Draw.NONE)
+            if (gattr.symbol == SymbolType.NONE)
                 g.drawLine(x + 1, yc, x + width - 2, yc)
             Draw.drawSymbol(g, x + width / 2, yc, 8f, gattr.symbol, gattr.color)
         } else

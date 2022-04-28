@@ -126,7 +126,7 @@ class Legend {
                         val w = g.stringWidth(label)
                         if (w > strWidth)
                             strWidth = w
-                        g.color = Color.black
+                        g.color = Color.defaultTextColor
                         g.drawString(label, x + symbolWidth + symbolGap, y + fontY)
                     }
                     //System.out.println( "series: " + series + " data: " + j + " " + label );

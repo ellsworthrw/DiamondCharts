@@ -363,6 +363,17 @@ interface GraphicsContext {
      */
     fun stringWidth(str: String): Int
 
+    /**
+     * Draws the given [image] into the canvas with its top-left corner at the
+     * given x,y offset.
+     */
+    fun drawImage(image: Any, x: Int, y: Int)
+
+    /**
+     * Returns the width and height of the given [image]
+     */
+    fun getImageSize(image: Any): Pair<Int, Int>
+
     fun applyGradient(gradient: Gradient, alpha: Float = 1f)
     fun clearGradient()
 

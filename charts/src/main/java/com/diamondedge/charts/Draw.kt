@@ -6,25 +6,6 @@
 package com.diamondedge.charts
 
 object Draw {
-    val NONE = 0
-    val SQUARE = 1
-    val SQUARE_OUTLINE = 2
-    val CIRCLE = 3
-    val CIRCLE_OUTLINE = 4
-    val TRIANGLE = 5
-    val TRIANGLE_OUTLINE = 6
-    val DIAMOND = 7
-    val DIAMOND_OUTLINE = 8
-    val PLUS = 9
-    val ASTERISK = 10
-    val CROSS = 11
-    val CROSS_DIAGONAL = 12
-    val SQUARE_SMALL = 13
-    val CIRCLE_SMALL = 14
-    val UP_ARROW = 15
-    val DOWN_ARROW = 16
-    val TRIANGLE_DOWN = 17
-    val SMALL_DOT = 18
 
     private var colors: ArrayList<Long>? = null
     internal var defaultFont = Font.Default
@@ -76,92 +57,103 @@ object Draw {
             g.applyGradient(gradient, 1f)
             g.fillOval(x, y, size, size)
         } else {
-            drawSymbol(g, xc, yc, sizeDp, Draw.CIRCLE, color)
+            drawSymbol(g, xc, yc, sizeDp, SymbolType.CIRCLE, color)
         }
     }
 
-    fun drawSymbol(g: GraphicsContext, xc: Int, yc: Int, size: Float, symbol: Int, color: Long) {
-        var yc = yc
-        var size = g.dpToPixel(size)
+    /**
+     * Draws the symbol with its center at xc, yc
+     */
+    fun drawSymbol(g: GraphicsContext, xc: Int, yc: Int, sizeDp: Float, symbol: SymbolType, color: Long) {
         // Note: size = 7 looks best, odd sizes looks better than even sizes
         // xc, yc is the center coord
         // x, y is the top left coord of bounding box
-        var x = xc - size / 2
-        var y = yc - size / 2
+        val size = g.dpToPixel(sizeDp)
+        val x = xc - size / 2
+        val y = yc - size / 2
+        drawSymbolAt(g, x, y, sizeDp, symbol, color)
+    }
+
+    /**
+     * Draws the symbol inside the bounding box beginning at x, y
+     */
+    fun drawSymbolAt(g: GraphicsContext, x: Int, y: Int, sizeDp: Float, symbol: SymbolType, color: Long) {
+        var size = g.dpToPixel(sizeDp)
+        val xc = x + size / 2
+        var yc = y + size / 2
         val h: Int
         val xPts: IntArray
         val yPts: IntArray
         g.color = color
-        //g.setColor( Color.blue );
         when (symbol) {
-            SQUARE_OUTLINE -> g.drawRect(x, y, size - 1, size - 1)
-            SQUARE -> g.fillRect(x, y, size, size)
-            SQUARE_SMALL -> {
+            SymbolType.SQUARE_OUTLINE -> g.drawRect(x, y, size - 1, size - 1)
+            SymbolType.SQUARE -> g.fillRect(x, y, size, size)
+            SymbolType.SQUARE_SMALL -> {
                 size -= 2
                 g.fillRect(xc - size / 2, yc - size / 2, size, size)
             }
-            SMALL_DOT -> {
+            SymbolType.SMALL_DOT -> {
                 size = 2
                 g.fillRect(xc, yc - 1, size, size)
             }
-            CIRCLE_SMALL -> {
+            SymbolType.CIRCLE_SMALL -> {
                 size -= 2
                 g.fillOval(xc - size / 2, yc - size / 2, size, size)
             }
-            CIRCLE -> g.fillOval(x, y, size, size)
-            CIRCLE_OUTLINE -> g.drawOval(x, y, size - 1, size - 1)
-            CROSS_DIAGONAL, ASTERISK -> {
+            SymbolType.CIRCLE -> g.fillOval(x, y, size, size)
+            SymbolType.CIRCLE_OUTLINE -> g.drawOval(x, y, size - 1, size - 1)
+            SymbolType.CROSS_DIAGONAL, SymbolType.ASTERISK -> {
                 g.drawLine(x, y, x + size - 1, y + size - 1)
                 g.drawLine(x, y + size - 1, x + size - 1, y)
-                if (symbol != CROSS_DIAGONAL) {
+                if (symbol != SymbolType.CROSS_DIAGONAL) {
                     g.drawLine(x, yc, x + size - 1, yc)
                     g.drawLine(xc, y, xc, y + size - 1)
                 }
             }
-            CROSS -> {
+            SymbolType.CROSS -> {
                 g.drawLine(x, yc, x + size - 1, yc)
                 g.drawLine(xc, y, xc, y + size - 1)
             }
-            PLUS -> {
+            SymbolType.PLUS -> {
                 // plus looks better at size = 9, so increase size by 2
-                x--
+                var xx = x - 1
                 size += 2
                 // draw hor line
-                y = yc - 1
-                while (y < yc + 2) {
-                    g.drawLine(x, y, x + size - 1, y)
-                    y++
+                var yy = yc - 1
+                while (yy < yc + 2) {
+                    g.drawLine(xx, yy, xx + size - 1, yy)
+                    yy++
                 }
                 // draw vert line
-                y = yc - size / 2
-                x = xc - 1
-                while (x < xc + 2) {
-                    g.drawLine(x, y, x, y + size - 1)
-                    x++
+                yy = yc - size / 2
+                xx = xc - 1
+                while (xx < xc + 2) {
+                    g.drawLine(xx, yy, xx, yy + size - 1)
+                    xx++
                 }
             }
-            UP_ARROW -> {
+            SymbolType.UP_ARROW -> {
                 g.fillRect(xc - 1, yc + 2, 3, 3)
                 yc -= 1
                 size += 2
-                x = xc - size / 2
-                y = yc - size / 2 - 1  // move center 1 closer to base
+                val xx = xc - size / 2
+                val yy = yc - size / 2 - 1  // move center 1 closer to base
                 xPts = IntArray(3)
                 yPts = IntArray(3)
-                xPts[0] = x
+                xPts[0] = xx
                 xPts[1] = xc
-                xPts[2] = x + size - 1
-                yPts[0] = y + size - 1
-                yPts[1] = y
-                yPts[2] = y + size - 1
+                xPts[2] = xx + size - 1
+                yPts[0] = yy + size - 1
+                yPts[1] = yy
+                yPts[2] = yy + size - 1
                 g.fillPolygon(xPts, yPts, 3)
-                if (symbol == UP_ARROW)
+                if (symbol == SymbolType.UP_ARROW)
                     yc += 1
             }
-            TRIANGLE -> {
+            SymbolType.TRIANGLE -> {
                 size += 2
-                x = xc - size / 2
-                y = yc - size / 2 - 1
+                val x = xc - size / 2
+                val y = yc - size / 2 - 1
                 xPts = IntArray(3)
                 yPts = IntArray(3)
                 xPts[0] = x
@@ -171,15 +163,15 @@ object Draw {
                 yPts[1] = y
                 yPts[2] = y + size - 1
                 g.fillPolygon(xPts, yPts, 3)
-                if (symbol == UP_ARROW)
+                if (symbol == SymbolType.UP_ARROW)
                     yc += 1
             }
-            DOWN_ARROW -> {
+            SymbolType.DOWN_ARROW -> {
                 g.fillRect(xc - 1, yc - 4, 3, 3)
                 yc += 1
                 size += 2
-                x = xc - size / 2
-                y = yc - size / 2 + 2  // move center 1 closer to base
+                val x = xc - size / 2
+                val y = yc - size / 2 + 2  // move center 1 closer to base
                 xPts = IntArray(3)
                 yPts = IntArray(3)
                 xPts[0] = x
@@ -189,13 +181,13 @@ object Draw {
                 yPts[1] = y + size - 1
                 yPts[2] = y
                 g.fillPolygon(xPts, yPts, 3)
-                if (symbol == DOWN_ARROW)
+                if (symbol == SymbolType.DOWN_ARROW)
                     yc -= 1
             }
-            TRIANGLE_DOWN -> {
+            SymbolType.TRIANGLE_DOWN -> {
                 size += 2
-                x = xc - size / 2
-                y = yc - size / 2 + 2
+                val x = xc - size / 2
+                val y = yc - size / 2 + 2
                 xPts = IntArray(3)
                 yPts = IntArray(3)
                 xPts[0] = x
@@ -205,23 +197,23 @@ object Draw {
                 yPts[1] = y + size - 1
                 yPts[2] = y
                 g.fillPolygon(xPts, yPts, 3)
-                if (symbol == DOWN_ARROW)
+                if (symbol == SymbolType.DOWN_ARROW)
                     yc -= 1
             }
-            TRIANGLE_OUTLINE -> {
-                y--                    // move center 1 closer to base
+            SymbolType.TRIANGLE_OUTLINE -> {
+                val y = y - 1                    // move center 1 closer to base
                 g.drawLine(x, y + size - 1, xc, y)
                 g.drawLine(xc, y, x + size - 1, y + size - 1)
                 g.drawLine(x + size - 1, y + size - 1, x, y + size - 1)
             }
-            DIAMOND_OUTLINE -> {
+            SymbolType.DIAMOND_OUTLINE -> {
                 h = size - 2   // diamond looks better almost twice as tall
                 g.drawLine(x, yc, xc, yc - h)
                 g.drawLine(xc, yc - h, x + size - 1, yc)
                 g.drawLine(x + size - 1, yc, xc, yc + h)
                 g.drawLine(xc, yc + h, x, yc)
             }
-            DIAMOND -> {
+            SymbolType.DIAMOND -> {
                 h = size   // diamond looks better twice as tall
                 xPts = IntArray(4)
                 yPts = IntArray(4)
@@ -235,12 +227,109 @@ object Draw {
                 yPts[3] = yc + h
                 g.fillPolygon(xPts, yPts, 4)
             }
+            SymbolType.NONE -> {}
         }
-        /* draw center point for data for debugging
-    g.setColor( Color.black );
-    g.drawLine( xc, yc, xc, yc );
-    */
     }
+
+    fun getTileSize(
+        g: GraphicsContext,
+        symbol: Any? = null,
+        text: String,
+        leftMargin: Float = 4f,
+        topMargin: Float = 4f,
+        rightMargin: Float = 4f,
+        bottomMargin: Float = 4f,
+        gap: Float = 4f,
+    ): Pair<Int, Int> {
+        var width = g.dpToPixel(leftMargin) + g.dpToPixel(rightMargin)
+        var height = g.fontMetrics.height
+        width += g.stringWidth(text)
+        if (symbol != null) {
+            val (symbolWidth, symbolHeight) = g.getImageSize(symbol)
+            width += symbolWidth + g.dpToPixel(gap)
+            if (symbolHeight > height) {
+                height = symbolHeight
+            }
+        }
+        height += g.dpToPixel(topMargin) + g.dpToPixel(bottomMargin)
+        return Pair(width, height)
+    }
+
+    fun drawTileCentered(g: GraphicsContext, xc: Int, yc: Int, symbol: Any? = null, text: String, isDarkTheme: Boolean) {
+        val (width, height) = getTileSize(g, symbol, text)
+        val x = xc - width / 2
+        val y = yc - height / 2
+        val bg = if (isDarkTheme) Color.darkDarkGray else Color.ltGray
+        drawTile(g, x, y, width, height, symbol, text, bg, isDarkTheme)
+    }
+
+    fun drawTile(
+        g: GraphicsContext,
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int,
+        symbol: Any? = null,
+        text: String,
+        tileBgColor: Long,
+        isDarkTheme: Boolean,
+        leftMargin: Float = 4f,
+        gap: Float = 4f,
+    ) {
+        drawTileOutline(g, x, y, width, height, tileBgColor, isDarkTheme)
+        var xx = x + g.dpToPixel(leftMargin)
+        if (symbol != null) {
+            val (symbolWidth, symbolHeight) = g.getImageSize(symbol)
+            g.drawImage(symbol, xx, y + (height - symbolHeight) / 2)
+            xx += symbolWidth + g.dpToPixel(gap)
+        }
+
+        g.color = Color.defaultTextColor
+        g.drawString(text, xx, y + g.fontMetrics.baseline + (height - g.fontMetrics.height) / 2)
+    }
+
+    fun drawTileOutline(
+        g: GraphicsContext,
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int,
+        tileBgColor: Long,
+        isDarkTheme: Boolean,
+        cornerRadius: Float = 12f
+    ) {
+        val shadowHeight = g.dpToPixel(shadowHeightDp)
+        val tileRadius = g.dpToPixel(cornerRadius)
+
+        val gradient = if (isDarkTheme) darKTileBorderGradient else tileBorderGradient
+        gradient.bounds.set(x, y + shadowHeight / 2, width, height)
+        g.applyGradient(gradient)
+        g.setStroke(shadowHeightDp, StrokeStyle.Solid)
+        g.drawRoundedRect(x, y + shadowHeight / 2, width, height, tileRadius, tileRadius)
+
+        g.color = tileBgColor
+        g.fillRoundedRect(x, y, width, height, tileRadius, tileRadius)
+    }
+
+    var shadowHeightDp = 2f
+
+    var tileBorderGradient = Gradient(
+        listOf(
+            0f to Color.transparent,
+            .5f to Color.transparent,
+            .9f to Color.black20,
+            1f to Color.black10,
+        )
+    )
+
+    var darKTileBorderGradient = Gradient(
+        listOf(
+            0f to Color.transparent,
+            .5f to Color.transparent,
+            .9f to Color.black50,
+            1f to Color.black20,
+        )
+    )
 
     /*
   public static int DOWNWARD_DIAGONAL_LINE = 0x1;

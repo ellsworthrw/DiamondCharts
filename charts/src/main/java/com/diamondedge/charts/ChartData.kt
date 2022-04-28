@@ -75,9 +75,9 @@ interface ChartData {
     }
 
     companion object {
+        val log = moduleLogging()
 
         const val valueIndex = 0
-        val log = moduleLogging()
 
         // datasets with 2 or 3 values
         const val xIndex = 1
@@ -91,9 +91,9 @@ interface ChartData {
         const val openIndex = 3
         const val closeIndex = 0
 
-        val COMBINE_SERIES = 0x1
-        val COMBINE_PERCENT_SERIES = 0x3
-        val GROUP_CENTER = 0x4
+        const val COMBINE_SERIES = 0x1
+        const val COMBINE_PERCENT_SERIES = 0x3
+        const val GROUP_CENTER = 0x4
 
         fun dataPointsAtX(x: Double, list: List<ChartData>, interpolate: Boolean = true): List<Triple<ChartData, Double, Int>> {
             log.d { "dataPointsAt($x, $list)" }
