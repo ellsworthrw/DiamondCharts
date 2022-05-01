@@ -37,7 +37,7 @@ open class DefaultXYData(override val id: Any = "") : XYData() {
         data[dataPtNum] = Pair(x, y)
     }
 
-    override fun recalc() {
+    override fun recalc(combineSeries: Boolean) {
         maxX = Double.MIN_VALUE
         minX = Double.MAX_VALUE
         maxY = Double.MIN_VALUE

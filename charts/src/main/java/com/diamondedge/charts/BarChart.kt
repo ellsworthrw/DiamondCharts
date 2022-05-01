@@ -5,24 +5,24 @@
  */
 package com.diamondedge.charts
 
-class BarChart(data: ChartData, override val isVertical: Boolean = true) : Chart(data) {
+class BarChart(
+    data: ChartData,
+    override val isVertical: Boolean = true,
+    val isStacked: Boolean = false,
+    val is100Percent: Boolean = false
+) : Chart(data) {
 
-    /** Returns the space in between bars in a group as a percentage of the bar width.
-     */
-    /** Sets the space in between bars in a group as a percentage of the bar width.
+    /** The space in between bars in a group as a percentage of the bar width.
      * This is not used for stacked bars or data with only one data series.
      */
     var gap = 0
-    /** Returns the total width of the bars in a group as a percentage of the width alotted to the group.
-     */
-    /** Sets the total width of the bars in a group as a percentage of the width alotted to the group.
+
+    /** The total width of the bars in a group as a percentage of the width allotted to the group.
      * Setting to 80 will allow 10% space on each side or 20% in between groups of bars.
      */
     var barWidth = 80
 
     init {
-        this.data.options = this.data.options or ChartData.GROUP_CENTER
-
         if (isVertical && vertAxis != null)
             vertAxis!!.isZeroRequired = true
         else if (horAxis != null)
@@ -30,6 +30,16 @@ class BarChart(data: ChartData, override val isVertical: Boolean = true) : Chart
 
         println("hor: " + horAxis)
         println("vert: " + vertAxis)
+    }
+
+    override fun setup(combineSeries: Boolean) {
+        super.setup(isStacked || is100Percent)
+        if (isStacked || is100Percent) {
+            data.minValue = 0.0
+            if (is100Percent) {
+                data.maxValue = 100.0
+            }
+        }
     }
 
     override fun createVerticalAxis(): Axis {
@@ -55,9 +65,6 @@ class BarChart(data: ChartData, override val isVertical: Boolean = true) : Chart
             return
         val dsCount = data.seriesCount
         val dataCount = data.dataCount
-        var stacked = false
-        if (data.options and ChartData.COMBINE_SERIES > 0)
-            stacked = true
         var valueAxis = vertAxis
         var catAxis = horAxis
         if (!isVertical) {
@@ -71,8 +78,7 @@ class BarChart(data: ChartData, override val isVertical: Boolean = true) : Chart
         var iBarWidth = barWidth
         var catPos: Int
         var valPos: Int
-        var value: Int
-        if (!stacked && dsCount > 1) {
+        if (!isStacked && dsCount > 1) {
             iBarWidth = (barWidth - gap * (dsCount - 1)) / dsCount
             // recalc amount used by all bars to account for roundoff errors
             barWidth = iBarWidth * dsCount + gap * (dsCount - 1)
@@ -80,6 +86,18 @@ class BarChart(data: ChartData, override val isVertical: Boolean = true) : Chart
         // center the bars in the area
         val offset = (unitWidth - barWidth) / 2
         val zero = valueAxis!!.convertToPixel(0.0)
+
+        var total: DoubleArray? = null
+        if (is100Percent) {
+            total = DoubleArray(dataCount)
+            for (i in 0 until dataCount) {
+                var value = 0.0
+                for (series in 0 until dsCount) {
+                    value += data.getDouble(series, i)
+                }
+                total[i] = value
+            }
+        }
 
         //System.out.println( "hor: " + catAxis );
         //System.out.println( "vert: " + valueAxis );
@@ -98,9 +116,13 @@ class BarChart(data: ChartData, override val isVertical: Boolean = true) : Chart
             }
 
             for (series in 0 until dsCount) {
-                value = valueAxis.scaleData(data.getDouble(series, i))
-                gattr = data.getGraphicAttributes(series)
+                var dataValue = data.getDouble(series, i)
+                if (total != null) {                            // then using 100 percent fill
+                    dataValue = dataValue / total[i] * 100      // convert to percent of total
+                }
+                val value = valueAxis.scaleData(dataValue)
 
+                gattr = data.getGraphicAttributes(series)
                 if (isVertical)
                     Draw.drawRect(g, catPos, valPos - value, iBarWidth, value, gattr)
                 else
@@ -115,7 +137,7 @@ class BarChart(data: ChartData, override val isVertical: Boolean = true) : Chart
                     hotspots!!.add(Hotspot(this, data, series, i, rect))
                 }
 
-                if (stacked) {
+                if (isStacked) {
                     if (isVertical)
                         valPos -= value
                     else
@@ -128,24 +150,5 @@ class BarChart(data: ChartData, override val isVertical: Boolean = true) : Chart
 
     override fun toString(): String {
         return "BarChart[gap%=" + gap + ",bar%=" + barWidth + "," + toStringParam() + "]"
-    }
-
-    companion object {
-
-        fun createStackedBarChart(data: ChartData): BarChart {
-            if (data != null)
-                data.options = ChartData.COMBINE_SERIES
-            return BarChart(data)
-        }
-
-        fun createHorizontalStackedBarChart(data: ChartData): BarChart {
-            if (data != null)
-                data.options = ChartData.COMBINE_SERIES
-            return BarChart(data, false)
-        }
-
-        fun createHorizontalBarChart(data: ChartData): BarChart {
-            return BarChart(data, false)
-        }
     }
 }

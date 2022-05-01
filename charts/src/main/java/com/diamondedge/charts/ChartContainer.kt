@@ -48,9 +48,10 @@ abstract class ChartContainer {
 
     fun add(obj: ChartObject): ChartObject {
         charts.add(obj)
-        if (obj is Chart)
+        if (obj is Chart) {
+            obj.setup()
             setupGraph(obj)
-
+        }
         //todo remove
         if (obj is Chart) {
             //            setupHotspots();
@@ -139,12 +140,12 @@ abstract class ChartContainer {
         if (nGraphs == 0)
             return
 
-        //todo: add an event so CalculatedData can get updated when dependent data changes
-        // then remove the following
-        for (i in 0 until nGraphs) {
-            val data = charts[i].data
+        for (chart in charts) {
+            //todo: add an event so CalculatedData can get updated when dependent data changes
+            // then remove the following
+            val data = chart.data
             if (data is CalculatedData)
-                data.recalc()
+                data.recalc(false)
         }
 
         horizontalAxis?.isVertical = false

@@ -30,13 +30,9 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
 
     private val graphicAttributesList = Vector<GraphicAttributes?>()
     override var maxValue = 100.0
-        internal set
     override var minValue = 0.0
-        internal set
     override var maxValue2 = 100.0
-        internal set
     override var minValue2 = 0.0
-        internal set
 
     init {
         updateRowCount(1)
@@ -115,27 +111,20 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
         graphicAttributesList[series] = attr
     }
 
-    override var options: Int = 0
-        set(value) {
-            field = value
-            recalc()
-        }
-
-    override fun recalc() {
+    override fun recalc(combineSeries: Boolean) {
         maxValue = Double.MIN_VALUE
         minValue = Double.MAX_VALUE
         maxValue2 = Double.MIN_VALUE
         minValue2 = Double.MAX_VALUE
         var value: Double
-        val combineSeries = options and ChartData.COMBINE_SERIES > 0
         val valueCount = valueCount
         var index = ChartData.valueIndex
         var index2 = ChartData.xIndex
         val dataCount = dataCount
         val seriesCount = seriesCount
         if (valueCount > 1) {
-            index = ChartData.yIndex
-            index2 = ChartData.xIndex
+            if (seriesType == HLOC_SERIES)
+                index2 = ChartData.dateIndex
         } else {
             minValue2 = 0.0
             maxValue2 = (dataCount - 1).toDouble()
@@ -171,14 +160,10 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
                 }
             }
         }
-        if (options and ChartData.COMBINE_PERCENT_SERIES == ChartData.COMBINE_PERCENT_SERIES) {
-            minValue = 0.0
-            maxValue = 100.0
-        }
 
         log.d { "Data min: $minValue max: $maxValue" }
         log.d { "    min2: $minValue2 max2: $maxValue2" }
-        log.d { "    combined: $combineSeries options: $options" }
+        log.d { "    combined: $combineSeries" }
     }
 
     var rowCount: Int
@@ -264,7 +249,7 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
 
     protected fun toStringParam(): String {
         return if (valueCount == 1) {
-            "series=$seriesCount,size=$dataCount,min=$minValue,max=$maxValue"
+            "series=$seriesCount,size=$dataCount,min=$minValue,max=$maxValue,min2=$minValue2,max2=$maxValue2"
         } else {
             if (seriesType == DATE_SERIES)
                 "series=$seriesCount,size=$dataCount,min=$minValue,max=$maxValue,min2=${DateUtil.toDate(minValue2)},max2=${
@@ -293,7 +278,7 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
         val DATE_SERIES = 0x300 or 0x10 or 0x02 or DATE_0TH
         val XY_BUBBLE_SERIES = 0x400 or 0x10 or 0x03
         val DATE_BUBBLE_SERIES = 0x500 or 0x10 or 0x03 or DATE_0TH
-        val HLOC_SERIES = 0x600 or 0x40 or 0x05 or DATE_0TH
+        val HLOC_SERIES = 0x600 or 0x40 or 0x05
 
         private fun toDouble(value: Any?): Double {
             var value = value

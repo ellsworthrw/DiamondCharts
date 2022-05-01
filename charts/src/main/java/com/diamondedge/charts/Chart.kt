@@ -14,14 +14,14 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
         get() = horAxis
         set(axis) {
             horAxis = axis
-            setup()
+            setupAxis()
         }
 
     var verticalAxis: Axis?
         get() = vertAxis
         set(axis) {
             vertAxis = axis
-            setup()
+            setupAxis()
         }
 
     /** Returns the number of values per data point
@@ -90,14 +90,13 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
         return DecimalAxis()
     }
 
-    init {
-        setup()
+    open fun setup(combineSeries: Boolean = false) {
+        log.d { "setup: $data" }
+        data.recalc(combineSeries)
+        log.d { "setup after: $data" }
     }
 
-    private fun setup() {
-        log.d { "setup: $data" }
-        data.recalc()
-        log.d { "setup after: $data" }
+    private fun setupAxis() {
         val dataCount = data.dataCount
         vertAxis?.apply {
             if (this is LabelAxis) {

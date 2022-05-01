@@ -11,7 +11,7 @@ import com.diamondedge.charts.RandomData
 import com.diamondedge.charts.compose.BarChart
 import com.diamondedge.charts.compose.LineGraph
 import com.diamondedge.charts.compose.PieChart
-import com.diamondedge.charts.compose.StackedAreaGraph
+import com.diamondedge.charts.compose.StockChart
 
 @Preview
 @Composable
@@ -73,21 +73,36 @@ private fun PieChartMultiPreview() {
 private fun LineGraphPreview() {
     LineGraph(RandomData(DefaultData.SIMPLE_SERIES, 1), fillArea = true, modifier = Modifier
         .fillMaxWidth()
-        .height(200.dp))
+        .height(200.dp)
+    )
 }
 
 @Preview
 @Composable
 private fun LineGraphMultiPreview() {
-    LineGraph(RandomData(DefaultData.SIMPLE_SERIES), modifier = Modifier
-        .fillMaxWidth()
-        .height(200.dp))
+    LineGraph(
+        RandomData(DefaultData.SIMPLE_SERIES), modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+    )
 }
 
 @Preview
 @Composable
-private fun StackedAreaGraphPreview() {
-    StackedAreaGraph(RandomData(DefaultData.SIMPLE_SERIES, 5), modifier = Modifier
-        .fillMaxWidth()
-        .height(200.dp))
+private fun ScatterGraphPreview() {
+    LineGraph(
+        RandomData(DefaultData.SIMPLE_SERIES, 7), drawLine = false, modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+    )
+}
+
+@Preview
+@Composable
+private fun StockChartPreview() {
+    StockChart(
+        RandomData(DefaultData.HLOC_SERIES, 5), modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp)
+    )
 }

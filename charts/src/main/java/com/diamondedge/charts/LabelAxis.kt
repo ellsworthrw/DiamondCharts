@@ -35,7 +35,7 @@ class LabelAxis : Axis() {
         return label
     }
 
-    override fun setDataCount(value: Int) {
+    fun setDataCount(value: Int) {
         println("==>LabelAxis.setDataCount: $value")
         dataCount = value
     }

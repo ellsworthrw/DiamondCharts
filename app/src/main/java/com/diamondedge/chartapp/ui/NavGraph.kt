@@ -32,7 +32,7 @@ fun NavGraph(
         Modifier.padding(innerPadding)
     ) {
         composable(MainDestinations.HOME_ROUTE) {
-            FunctionGraphScreen()
+            SampleGraphScreen()
 //            CookSessionScreen()
         }
         composable(MainDestinations.CHART1_ROUTE) {

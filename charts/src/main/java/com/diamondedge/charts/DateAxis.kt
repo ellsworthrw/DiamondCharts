@@ -7,7 +7,6 @@ package com.diamondedge.charts
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.util.Calendar
 import kotlin.time.Duration.Companion.days
 
 class DateAxis : Axis() {
@@ -42,6 +41,12 @@ class DateAxis : Axis() {
                     majorTickInc = DateUtil.ONE_YEAR
                     tickLabelDateFormat = yearFormat
                     minorTickIncNum = 12
+                }
+                range > 5 * DateUtil.ONE_MONTH -> {
+                    log.v { "> 5mon inc: 2mon" }
+                    majorTickInc = 2 * DateUtil.ONE_MONTH
+                    tickLabelDateFormat = majorMonthFormat
+                    minorTickIncNum = 2
                 }
                 range > DateUtil.ONE_MONTH -> {
                     log.v { "> 1mon inc: mon" }
@@ -142,14 +147,6 @@ class DateAxis : Axis() {
         }
     }
 
-    override fun nextMinorIncVal(pos: Double, incVal: Double): Double {
-        return nextInc(pos, incVal)
-    }
-
-    override fun nextMajorIncVal(pos: Double, incVal: Double): Double {
-        return nextInc(pos, incVal)
-    }
-
     override fun tickLabel(value: Double): String {
         return numberFormatter?.invoke(value) ?: tickLabelDateFormat.format(DateUtil.toDate(value))
     }
@@ -159,12 +156,12 @@ class DateAxis : Axis() {
     }
 
     companion object {
-        private val cal = Calendar.getInstance()
         private val log = moduleLogging()
 
         private val dateFormat = DateFormat.getDateInstance()
         private val timeFormat = DateFormat.getTimeInstance()
         private val yearFormat = SimpleDateFormat("yyyy")
+        private val debugMonthFormat = SimpleDateFormat("M-d")
         private val majorMonthFormat = SimpleDateFormat("MMM yyyy")
         private val minorMonthFormat = SimpleDateFormat("MMM")
         private val majorDayFormat = dateFormat
@@ -173,15 +170,5 @@ class DateAxis : Axis() {
         private val hourMinuteFormat = SimpleDateFormat("h:mma")
         private val minuteFormat = SimpleDateFormat("m")
         private val secondFormat = SimpleDateFormat("s")
-
-        internal fun nextInc(pos: Double, incVal: Double): Double {
-            if (incVal == DateUtil.ONE_MONTH) {
-                DateUtil.setCalendar(cal, pos)
-                cal.add(Calendar.MONTH, 1)
-                DateUtil.clearCalBelow(cal, Calendar.MONTH)
-                return DateUtil.toDouble(cal) - pos
-            }
-            return incVal
-        }
     }
 }

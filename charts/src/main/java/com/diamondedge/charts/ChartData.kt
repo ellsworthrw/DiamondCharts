@@ -27,32 +27,30 @@ interface ChartData {
     val valueCount: Int
 
     /**
-     * return the minimum value in the data set for the 1st value
+     * The minimum value in the data set for the 1st value
      * This must be set during the recalc() function
      */
-    val minValue: Double
+    var minValue: Double
 
     /**
-     * return the maximum value in the data set for the 1st value
+     * The maximum value in the data set for the 1st value
      * This must be set during the recalc() function
      */
-    val maxValue: Double
+    var maxValue: Double
 
     /**
-     * return the minimum value in the data set for the 2nd value
+     * The minimum value in the data set for the 2nd value
      * This must be set during the recalc() function
      */
-    val minValue2: Double
+    var minValue2: Double
 
     /**
-     * return the maximum value in the data set for the 2nd value
+     * The maximum value in the data set for the 2nd value
      * This must be set during the recalc() function
      */
-    val maxValue2: Double
+    var maxValue2: Double
 
     val id: Any
-
-    var options: Int
 
     fun getDouble(series: Int, dataPtNum: Int): Double {
         return getDouble(series, dataPtNum, valueIndex)
@@ -68,7 +66,7 @@ interface ChartData {
 
     fun getGraphicAttributes(series: Int): GraphicAttributes
 
-    fun recalc()
+    fun recalc(combineSeries: Boolean)
 
     fun isEmpty(): Boolean {
         return dataCount == 0
@@ -84,16 +82,12 @@ interface ChartData {
         const val yIndex = 0    // 0th value so 2nd value can be dataPtNum if not supplied
         const val zIndex = 2    // index for bubble value
 
-        // HLOC (high, low, open, close) stock data, the 4th value is the timestamp, 0th is close for displaying in LineGraph
-        const val dateIndex = 4
-        const val highIndex = 1
-        const val lowIndex = 2
-        const val openIndex = 3
+        // HLOC (high, low, open, close) stock data with date on x axis
+        const val highIndex = 2
+        const val lowIndex = 3
+        const val openIndex = 4
         const val closeIndex = 0
-
-        const val COMBINE_SERIES = 0x1
-        const val COMBINE_PERCENT_SERIES = 0x3
-        const val GROUP_CENTER = 0x4
+        const val dateIndex = 1
 
         fun dataPointsAtX(x: Double, list: List<ChartData>, interpolate: Boolean = true): List<Triple<ChartData, Double, Int>> {
             log.d { "dataPointsAt($x, $list)" }

@@ -12,18 +12,18 @@ class OthersData(private val otherData: ChartData, val seriesNumber: Int = 0) : 
     init {
         if (!otherData.isEmpty()) {
             seriesCount = 1
-            recalc()
+            recalc(false)
             val label = otherData.getSeriesLabel(seriesNumber)
             if (label != null)
                 setSeriesLabel(0, label)
         }
     }
 
-    override fun recalc() {
+    override fun recalc(combineSeries: Boolean) {
         if (otherData.isEmpty())
             return
 
-        otherData.recalc()
+        otherData.recalc(combineSeries)
         var dataCount = otherData.dataCount
         var total = 0.0
         var value: Double
@@ -64,7 +64,7 @@ class OthersData(private val otherData: ChartData, val seriesNumber: Int = 0) : 
                     setDataLabel(dataPtNum, label)
             }
         }
-        super.recalc()
+        super.recalc(combineSeries)
     }
 
     override fun toString(): String {

@@ -77,7 +77,7 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
         if (periodStyle == MOVING_PERIOD)
             alignment = RIGHT
         seriesCount = 1
-        recalc()
+        recalc(false)
         setSeriesLabel(0, label)
         val gattr = getGraphicAttributes(0)
         gattr.color = Color.black
@@ -101,12 +101,10 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
         periodStyle = this.periodStyle  // calculate valueRange
     }
 
-    override fun recalc() {
-        if (data == null)
-            return
+    override fun recalc(combineSeries: Boolean) {
 
         if (ddata is CalculatedData)
-            ddata.recalc()  // recalc dependent data too
+            ddata.recalc(combineSeries)  // recalc dependent data too
 
         if (this.periodStyle == ALL_POINTS || period <= 0)
             recalcAllPoints()
@@ -115,7 +113,7 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
         else
             recalcNumPoints()
 
-        super.recalc()
+        super.recalc(combineSeries)
     }
 
     private fun getAlignedValue(min: Double, max: Double): Double {
@@ -170,14 +168,9 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
         while (i < dataCount) {
             minX = i.toDouble()
             maxX = i + period - 1
-            if (maxX >= dataCount)
-            // last group of points is smaller than period
-            {
+            if (maxX >= dataCount) {    // last group of points is smaller than period
                 maxX = (dataCount - 1).toDouble()
                 value = DoubleArray((maxX - minX + 1).toInt())
-            }
-            if (ChartData.xIndex < 0 && ddata.options and ChartData.GROUP_CENTER > 0) {           // data is in between current x val and the next x val
-                maxX++   // which makes the next x val the max value
             }
             var j = 0
             while (j < period && i + j < dataCount) {

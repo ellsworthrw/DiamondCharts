@@ -8,19 +8,17 @@ import androidx.compose.ui.platform.LocalDensity
 import com.diamondedge.charts.ChartContainer
 import com.diamondedge.charts.ChartData
 import com.diamondedge.charts.Charts
-import com.diamondedge.charts.StackedAreaGraph
+import com.diamondedge.charts.XYGraph
 
 @Composable
-fun StackedAreaGraph(
-    data: ChartData,
-    modifier: Modifier = Modifier,
-    is100Percent: Boolean = false
+fun XYGraph(
+    data: ChartData, drawLine: Boolean = true, fillArea: Boolean = false,
+    modifier: Modifier,
 ) {
     val density = LocalDensity.current
     Canvas(modifier = modifier) {
-        val charts = Charts(size.width, size.height, ChartContainer.LEGEND_NONE)
-        charts.add(StackedAreaGraph(data, is100Percent))
-
+        val charts = Charts(size.width, size.height, ChartContainer.LEGEND_RIGHT)
+        charts.add(XYGraph(data, drawLine, fillArea))
         drawIntoCanvas { canvas ->
             charts.draw(ComposeGC(canvas, density))
         }

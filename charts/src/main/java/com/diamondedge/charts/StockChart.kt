@@ -56,13 +56,8 @@ class StockChart(data: ChartData) : Chart(data) {
         val dataCount = data.dataCount
         println("StockChart.draw: $dataCount")
         var gattr: GraphicAttributes
-        var x: Int
         var lastX = 0
         var lastY = 0
-        var high = 0
-        var low = 0
-        var open = 0
-        var close = 0
         var goingUp = false
         // make local variables so when they are adjusted they don't change the user settings
         var drawLine = this.drawLine
@@ -79,19 +74,12 @@ class StockChart(data: ChartData) : Chart(data) {
             hotspots!!.clear()
 
         var width = symbolWidth
-        if (dataCount > 1)
-        // check to see if there is room to display requested style
-        {                     // if not switch to a style that takes less space
-            var w = horAxis!!.convertToPixel(data.getDouble(0, 1, ChartData.xIndex)) - horAxis!!.convertToPixel(
-                data.getDouble(
-                    0,
-                    0,
-                    ChartData.xIndex
-                )
-            )
+        if (dataCount > 1) {   // check to see if there is room to display requested style, if not switch to a style that takes less space
+            val val0 = data.getDouble(0, 0, ChartData.dateIndex)
+            val val1 = data.getDouble(0, 1, ChartData.dateIndex)
+            var w = horAxis!!.convertToPixel(val1) - horAxis!!.convertToPixel(val0)
             w -= 2
-            if (drawCandle)
-            // want min of 2 pixels in between candles
+            if (drawCandle) // want min of 2 pixels in between candles
                 w -= 2
             if (width > w) {
                 if (w < 4) {
@@ -116,9 +104,7 @@ class StockChart(data: ChartData) : Chart(data) {
         for (series in 0 until dsCount) {
             gattr = data.getGraphicAttributes(series)
 
-            if (!drawLine && dsCount > 1)
-            // for multiple sets of data when line is not drawn
-            {                               // draw with the color of the data series
+            if (!drawLine && dsCount > 1) {     // for multiple sets of data when line is not drawn, draw with the color of the data series
                 upColor = gattr.color
                 upCandleColor = gattr.color
                 upCandleFill = Color.white
@@ -128,16 +114,14 @@ class StockChart(data: ChartData) : Chart(data) {
             }
 
             for (i in 0 until dataCount) {
-                x = horAxis!!.convertToPixel(data.getDouble(series, i, ChartData.xIndex))
-                high = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.highIndex))
-                low = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.lowIndex))
-                open = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.openIndex))
-                close = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.closeIndex))
+                val x = horAxis!!.convertToPixel(data.getDouble(series, i, ChartData.dateIndex))
+                val high = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.highIndex))
+                val low = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.lowIndex))
+                val open = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.openIndex))
+                val close = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.closeIndex))
 
                 g.color = gattr.color
-                if (i > 0 && drawLine)
-                // draw line from last point to this one
-                {
+                if (i > 0 && drawLine) { // draw line from last point to this one
                     if (drawCandle)
                         g.drawLine(lastX + width / 2, lastY, x - width2, close)
                     else

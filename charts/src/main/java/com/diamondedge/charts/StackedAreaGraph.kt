@@ -5,32 +5,22 @@
  */
 package com.diamondedge.charts
 
-class StackedAreaGraph(data: ChartData) : Chart(data) {
-    private var options = ChartData.COMBINE_SERIES
+class StackedAreaGraph(data: ChartData, val is100Percent: Boolean = false) : Chart(data) {
 
-    init {
-        if (data.options != options) {
-            data.options = options
+    override fun setup(combineSeries: Boolean) {
+        super.setup(true)
+        if (is100Percent) {
+            data.minValue = 0.0
+            data.maxValue = 100.0
         }
+        log.d { "setup after: $data" }
     }
 
     override fun createHorizontalAxis(): Axis {
         return LabelAxis()
     }
 
-    fun set100Percent(value: Boolean) {
-        if (value)
-            options = ChartData.COMBINE_PERCENT_SERIES
-        else
-            options = ChartData.COMBINE_SERIES
-        if (data != null && data.options != options) {
-            data.options = options
-        }
-    }
-
     override fun draw(g: GraphicsContext) {
-        if (data == null)
-            return
         val dsCount = data.seriesCount
         val dataCount = data.dataCount
         var ptNum = 0
@@ -41,7 +31,6 @@ class StackedAreaGraph(data: ChartData) : Chart(data) {
         var x = 0
         var y = 0
         var lastY = 0
-        var value = 0.0
         // center the bars in the area
         val offset = 0 //unitWidth / 2;
         var useFirst = true
@@ -49,17 +38,16 @@ class StackedAreaGraph(data: ChartData) : Chart(data) {
             hotspots!!.clear()
 
         var total: DoubleArray? = null
-        if (options == ChartData.COMBINE_PERCENT_SERIES) {
+        if (is100Percent) {
             total = DoubleArray(dataCount)
             for (i in 0 until dataCount) {
-                value = 0.0
+                var value = 0.0
                 for (series in 0 until dsCount) {
                     value += data.getDouble(series, i)
                 }
                 total[i] = value
             }
         }
-
         // y values for 2 sets of data are being kept
         // this is the polygon that being drawn
         // if useFirst = true then current data is in yPts[0 to dataCount-1]
@@ -85,10 +73,10 @@ class StackedAreaGraph(data: ChartData) : Chart(data) {
                 if (series == 0)
                     y = vertAxis!!.convertToPixel(0.0)
                 lastY = y
-                value = data.getDouble(series, i)
-                if (total != null)
-                // then using 100 percent fill
-                    value = value / total[i] * 100   // convert to percent of total
+                var value = data.getDouble(series, i)
+                if (total != null) {                    // then using 100 percent fill
+                    value = value / total[i] * 100      // convert to percent of total
+                }
                 // subtract current y value
                 y -= vertAxis!!.scaleData(value)
                 x = horAxis!!.convertToPixel(i.toDouble()) + offset
@@ -101,9 +89,7 @@ class StackedAreaGraph(data: ChartData) : Chart(data) {
                 else
                     ptNum--
 
-                if (hotspots != null)
-                // add hotspot for data point
-                {
+                if (hotspots != null) { // add hotspot for data point
                     val rect = Rectangle(x - hotspotWidth / 2, y - hotspotWidth / 2, hotspotWidth, lastY - y)
                     println(rect)
                     hotspots!!.add(Hotspot(this, data, series, i, rect))
@@ -127,12 +113,7 @@ class StackedAreaGraph(data: ChartData) : Chart(data) {
     }
 
     companion object {
-
-        fun create100PercentStackedAreaGraph(data: ChartData): StackedAreaGraph {
-            val graph = StackedAreaGraph(data)
-            graph.set100Percent(true)
-            return graph
-        }
+        private val log = moduleLogging()
 
         private val hotspotWidth = 7
     }

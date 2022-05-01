@@ -5,6 +5,8 @@
  */
 package com.diamondedge.charts
 
+import kotlin.math.abs
+
 class RandomData : DefaultData {
     private var minval_set = 0
     private var maxval_set = 0
@@ -23,18 +25,19 @@ class RandomData : DefaultData {
         minval_set = minval.toInt()
     }
 
-    override fun recalc() {
+    override fun recalc(combineSeries: Boolean) {
         if (seriesType == HLOC_SERIES) {
             recalcHLOC()
-            super.recalc()
+            super.recalc(combineSeries)
             return
         }
 
+/*
         if (options and 0x8000 > 0) {
             recalcBellCurve()
-            //super.recalc();
             return
         }
+*/
 
         log.d { "RandomGraphData.recalc()" }
         if (maxval_set == 0)
@@ -88,7 +91,7 @@ class RandomData : DefaultData {
             listOf("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
         for (j in 0 until dataCount)
             setDataLabel(j, months[j])
-        super.recalc()
+        super.recalc(combineSeries)
     }
 
     private fun getSymbolFor(i: Int): SymbolType {
@@ -100,49 +103,53 @@ class RandomData : DefaultData {
     private fun recalcHLOC() {
         //log.d {  "\nRandomGraphData.recalcHLOC()"  };
 
-        val totalRange = Math.random() * 30
-        minValue = Math.random() * 100
-        maxValue = minValue + totalRange
-
-        var seriesCount = (Math.random() * 3).toInt()
+        var seriesCount = seriesCount_set
+        if (seriesCount_set == 0)
+            seriesCount = (Math.random() * 3).toInt()
         if (seriesCount == 0)
             seriesCount = 1
-        //seriesCount = 1;
-        var dataCount = (Math.random() * 80).toInt() + 30
-        if (dataCount < 7)
-            dataCount = 7
 
-        dataCount = 0
-        seriesCount = 0
-        dataCount = dataCount
-        seriesCount = seriesCount
-        var high = 0.0
-        var low = 0.0
-        var open = 0.0
-        var close = 0.0
-        val today = Math.floor(DateUtil.toDouble(java.util.Date()))
+        val dataCount = (Math.random() * 40).toInt() + 10
+        this.dataCount = 0
+        this.seriesCount = 0
+        this.dataCount = dataCount
+        this.seriesCount = seriesCount
+        val dateMin = DateUtil.toDouble(java.util.Date()) - dataCount
+        val totalRange = Math.random() * 50
+        minValue = Math.random() * 100
+        maxValue = minValue + totalRange
 
         for (i in 0 until seriesCount) {
             setSeriesLabel(i, "Stock " + (i + 1).toString())
 
             getGraphicAttributes(i).color = Draw.getColor(i)
-
+            var lastY = minValue
+            var lastBasis = minValue
+            var trend = 1.0
             for (j in 0 until dataCount) {
-                setDouble(i, j, 0, today + j)
+                setDouble(i, j, ChartData.dateIndex, dateMin + j)
                 val range = Math.random() * totalRange / 5
-                low = minValue + Math.random() * totalRange
-                if (low + range > maxValue)
-                    low = maxValue - range
-                high = low + range
-                open = low + Math.random() * range
-                close = low + Math.random() * range
-                setDouble(i, j, 1, high)
-                setDouble(i, j, 2, low)
-                setDouble(i, j, 3, open)
-                setDouble(i, j, 4, close)
+                val valRange = Math.random() * totalRange / 20
+                var base = lastY + Math.random() * range * trend
+                if (abs(base - lastBasis) > range) {
+                    trend *= -1
+                    lastBasis = base
+                }
+                if (base + range > maxValue)
+                    base = maxValue - range
+                if (base < minValue)
+                    base = minValue
+                lastY = base
+                val low = base
+                val high = base + valRange
+                val open = base + Math.random() * valRange
+                val close = base + Math.random() * valRange
+                setDouble(i, j, ChartData.highIndex, high)
+                setDouble(i, j, ChartData.lowIndex, low)
+                setDouble(i, j, ChartData.openIndex, open)
+                setDouble(i, j, ChartData.closeIndex, close)
             }
         }
-        super.recalc()
     }
 
     fun recalcBellCurve() {
@@ -179,7 +186,7 @@ class RandomData : DefaultData {
          */
         fun createBellCurveDistribution(): RandomData {
             val data = RandomData()
-            data.options = 0x8000
+//            data.options = 0x8000
             return data
         }
     }

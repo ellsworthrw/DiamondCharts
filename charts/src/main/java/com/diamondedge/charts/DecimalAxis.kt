@@ -9,7 +9,6 @@ import java.text.DecimalFormat
 
 open class DecimalAxis : Axis() {
 
-    private val log = moduleLogging()
     private val majorTickDecimalFormat = DecimalFormat()
 
     /** Applies the given pattern to this DecimalFormat object used in formatting the
@@ -104,5 +103,9 @@ open class DecimalAxis : Axis() {
 
     override fun toString(): String {
         return "DecimalAxis[" + toStringParam() + "]"
+    }
+
+    companion object {
+        private val log = moduleLogging()
     }
 }

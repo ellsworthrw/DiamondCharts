@@ -55,7 +55,6 @@ private fun FunctionGraphPreview() {
     }
 }
 
-
 fun createData(fn: (Double) -> Double, minX: Double, maxX: Double): ChartData {
 
     val data = DefaultXYData("fn")

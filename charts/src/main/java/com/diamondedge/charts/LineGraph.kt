@@ -13,26 +13,19 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
     var symbolSize = 4f
     private val isBubble3D = true
 
+    var lineWidth = 2f
+
     override fun createHorizontalAxis(): Axis {
         return LabelAxis()
     }
 
     open fun getX(series: Int, dataPt: Int): Double {
-        return when (data.valueCount) {
-            1 -> dataPt.toDouble()   // use the dataPtNum as the value on the x axis when only one value is supplied in the dataset
-            5 -> data.getDouble(series, dataPt, ChartData.dateIndex)
-            else -> data.getDouble(series, dataPt, ChartData.xIndex)
-        }
+        return dataPt.toDouble()
     }
 
     open fun getY(series: Int, dataPt: Int): Double {
-        return when (data.valueCount) {
-            5 -> data.getDouble(series, dataPt, ChartData.closeIndex)
-            else -> data.getDouble(series, dataPt, ChartData.yIndex)
-        }
+        return data.getDouble(series, dataPt)
     }
-
-    var lineWidth = 2f
 
     override fun draw(g: GraphicsContext) {
         val dsCount = data.seriesCount

@@ -1,5 +1,9 @@
 package com.diamondedge.charts
 
+/**
+ * Simplified `ChartData` that is specific for XYGraphs.
+ * The more generic `ChartData` can still be used for XYGraphs.
+ */
 abstract class XYData : ChartData {
     val graphicAttributes = GraphicAttributes()
 
@@ -8,13 +12,9 @@ abstract class XYData : ChartData {
     abstract fun getY(dataPtNum: Int): Double
 
     abstract var minX: Double
-        protected set
     abstract var maxX: Double
-        protected set
     abstract var minY: Double
-        protected set
     abstract var maxY: Double
-        protected set
 
     override val id: Any = ""
 
@@ -22,7 +22,6 @@ abstract class XYData : ChartData {
 
     override val seriesCount: Int = 1
     override val valueCount: Int = 2
-    override var options: Int = 0
 
     override fun getGraphicAttributes(series: Int): GraphicAttributes = graphicAttributes
 
@@ -36,12 +35,8 @@ abstract class XYData : ChartData {
 
     override fun getDataLabel(dataPtNum: Int): String? = null
 
-    override val minValue: Double
-        get() = minY
-    override val maxValue: Double
-        get() = maxY
-    override val minValue2: Double
-        get() = minX
-    override val maxValue2: Double
-        get() = maxX
+    override var minValue: Double by ::minY
+    override var maxValue: Double by ::maxY
+    override var minValue2: Double by ::minX
+    override var maxValue2: Double by ::maxX
 }

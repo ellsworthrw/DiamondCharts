@@ -566,8 +566,6 @@ open class Axis protected constructor() {
         return thickness
     }
 
-    internal open fun setDataCount(value: Int) {}
-
     open fun tickLabel(value: Double): String {
         return numberFormatter?.invoke(value) ?: value.toString()
     }
@@ -577,15 +575,16 @@ open class Axis protected constructor() {
     }
 
     protected open fun toStringParam(): String {
-        return "vert=" + isVertical + ",scale=" + dbl(scale) + ",min=" + dbl(minVal) + ",max=" + dbl(maxVal) + ",majorTickInc=" +
-                dbl(majorTickInc) + ",minorTickNum=" + minorTickIncNum + ", xOrigin=" + xOrigin + ", yOrigin=" + yOrigin +
-                ",axisLabel=" + axisLabel + ",left=" + x + ",bottom=" + y + ",width=" + width + ",height=" + height
+        return "vert=$isVertical,scale=${dbl(scale)},min=${dbl(minVal)},max=${dbl(maxVal)},majorTickInc=${dbl(majorTickInc)},minorTickNum=" +
+                "$minorTickIncNum, xOrigin=$xOrigin, yOrigin=$yOrigin,axisLabel=$axisLabel,left=$x,bottom=$y,width=$width,height=$height"
     }
 
     private fun dbl(d: Double): String {
         var str = String.format("%.2f", d)
         if (str.endsWith("00"))
             str = String.format("%.6f", d)
+        if (str.endsWith("000000"))
+            str = String.format("%.1f", d)
         return str
     }
 
