@@ -110,9 +110,9 @@ interface ChartData {
             returnValueNum: Int,
             interpolate: Boolean
         ): Triple<ChartData, Double, Int>? {
-            val minVal = if (compareValueNum == ChartData.yIndex) data.minValue else data.minValue2
-            val maxVal = if (compareValueNum == ChartData.yIndex) data.maxValue else data.maxValue2
-            if (value < minVal || value > maxVal) {
+            val minVal = if (compareValueNum == yIndex) data.minValue else data.minValue2
+            val maxVal = if (compareValueNum == yIndex) data.maxValue else data.maxValue2
+            if (value < minVal || value > maxVal || data.dataCount == 0) {
                 log.d { "value: $value not within min: $minVal max: $maxVal" }
                 // point not within the range of the data set
                 return null
@@ -126,29 +126,43 @@ interface ChartData {
                     bestMatchVal = thisVal
                 }
             }
-            log.d { "bestMatch: $bestMatch $bestMatchVal temp: ${data.getDouble(series, bestMatch, returnValueNum)}" }
+            val bestMatchY = data.getDouble(series, bestMatch, returnValueNum)
+            log.d { "bestMatch: index: $bestMatch  coord: ($bestMatchVal, $bestMatchY)" }
             if (interpolate) {
                 // for variable naming purposes, assume compareValueNum = xIndex and returnValueNum = yIndex
-                var x1 = bestMatchVal
-                var x2 = bestMatchVal
-                var y1 = data.getDouble(series, bestMatch, returnValueNum)
-                var y2 = y1
+                val x1: Double
+                val x2: Double
+                val y1: Double
+                val y2: Double
 
-                if (bestMatchVal < value && (bestMatch + 1) < data.dataCount) {
+                if (value > bestMatchVal && (bestMatch + 1) < data.dataCount) {
                     x1 = bestMatchVal
-                    y1 = data.getDouble(series, bestMatch, returnValueNum)
+                    y1 = bestMatchY
                     x2 = data.getDouble(series, bestMatch + 1, compareValueNum)
                     y2 = data.getDouble(series, bestMatch + 1, returnValueNum)
-                } else if (bestMatchVal > value && (bestMatch - 1) >= 0) {
+                } else if (value < bestMatchVal && (bestMatch - 1) >= 0) {
                     x1 = data.getDouble(series, bestMatch - 1, compareValueNum)
                     y1 = data.getDouble(series, bestMatch - 1, returnValueNum)
                     x2 = bestMatchVal
-                    y2 = data.getDouble(series, bestMatch, returnValueNum)
+                    y2 = bestMatchY
+                } else {
+                    val firstValue = data.getDouble(series, 0, compareValueNum)
+                    val lastValue = data.getDouble(series, data.dataCount - 1, compareValueNum)
+                    if (value < firstValue || value > lastValue) {
+                        // not inside the boundaries of the dataset. minVal or maxVal are probably not right
+                        if (minVal < firstValue)
+                            log.e { "error: minVal $minVal is less than first value $firstValue. Please correct the calculation of min/max values in your ChartData.recalc function." }
+                        if (maxVal > lastValue)
+                            log.e { "error: maxVal $maxVal is greater than last value $lastValue. Please correct the calculation of min/max values in your ChartData.recalc function." }
+                        log.d { "value: $value not within first value: $firstValue and last value: $lastValue" }
+                        return null
+                    }
+                    return Triple(data, bestMatchY, bestMatch)
                 }
                 val y = y1 + (value - x1) * (y2 - y1) / (x2 - x1)
                 return Triple(data, y, bestMatch)
             } else {
-                return Triple(data, data.getDouble(series, bestMatch, returnValueNum), bestMatch)
+                return Triple(data, bestMatchY, bestMatch)
             }
         }
     }

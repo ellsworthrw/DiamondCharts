@@ -10,6 +10,10 @@ open class Font(val face: FontFace = FontFace.Default, val style: FontStyle = Fo
     var fontMetrics: FontMetrics? = null
         internal set
 
+    override fun toString(): String {
+        return "Font(face=$face, style=$style, size=$size, typeface=$typeface)"
+    }
+
     companion object {
         val Default = Font()
         val Small = Font(size = 8f)
