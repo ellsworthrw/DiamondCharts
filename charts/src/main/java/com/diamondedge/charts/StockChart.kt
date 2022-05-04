@@ -5,11 +5,13 @@
  */
 package com.diamondedge.charts
 
-class StockChart(data: ChartData) : Chart(data) {
+class StockChart(
+    data: ChartData,
+    private val drawCandle: Boolean = true,
+    private val drawHighLow: Boolean = true,
+    private val drawOpenClose: Boolean = true
+) : Chart(data) {
     private var drawLine = false
-    private var drawCandle = true
-    private var drawHighLow = true
-    private var drawOpenClose = false
     private val symbolWidth = 8
     private val upColor = Color.green
     private val downColor = Color.red
@@ -18,32 +20,9 @@ class StockChart(data: ChartData) : Chart(data) {
     private val upCandleColor = upColor
     private val downCandleColor = downColor
 
-    var style: Int
-        get() = if (drawCandle)
-            CANDLE_STICK
-        else if (drawOpenClose)
-            HIGH_LOW_OPEN_CLOSE
-        else if (drawHighLow)
-            HIGH_LOW
-        else
-            LINE
-        set(style) {
-            drawCandle = false
-            drawOpenClose = false
-            drawHighLow = true
-            when (style) {
-                HIGH_LOW_OPEN_CLOSE -> drawOpenClose = true
-                CANDLE_STICK -> drawCandle = true
-                LINE -> {
-                    drawLine = true
-                    drawHighLow = false
-                }
-            }
-        }
-
     init {
         if (data.valueCount != 5) {
-            println("StockChart can only accept ChartData with 5 values (date,high,low,open,close")
+            log.e { "StockChart can only accept ChartData with 5 values (date,high,low,open,close" }
         }
     }
 
@@ -54,11 +33,11 @@ class StockChart(data: ChartData) : Chart(data) {
     override fun draw(g: GraphicsContext) {
         val dsCount = data.seriesCount
         val dataCount = data.dataCount
-        println("StockChart.draw: $dataCount")
+        log.d { "StockChart.draw: $dataCount" }
         var gattr: GraphicAttributes
         var lastX = 0
         var lastY = 0
-        var goingUp = false
+        var goingUp: Boolean
         // make local variables so when they are adjusted they don't change the user settings
         var drawLine = this.drawLine
         var drawCandle = this.drawCandle
@@ -75,8 +54,8 @@ class StockChart(data: ChartData) : Chart(data) {
 
         var width = symbolWidth
         if (dataCount > 1) {   // check to see if there is room to display requested style, if not switch to a style that takes less space
-            val val0 = data.getDouble(0, 0, ChartData.dateIndex)
-            val val1 = data.getDouble(0, 1, ChartData.dateIndex)
+            val val0 = data.getValue(0, 0, ChartData.dateIndex)
+            val val1 = data.getValue(0, 1, ChartData.dateIndex)
             var w = horAxis!!.convertToPixel(val1) - horAxis!!.convertToPixel(val0)
             w -= 2
             if (drawCandle) // want min of 2 pixels in between candles
@@ -114,11 +93,11 @@ class StockChart(data: ChartData) : Chart(data) {
             }
 
             for (i in 0 until dataCount) {
-                val x = horAxis!!.convertToPixel(data.getDouble(series, i, ChartData.dateIndex))
-                val high = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.highIndex))
-                val low = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.lowIndex))
-                val open = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.openIndex))
-                val close = vertAxis!!.convertToPixel(data.getDouble(series, i, ChartData.closeIndex))
+                val x = horAxis!!.convertToPixel(data.getValue(series, i, ChartData.dateIndex))
+                val high = vertAxis!!.convertToPixel(data.getValue(series, i, ChartData.highIndex))
+                val low = vertAxis!!.convertToPixel(data.getValue(series, i, ChartData.lowIndex))
+                val open = vertAxis!!.convertToPixel(data.getValue(series, i, ChartData.openIndex))
+                val close = vertAxis!!.convertToPixel(data.getValue(series, i, ChartData.closeIndex))
 
                 g.color = gattr.color
                 if (i > 0 && drawLine) { // draw line from last point to this one
@@ -166,7 +145,7 @@ class StockChart(data: ChartData) : Chart(data) {
     }
 
     override fun toStringParam(): String {
-        return "style=" + style + "," + super.toStringParam()
+        return "drawCandle=$drawCandle, drawHighLow=$drawHighLow, drawOpenClose=$drawOpenClose" + super.toStringParam()
     }
 
     override fun toString(): String {
@@ -174,33 +153,6 @@ class StockChart(data: ChartData) : Chart(data) {
     }
 
     companion object {
-        val LINE = 0
-        val HIGH_LOW = 1
-        val HIGH_LOW_OPEN_CLOSE = 2
-        val CANDLE_STICK = 3
-
-        fun createHighLowStockChart(data: ChartData): StockChart {
-            val graph = StockChart(data)
-            graph.drawCandle = false
-            graph.drawHighLow = true
-            graph.drawOpenClose = false
-            return graph
-        }
-
-        fun createHighLowOpenCloseStockChart(data: ChartData): StockChart {
-            val graph = StockChart(data)
-            graph.drawCandle = false
-            graph.drawHighLow = true
-            graph.drawOpenClose = true
-            return graph
-        }
-
-        fun createCandleStickStockChart(data: ChartData): StockChart {
-            val graph = StockChart(data)
-            graph.drawCandle = true
-            graph.drawHighLow = true
-            graph.drawOpenClose = false
-            return graph
-        }
+        private val log = moduleLogging()
     }
 }

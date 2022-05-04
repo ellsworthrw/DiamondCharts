@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,7 +21,6 @@ fun NavGraph(
     navController: NavHostController = rememberNavController(),
     innerPadding: PaddingValues,
     startDestination: String = MainDestinations.HOME_ROUTE,
-    viewModel: HomeViewModel = viewModel()
 ) {
     val actions = remember(navController) { MainActions(navController) }
 
@@ -39,7 +37,7 @@ fun NavGraph(
             FunctionGraphScreen()
         }
         composable(MainDestinations.CHARTS_ROUTE) {
-            LockOrientationScreen(actions.upPress)
+            SampleGraphScreen(4)
         }
     }
 }

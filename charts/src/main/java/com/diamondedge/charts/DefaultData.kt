@@ -38,8 +38,8 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
         updateRowCount(1)
     }
 
-    override fun getDouble(series: Int, dataPtNum: Int, valueNum: Int): Double {
-        return toDouble(getValueAt(dataPtNum + 1, series * valueCount + 1 + valueNum))
+    override fun getValue(series: Int, dataPtNum: Int, valueIndex: Int): Double {
+        return toDouble(getValueAt(dataPtNum + 1, series * valueCount + 1 + valueIndex))
     }
 
     fun setDouble(series: Int, dataPtNum: Int, value: Double) {
@@ -47,33 +47,7 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
     }
 
     fun setDouble(series: Int, dataPtNum: Int, valueNum: Int, value: Double) {
-        if (valueNum == ChartData.valueIndex) {
-            val dataPt = getDataPoint(series, dataPtNum, false)
-            if (dataPt != null) {
-                dataPt.value = value
-                return
-            }
-        }
         setValueAt(value, dataPtNum + 1, series * valueCount + 1 + valueNum)
-    }
-
-    /** Returns the DataPoint object for the given data point number. This object
-     * can be used to set properties specific to the given data point.
-     * This will use the default value number encoded in the getSeriesType() to get
-     * the value at that row,column.
-     */
-    override fun getDataPoint(series: Int, dataPtNum: Int, createIfNull: Boolean): DataPoint? {
-        val value = getValueAt(dataPtNum + 1, series * valueCount + 1 + ChartData.valueIndex)
-        if (value is DataPoint)
-            return value
-
-        var dataPt: DataPoint? = null
-        if (createIfNull) {
-            dataPt = DataPoint()
-            dataPt.value = value
-            setValueAt(dataPt, dataPtNum + 1, series * valueCount + 1 + ChartData.valueIndex)
-        }
-        return dataPt
     }
 
     override fun getSeriesLabel(series: Int): String? {
@@ -134,17 +108,17 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
             value = 0.0
             for (series in 0 until seriesCount) {
                 if (seriesType == HLOC_SERIES) {
-                    value = getDouble(series, i, ChartData.highIndex)  // get high value
+                    value = getValue(series, i, ChartData.highIndex)  // get high value
                     if (value > maxValue)
                         maxValue = value
-                    value = getDouble(series, i, ChartData.lowIndex)  // get low value
+                    value = getValue(series, i, ChartData.lowIndex)  // get low value
                     if (value < minValue)
                         minValue = value
                 } else {
                     if (combineSeries)
-                        value += getDouble(series, i, index)
+                        value += getValue(series, i, index)
                     else
-                        value = getDouble(series, i, index)
+                        value = getValue(series, i, index)
                     if (value < minValue)
                         minValue = value
                     if (value > maxValue)
@@ -152,7 +126,7 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
                 }
 
                 if (valueCount > 1) {
-                    value = getDouble(series, i, index2)
+                    value = getValue(series, i, index2)
                     if (value < minValue2)
                         minValue2 = value
                     if (value > maxValue2)
@@ -168,7 +142,7 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
 
     var rowCount: Int
         get() = data.size
-        set(value) {
+        set(_) {
         }
 
     var columnCount: Int = 0
@@ -281,10 +255,6 @@ open class DefaultData(override val id: Any = "", val seriesType: Int) : ChartDa
         val HLOC_SERIES = 0x600 or 0x40 or 0x05
 
         private fun toDouble(value: Any?): Double {
-            var value = value
-            if (value is DataPoint)
-                value = value.value
-
             if (value is Number)
                 return value.toDouble()
             else if (value is Date)

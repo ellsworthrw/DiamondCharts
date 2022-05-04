@@ -10,34 +10,6 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
     open val showInLegend: Int
         get() = Legend.SERIES
 
-    var horizontalAxis: Axis?
-        get() = horAxis
-        set(axis) {
-            horAxis = axis
-            setupAxis()
-        }
-
-    var verticalAxis: Axis?
-        get() = vertAxis
-        set(axis) {
-            vertAxis = axis
-            setupAxis()
-        }
-
-    /** Returns the number of values per data point
-     * public int getValueCount();
-     * public static int getValueCount( GraphData );
-     *
-     * public Date getDate( int series, int dataPtNum, int valueNum );
-     * public void setDate( int series, int dataPtNum, int valueNum, Date val );
-     *
-     * public void setData( int series, double val );
-     * public void setData( int series, double val0, double val1 );
-     * public void setData( int series, double val0, double val1, double val2 );
-     * public void setData( int series, double val0, double val1, double val2, double val3, double val4 );
-     */
-
-
     /** @return true if the vertical axis displays the data values for the chart.
      * override if the horizontal axis is the axis which scales the data and return false
      */
@@ -61,13 +33,8 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
     internal var vertAxis: Axis? = null
     internal var horAxis: Axis? = null
     internal var hotspots: ArrayList<Hotspot>? = null
-    internal var labelType = LABEL_NEVER
 
     abstract override fun draw(g: GraphicsContext)
-
-    internal fun isLegendSymbolShowing(series: Int, dataPtNum: Int): Boolean {
-        return true
-    }
 
     open fun drawLegendSymbol(g: GraphicsContext, x: Int, y: Int, width: Int, height: Int, series: Int, dataPtNum: Int): Boolean {
         val gattr = data.getGraphicAttributes(series)
@@ -90,13 +57,12 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
         return DecimalAxis()
     }
 
-    open fun setup(combineSeries: Boolean = false) {
-        log.d { "setup: $data" }
+    open fun setupData(combineSeries: Boolean = false) {
         data.recalc(combineSeries)
-        log.d { "setup after: $data" }
+        log.d { "setupData(combine=$combineSeries) $data" }
     }
 
-    private fun setupAxis() {
+    open fun setupAxis() {
         val dataCount = data.dataCount
         vertAxis?.apply {
             if (this is LabelAxis) {
@@ -110,6 +76,9 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
                 setDataCount(dataCount)
             }
         }
+        log.d { "setupAxis: isVertical=$isVertical" }
+        log.d { "   hor: $horAxis" }
+        log.d { "   vert: $vertAxis" }
     }
 
     private fun createLabels(dataCount: Int): ArrayList<Any?> {
@@ -123,37 +92,13 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
     override fun hitTest(x: Int, y: Int): Hotspot? {
         val num = if (hotspots == null) 0 else hotspots!!.size
         for (i in 0 until num) {
-            val h = hotspots!!.get(i)
+            val h = hotspots!![i]
             if (h.shape.contains(x, y)) {
-                //log.d {  "series:" + h.series + " datapt:" + h.dataPtNum  };
                 return h
             }
         }
         return null
     }
-
-    fun getLabelType(): Int {
-        return labelType
-    }
-
-    fun setLabelType(type: Int) {
-        labelType = type
-        if (labelType == LABEL_ROLL_OVER)
-            isHotspotsAvailable = true
-    }
-
-    /*
-  protected boolean isDirty()
-  {
-    return isDirty;
-  }
-
-  protected void setDirty( boolean dirty )
-  {
-    isDirty = dirty;
-  }
-  private boolean isDirty = false;
-  */
 
     protected open fun toStringParam(): String {
         return "data=$data,vert=$vertAxis,hor=$horAxis"
@@ -161,10 +106,5 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
 
     companion object {
         private val log = moduleLogging()
-
-        val LABEL_NEVER = 0
-
-        //public static final int LABEL_ALWAYS = 1;
-        val LABEL_ROLL_OVER = 2
     }
 }

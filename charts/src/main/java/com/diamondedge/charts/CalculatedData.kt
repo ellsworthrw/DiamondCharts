@@ -9,7 +9,7 @@ import com.diamondedge.fn.Statistics
 
 import java.util.Calendar
 
-class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, period: Double = 0.0, private val ddata: ChartData) :
+class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, private val ddata: ChartData) :
     DefaultData(functionType, XY_SERIES) {
 
     /** The series used when period is greater than 0
@@ -84,7 +84,7 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
         if (symbol >= SymbolType.SMALL_DOT)
             symbol = SymbolType.SQUARE
         gattr.symbol = symbol
-        println("symbol: $symbol")
+        log.d { "symbol: $symbol" }
 //TODO:        symbol++
     }
 
@@ -129,16 +129,16 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
         val seriesCount = ddata.seriesCount
         dataCount = dataCount
         val value = DoubleArray(seriesCount)
-        var minX = 0.0
-        var maxX = 0.0
+        var minX: Double
+        var maxX: Double
         var x: Double
         for (i in 0 until dataCount) {
             minX = i.toDouble()
             maxX = (i + 1).toDouble()
             for (series in 0 until seriesCount) {
-                value[series] = ddata.getDouble(series, i, ChartData.yIndex)
+                value[series] = ddata.getValue(series, i, ChartData.yIndex)
                 if (ChartData.xIndex >= 0) {
-                    x = ddata.getDouble(series, i, ChartData.xIndex)
+                    x = ddata.getValue(series, i, ChartData.xIndex)
                     if (series == 0) {
                         maxX = x
                         minX = maxX
@@ -161,8 +161,8 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
         var dataPt = 0
         dataCount = Math.ceil(1.0 * dataCount / period).toInt()
         var value = DoubleArray(period.toInt())
-        var minX = 0.0
-        var maxX = 0.0
+        var minX: Double
+        var maxX: Double
         var x: Double
         var i = 0
         while (i < dataCount) {
@@ -174,9 +174,9 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
             }
             var j = 0
             while (j < period && i + j < dataCount) {
-                value[j] = ddata.getDouble(this.series, i + j, ChartData.yIndex)
+                value[j] = ddata.getValue(this.series, i + j, ChartData.yIndex)
                 if (ChartData.xIndex >= 0) {
-                    x = ddata.getDouble(this.series, i + j, ChartData.xIndex)
+                    x = ddata.getValue(this.series, i + j, ChartData.xIndex)
                     if (j == 0) {
                         maxX = x
                         minX = maxX
@@ -202,7 +202,7 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
     }
 
     private fun getVal(series: Int, i: Int, xIndex: Int, values: DoubleArray): Double {
-        return if (xIndex >= 0) ddata.getDouble(series, i, xIndex) else values[i]
+        return if (xIndex >= 0) ddata.getValue(series, i, xIndex) else values[i]
     }
 
     private fun recalcRange() {
@@ -212,7 +212,7 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
 
         var dataCount = ddata.dataCount
         var dataPt = 0     // index of data point in this GraphData that is being calculated
-        var numPts = 1     // number of points in the current range
+        var numPts: Int    // number of points in the current range
         var minXdata = 0.0  // minimum value on x axis for entire data
         var maxXdata = (dataCount - 1).toDouble()
         if (ChartData.xIndex >= 0) {
@@ -224,14 +224,14 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
         val values = DoubleArray(dataCount)  // all values in series
         var value: DoubleArray? = null                      // values in the range
         for (i in 0 until dataCount) {
-            values[i] = ddata.getDouble(this.series, i, ChartData.yIndex)
+            values[i] = ddata.getValue(this.series, i, ChartData.yIndex)
         }
         if (ChartData.xIndex < 0 && dataCount > 0) {   // cannot sort if have an xIndex since the x & y values will no longer be in the same order
             java.util.Arrays.sort(values)
             minXdata = values[0]
             maxXdata = values[dataCount - 1]
         }
-        var minX = 0.0
+        var minX: Double
         var maxX = minXdata
         var x: Double
         var i = 0
@@ -261,7 +261,7 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
             if (numPts > 0) {
                 if (ChartData.xIndex >= 0) {
                     for (j in 0 until numPts) {
-                        x = ddata.getDouble(this.series, i + j, ChartData.xIndex)
+                        x = ddata.getValue(this.series, i + j, ChartData.xIndex)
                         if (j == 0) {
                             maxX = x
                             minX = maxX
@@ -273,15 +273,15 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
                         }
                     }
                 }
-                println("i: $i numPts: $numPts")
-                println("  min: $minX max: $maxX valueRange: $valueRange")
+                log.d { "i: $i numPts: $numPts" }
+                log.d { "  min: $minX max: $maxX valueRange: $valueRange" }
                 if (value == null || value.size != numPts)
                     value = DoubleArray(numPts)
                 System.arraycopy(values, i, value, 0, numPts)
                 /*
-        System.out.println( "  x: " + getAlignedValue( minX, maxX ) + " y: " + calculate( val ) + " val.length: " + val.length );
+        System.out.log.d {  "  x: " + getAlignedValue( minX, maxX ) + " y: " + calculate( val ) + " val.length: " + val.length  };
         for( int n = 0; n < val.length; n++ )
-          System.out.println( "   n: " + n + " val: " + val[n] + " values: " + values[i + n] );
+          System.out.log.d {  "   n: " + n + " val: " + val[n] + " values: " + values[i + n]  };
         */
                 setDouble(0, dataPt, 0, getAlignedValue(minX, maxX))  // set X value
                 setDouble(0, dataPt, 1, calculate(value))               // set Y value
@@ -316,6 +316,8 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
     }
 
     companion object {
+        private val log = moduleLogging()
+
         // functionType
         val AVERAGE = 40
         val COUNT = 41
@@ -356,17 +358,13 @@ class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, perio
             if (range == WEEK || range == MONTH || range == YEAR) {
                 synchronized(cal) {
                     DateUtil.setCalendar(cal, pos)
-                    //System.out.println( "\n  " + cal.getTime() );
                     if (range == YEAR)
                         cal.add(Calendar.YEAR, 1)
                     else if (range == MONTH)
                         cal.add(Calendar.MONTH, 1)
                     else
                         cal.add(Calendar.WEEK_OF_YEAR, 1)
-                    //System.out.println( "  " + cal.getTime() );
                     DateUtil.clearCalBelow(cal, range and 0xFF)
-//System.out.println( "incVal: " + incVal + " new inc: " + inc + " " + DateUtil.toDate( pos ) );
-                    //System.out.println( "  " + cal.getTime() );
                     return DateUtil.toDouble(cal) - pos
                 }
             } else if (range == MINUTE) {

@@ -5,6 +5,8 @@
  */
 package com.diamondedge.charts
 
+import kotlin.math.abs
+
 class LogarithmicAxis : DecimalAxis() {
     init {
         minorTickIncNum = 10
@@ -32,13 +34,11 @@ class LogarithmicAxis : DecimalAxis() {
         scale = rangeVal / rangePix
         if (scale == 0.0)
             scale = 1.0
-        //System.out.println( "calcScale: " + rangePix + " scale: " + scale );
         return scale
     }
 
-    override fun nextMajorIncVal(pos: Double, incVal: Double): Double {
-        var incVal = incVal
-        incVal = Math.pow(10.0, (Math.log(pos) / LOG10).toInt().toDouble())
+    override fun nextMajorIncVal(pos: Double, incrementVal: Double): Double {
+        var incVal = Math.pow(10.0, (Math.log(pos) / LOG10).toInt().toDouble())
         if (incVal == 0.0)
             incVal = 1.0
         return incVal
@@ -68,12 +68,12 @@ class LogarithmicAxis : DecimalAxis() {
         private val LOG10 = Math.log(10.0)
 
         private fun log10(value: Double): Double {
-            var value = value
-            val sign = if (value < 0) -1 else 1
-            value = Math.abs(value)
-            if (value < 10)
-                value += (10 - value) / 10   // make 0 correspond to 0
-            return Math.log(value) / LOG10 * sign
+            var v = value
+            val sign = if (v < 0) -1 else 1
+            v = abs(v)
+            if (v < 10)
+                v += (10 - v) / 10   // make 0 correspond to 0
+            return Math.log(v) / LOG10 * sign
         }
     }
 }

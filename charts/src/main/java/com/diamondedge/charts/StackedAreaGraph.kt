@@ -7,13 +7,16 @@ package com.diamondedge.charts
 
 class StackedAreaGraph(data: ChartData, val is100Percent: Boolean = false) : Chart(data) {
 
-    override fun setup(combineSeries: Boolean) {
-        super.setup(true)
+    override fun setupData(combineSeries: Boolean) {
+        super.setupData(true)
+    }
+
+    override fun setupAxis() {
+        super.setupAxis()
         if (is100Percent) {
-            data.minValue = 0.0
-            data.maxValue = 100.0
+            vertAxis?.minValueOverride = 0.0
+            vertAxis?.maxValueOverride = 100.0
         }
-        log.d { "setup after: $data" }
     }
 
     override fun createHorizontalAxis(): Axis {
@@ -23,14 +26,14 @@ class StackedAreaGraph(data: ChartData, val is100Percent: Boolean = false) : Cha
     override fun draw(g: GraphicsContext) {
         val dsCount = data.seriesCount
         val dataCount = data.dataCount
-        var ptNum = 0
+        var ptNum: Int
         val ptCount = dataCount * 2
         val xPts = IntArray(ptCount)
         val yPts = IntArray(ptCount)
         var gattr: GraphicAttributes
         var x = 0
-        var y = 0
-        var lastY = 0
+        var y: Int
+        var lastY: Int
         // center the bars in the area
         val offset = 0 //unitWidth / 2;
         var useFirst = true
@@ -43,7 +46,7 @@ class StackedAreaGraph(data: ChartData, val is100Percent: Boolean = false) : Cha
             for (i in 0 until dataCount) {
                 var value = 0.0
                 for (series in 0 until dsCount) {
-                    value += data.getDouble(series, i)
+                    value += data.getValue(series, i)
                 }
                 total[i] = value
             }
@@ -73,7 +76,7 @@ class StackedAreaGraph(data: ChartData, val is100Percent: Boolean = false) : Cha
                 if (series == 0)
                     y = vertAxis!!.convertToPixel(0.0)
                 lastY = y
-                var value = data.getDouble(series, i)
+                var value = data.getValue(series, i)
                 if (total != null) {                    // then using 100 percent fill
                     value = value / total[i] * 100      // convert to percent of total
                 }
@@ -91,7 +94,7 @@ class StackedAreaGraph(data: ChartData, val is100Percent: Boolean = false) : Cha
 
                 if (hotspots != null) { // add hotspot for data point
                     val rect = Rectangle(x - hotspotWidth / 2, y - hotspotWidth / 2, hotspotWidth, lastY - y)
-                    println(rect)
+                    log.d { rect }
                     hotspots!!.add(Hotspot(this, data, series, i, rect))
                 }
             }

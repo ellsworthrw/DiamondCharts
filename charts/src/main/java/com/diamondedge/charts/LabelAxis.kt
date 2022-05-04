@@ -20,27 +20,31 @@ class LabelAxis : Axis() {
         majorTickInc = 1.0
     }
 
-    override fun tickLabel(index: Double): String {
-        if (majorTickLabelPosition == TickLabelPosition.GroupCenter && index == maxValue)
+    override fun tickLabel(value: Double): String {
+        if (majorTickLabelPosition == TickLabelPosition.GroupCenter && value == maxValue)
             return ""    // extra label when centering labels in between ticks
         var label: String? = null
         val labels = labels
-        if (labels != null && index < labels.size) {
-            val l = labels.get(index.toInt())
+        if (labels != null && value < labels.size) {
+            val l = labels.get(value.toInt())
             if (l != null)
                 label = l.toString()
         }
         if (label == null)
-            label = index.toString()
+            label = value.toString()
         return label
     }
 
     fun setDataCount(value: Int) {
-        println("==>LabelAxis.setDataCount: $value")
+        log.d { "==>LabelAxis.setDataCount: $value" }
         dataCount = value
     }
 
     override fun toString(): String {
         return "LabelAxis[dataCount=" + dataCount + "," + toStringParam() + "]"
+    }
+
+    companion object {
+        private val log = moduleLogging()
     }
 }

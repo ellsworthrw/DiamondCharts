@@ -76,8 +76,8 @@ object DateUtil {
         cal.timeInMillis = Math.round(days * millisPerDay - zoneOffset)
     }
 
-    fun clearCalBelow(cal: Calendar, range: Int) {
-        var range = range
+    fun clearCalBelow(cal: Calendar, calendarField: Int) {
+        var range = calendarField
         if (range == Calendar.WEEK_OF_YEAR) {
             cal.set(Calendar.DAY_OF_WEEK, 1)
             range = Calendar.DAY_OF_MONTH

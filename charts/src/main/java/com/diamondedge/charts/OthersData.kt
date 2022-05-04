@@ -24,7 +24,7 @@ class OthersData(private val otherData: ChartData, val seriesNumber: Int = 0) : 
             return
 
         otherData.recalc(combineSeries)
-        var dataCount = otherData.dataCount
+        val dataCount = otherData.dataCount
         var total = 0.0
         var value: Double
         var percent: Double
@@ -34,11 +34,11 @@ class OthersData(private val otherData: ChartData, val seriesNumber: Int = 0) : 
         seriesCount = 1
 
         for (i in 0 until dataCount) {
-            total += otherData.getDouble(seriesNumber, i)
+            total += otherData.getValue(seriesNumber, i)
         }
 
         for (i in 0 until dataCount) {
-            value = otherData.getDouble(seriesNumber, i)
+            value = otherData.getValue(seriesNumber, i)
             percent = value / total * 100
             if (percent < othersPercent) {
                 othersTotal += value
@@ -58,7 +58,7 @@ class OthersData(private val otherData: ChartData, val seriesNumber: Int = 0) : 
                 setDataLabel(dataPtNum, "Others")
             } else {
                 val i = dataPointNumbers[0]
-                setDouble(0, dataPtNum, otherData.getDouble(seriesNumber, i))
+                setDouble(0, dataPtNum, otherData.getValue(seriesNumber, i))
                 val label = otherData.getDataLabel(i)
                 if (label != null)
                     setDataLabel(dataPtNum, label)

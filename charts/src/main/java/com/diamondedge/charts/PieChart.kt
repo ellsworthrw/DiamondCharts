@@ -12,12 +12,14 @@ class PieChart(data: ChartData) : Chart(data) {
     private var height: Int = 0
     var margin = 10
     private val startAngle = 0
+/*
     var explodeAmount = 12
         set(value) {
             field = value
             if (margin < this.explodeAmount + 5)
                 margin = this.explodeAmount + 5
         }
+*/
 
     override val showInLegend: Int
         get() = Legend.SERIES or Legend.DATA_PT
@@ -26,6 +28,7 @@ class PieChart(data: ChartData) : Chart(data) {
         return false
     }
 
+/*
     fun isExploded(dataPtNum: Int): Boolean {
         if (data != null) {
             val dataPt = data.getDataPoint(0, dataPtNum, false)
@@ -49,6 +52,7 @@ class PieChart(data: ChartData) : Chart(data) {
                 margin = this.explodeAmount + 5
         }
     }
+*/
 
     override fun setBounds(x: Int, y: Int, width: Int, height: Int) {
         this.x = x
@@ -69,16 +73,14 @@ class PieChart(data: ChartData) : Chart(data) {
             return
         val dsCount = data.seriesCount
         val dataCount = data.dataCount
-        var gattr: GraphicAttributes
         var x = this.x
         var y = this.y
         var rows = 1
-        var cols = 1
         if (dsCount > 8)
             rows = 3
         else if (dsCount > 2)
             rows = 2
-        cols = Math.ceil(dsCount.toDouble() / rows).toInt()
+        val cols = Math.ceil(dsCount.toDouble() / rows).toInt()
         var w = (width - margin) / cols - margin
         if ((height - margin) / rows - margin < w)
             w = height / rows - margin
@@ -104,15 +106,14 @@ class PieChart(data: ChartData) : Chart(data) {
                 x = this.x + margin
                 y += margin
             }
-            gattr = data.getGraphicAttributes(series)
             var c: Long
             for (i in 0 until dataCount) {
-                total += data.getDouble(series, i)
+                total += data.getValue(series, i)
             }
 
-            println("x=" + x + " end=" + (x + w))
+            log.d { "x=" + x + " end=" + (x + w) }
             for (i in 0 until dataCount) {
-                value = data.getDouble(series, i) / total
+                value = data.getValue(series, i) / total
                 if (i == dataCount - 1)
                 // last angle
                     angle = 360 - startAngle   // make sure it finishes circle
@@ -120,13 +121,15 @@ class PieChart(data: ChartData) : Chart(data) {
                     angle = (value * 360).toInt().toDouble()
                 var offsetX = 0
                 var offsetY = 0
+/*
                 val dataPt = data.getDataPoint(series, i, false)
                 if (dataPt != null && dataPt.flags and EXPLODED > 0) {
                     val theta = (startAngle + angle / 2) * Math.PI / 180
                     offsetX = (this.explodeAmount * Math.cos(theta)).toInt()
                     offsetY = (this.explodeAmount * Math.sin(theta)).toInt()
                 }
-                println("arc $i: $value angle=$angle start=$startAngle")
+*/
+                log.d { "arc $i: $value angle=$angle start=$startAngle" }
                 //g.setColor( gattr.color );
                 c = Draw.getColor(series * dataCount + i)
                 g.color = c
@@ -170,6 +173,6 @@ class PieChart(data: ChartData) : Chart(data) {
     }
 
     companion object {
-        private val EXPLODED = 0x1
+        private val log = moduleLogging()
     }
 }

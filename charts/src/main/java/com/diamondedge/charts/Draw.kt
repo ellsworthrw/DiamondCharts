@@ -152,16 +152,16 @@ object Draw {
             }
             SymbolType.TRIANGLE -> {
                 size += 2
-                val x = xc - size / 2
-                val y = yc - size / 2 - 1
+                val xx = xc - size / 2
+                val yy = yc - size / 2 - 1
                 xPts = IntArray(3)
                 yPts = IntArray(3)
-                xPts[0] = x
+                xPts[0] = xx
                 xPts[1] = xc
-                xPts[2] = x + size - 1
-                yPts[0] = y + size - 1
-                yPts[1] = y
-                yPts[2] = y + size - 1
+                xPts[2] = xx + size - 1
+                yPts[0] = yy + size - 1
+                yPts[1] = yy
+                yPts[2] = yy + size - 1
                 g.fillPolygon(xPts, yPts, 3)
                 if (symbol == SymbolType.UP_ARROW)
                     yc += 1
@@ -170,41 +170,41 @@ object Draw {
                 g.fillRect(xc - 1, yc - 4, 3, 3)
                 yc += 1
                 size += 2
-                val x = xc - size / 2
-                val y = yc - size / 2 + 2  // move center 1 closer to base
+                val xx = xc - size / 2
+                val yy = yc - size / 2 + 2  // move center 1 closer to base
                 xPts = IntArray(3)
                 yPts = IntArray(3)
-                xPts[0] = x
+                xPts[0] = xx
                 xPts[1] = xc
-                xPts[2] = x + size - 1
-                yPts[0] = y
-                yPts[1] = y + size - 1
-                yPts[2] = y
+                xPts[2] = xx + size - 1
+                yPts[0] = yy
+                yPts[1] = yy + size - 1
+                yPts[2] = yy
                 g.fillPolygon(xPts, yPts, 3)
                 if (symbol == SymbolType.DOWN_ARROW)
                     yc -= 1
             }
             SymbolType.TRIANGLE_DOWN -> {
                 size += 2
-                val x = xc - size / 2
-                val y = yc - size / 2 + 2
+                val xx = xc - size / 2
+                val yy = yc - size / 2 + 2
                 xPts = IntArray(3)
                 yPts = IntArray(3)
-                xPts[0] = x
+                xPts[0] = xx
                 xPts[1] = xc
-                xPts[2] = x + size - 1
-                yPts[0] = y
-                yPts[1] = y + size - 1
-                yPts[2] = y
+                xPts[2] = xx + size - 1
+                yPts[0] = yy
+                yPts[1] = yy + size - 1
+                yPts[2] = yy
                 g.fillPolygon(xPts, yPts, 3)
                 if (symbol == SymbolType.DOWN_ARROW)
                     yc -= 1
             }
             SymbolType.TRIANGLE_OUTLINE -> {
-                val y = y - 1                    // move center 1 closer to base
-                g.drawLine(x, y + size - 1, xc, y)
-                g.drawLine(xc, y, x + size - 1, y + size - 1)
-                g.drawLine(x + size - 1, y + size - 1, x, y + size - 1)
+                val yy = y - 1                    // move center 1 closer to base
+                g.drawLine(x, yy + size - 1, xc, yy)
+                g.drawLine(xc, yy, x + size - 1, yy + size - 1)
+                g.drawLine(x + size - 1, yy + size - 1, x, yy + size - 1)
             }
             SymbolType.DIAMOND_OUTLINE -> {
                 h = size - 2   // diamond looks better almost twice as tall
@@ -392,8 +392,8 @@ object Draw {
 
     @JvmStatic
     fun getColor(index: Int): Long {
-        var c = Color.black
-        var nColors = 0
+        val c: Long
+        val nColors: Int
         if (colors == null) {
             nColors = 12
             c = when (index % nColors) {

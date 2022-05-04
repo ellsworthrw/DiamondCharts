@@ -53,7 +53,6 @@ public class Statistics {
             }
             sum += product;
         }
-        //System.out.println( "sumProduct nvect:" + nvect + " nvals:" + nvals + " sum:" + sum );
         return sum;
     }
 

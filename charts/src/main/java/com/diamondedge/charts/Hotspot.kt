@@ -13,15 +13,9 @@ class Hotspot(
     var shape: Rectangle
 ) {
 
-    /* Returns the DataPoint object associated with this hotspot
-     */
-    val dataPoint: DataPoint? by lazy {
-        graphData.getDataPoint(series, dataPointNumber, false)
-    }
-
-    override fun equals(o: Any?): Boolean {
-        if (o is Hotspot) {
-            val h = o as Hotspot?
+    override fun equals(other: Any?): Boolean {
+        if (other is Hotspot) {
+            val h = other as Hotspot?
             if (h!!.graph === graph && h!!.graphData === graphData && h!!.series == series && h.dataPointNumber == dataPointNumber)
                 return true
         }

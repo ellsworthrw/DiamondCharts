@@ -24,7 +24,7 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
     }
 
     open fun getY(series: Int, dataPt: Int): Double {
-        return data.getDouble(series, dataPt)
+        return data.getValue(series, dataPt)
     }
 
     override fun draw(g: GraphicsContext) {
@@ -75,7 +75,7 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
                 }
                 var ptSize = g.dpToPixel(symbolSize)
                 if (bubbleIndex >= 0 && showBubble) {
-                    val bubble = vertAxis!!.scaleData(data.getDouble(series, i, bubbleIndex))
+                    val bubble = vertAxis!!.scaleData(data.getValue(series, i, bubbleIndex))
 
                     if (isBubble3D) {
                         g.applyGradient(
@@ -137,5 +137,4 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
     override fun toString(): String {
         return "LineGraph[" + toStringParam() + "]"
     }
-
 }

@@ -30,35 +30,33 @@ interface ChartData {
      * The minimum value in the data set for the 1st value
      * This must be set during the recalc() function
      */
-    var minValue: Double
+    val minValue: Double
 
     /**
      * The maximum value in the data set for the 1st value
      * This must be set during the recalc() function
      */
-    var maxValue: Double
+    val maxValue: Double
 
     /**
      * The minimum value in the data set for the 2nd value
      * This must be set during the recalc() function
      */
-    var minValue2: Double
+    val minValue2: Double
 
     /**
      * The maximum value in the data set for the 2nd value
      * This must be set during the recalc() function
      */
-    var maxValue2: Double
+    val maxValue2: Double
 
     val id: Any
 
-    fun getDouble(series: Int, dataPtNum: Int): Double {
-        return getDouble(series, dataPtNum, valueIndex)
+    fun getValue(series: Int, dataPtNum: Int): Double {
+        return getValue(series, dataPtNum, valueIndex)
     }
 
-    fun getDouble(series: Int, dataPtNum: Int, valueNum: Int): Double
-
-    fun getDataPoint(series: Int, dataPtNum: Int, createIfNull: Boolean): DataPoint?
+    fun getValue(series: Int, dataPtNum: Int, valueIndex: Int): Double
 
     fun getSeriesLabel(series: Int): String?
 
@@ -75,14 +73,15 @@ interface ChartData {
     companion object {
         val log = moduleLogging()
 
+        // valueIndex for datasets with 1 value
         const val valueIndex = 0
 
-        // datasets with 2 or 3 values
+        // valueIndex for datasets with 2 or 3 values
         const val xIndex = 1
         const val yIndex = 0    // 0th value so 2nd value can be dataPtNum if not supplied
         const val zIndex = 2    // index for bubble value
 
-        // HLOC (high, low, open, close) stock data with date on x axis
+        // valueIndex for HLOC (high, low, open, close) stock data with date on x axis
         const val highIndex = 2
         const val lowIndex = 3
         const val openIndex = 4
@@ -93,7 +92,7 @@ interface ChartData {
             log.d { "dataPointsAt($x, $list)" }
             val values = ArrayList<Triple<ChartData, Double, Int>>()
             for (data in list) {
-                val closest = findClosest(x, data, 0, ChartData.xIndex, ChartData.yIndex, interpolate)
+                val closest = findClosest(x, data, 0, xIndex, yIndex, interpolate)
                 log.d { "${data.id}  closest = $closest" }
                 if (closest != null) {
                     values.add(closest)
@@ -106,12 +105,12 @@ interface ChartData {
             value: Double,
             data: ChartData,
             series: Int,
-            compareValueNum: Int,
+            compareValueIndex: Int,
             returnValueNum: Int,
             interpolate: Boolean
         ): Triple<ChartData, Double, Int>? {
-            val minVal = if (compareValueNum == yIndex) data.minValue else data.minValue2
-            val maxVal = if (compareValueNum == yIndex) data.maxValue else data.maxValue2
+            val minVal = if (compareValueIndex == yIndex) data.minValue else data.minValue2
+            val maxVal = if (compareValueIndex == yIndex) data.maxValue else data.maxValue2
             if (value < minVal || value > maxVal || data.dataCount == 0) {
                 log.d { "value: $value not within min: $minVal max: $maxVal" }
                 // point not within the range of the data set
@@ -120,13 +119,13 @@ interface ChartData {
             var bestMatch = 0
             var bestMatchVal = 0.0
             for (i in 0 until data.dataCount) {
-                val thisVal = data.getDouble(series, i, compareValueNum)
+                val thisVal = data.getValue(series, i, compareValueIndex)
                 if (abs(value - thisVal) < abs(value - bestMatchVal)) {
                     bestMatch = i
                     bestMatchVal = thisVal
                 }
             }
-            val bestMatchY = data.getDouble(series, bestMatch, returnValueNum)
+            val bestMatchY = data.getValue(series, bestMatch, returnValueNum)
             log.d { "bestMatch: index: $bestMatch  coord: ($bestMatchVal, $bestMatchY)" }
             if (interpolate) {
                 // for variable naming purposes, assume compareValueNum = xIndex and returnValueNum = yIndex
@@ -138,16 +137,16 @@ interface ChartData {
                 if (value > bestMatchVal && (bestMatch + 1) < data.dataCount) {
                     x1 = bestMatchVal
                     y1 = bestMatchY
-                    x2 = data.getDouble(series, bestMatch + 1, compareValueNum)
-                    y2 = data.getDouble(series, bestMatch + 1, returnValueNum)
+                    x2 = data.getValue(series, bestMatch + 1, compareValueIndex)
+                    y2 = data.getValue(series, bestMatch + 1, returnValueNum)
                 } else if (value < bestMatchVal && (bestMatch - 1) >= 0) {
-                    x1 = data.getDouble(series, bestMatch - 1, compareValueNum)
-                    y1 = data.getDouble(series, bestMatch - 1, returnValueNum)
+                    x1 = data.getValue(series, bestMatch - 1, compareValueIndex)
+                    y1 = data.getValue(series, bestMatch - 1, returnValueNum)
                     x2 = bestMatchVal
                     y2 = bestMatchY
                 } else {
-                    val firstValue = data.getDouble(series, 0, compareValueNum)
-                    val lastValue = data.getDouble(series, data.dataCount - 1, compareValueNum)
+                    val firstValue = data.getValue(series, 0, compareValueIndex)
+                    val lastValue = data.getValue(series, data.dataCount - 1, compareValueIndex)
                     if (value < firstValue || value > lastValue) {
                         // not inside the boundaries of the dataset. minVal or maxVal are probably not right
                         if (minVal < firstValue)

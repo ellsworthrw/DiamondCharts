@@ -84,7 +84,6 @@ open class DecimalAxis : Axis() {
         }
 
         if (this.majorTickFormat == null) {
-            val tickDistance = 50  // make ticks about this many pixels apart
             //double exp = Math.log( scalePixel( tickDistance ) ) / Math.log(10); // log base 10
             if (exp < 0 || majorTickInc < 1) {
                 val str = StringBuffer()

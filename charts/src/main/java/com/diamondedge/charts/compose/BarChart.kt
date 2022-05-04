@@ -6,7 +6,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.platform.LocalDensity
 import com.diamondedge.charts.BarChart
-import com.diamondedge.charts.ChartContainer
 import com.diamondedge.charts.ChartData
 import com.diamondedge.charts.Charts
 
@@ -18,7 +17,7 @@ fun BarChart(
 ) {
     val density = LocalDensity.current
     Canvas(modifier = modifier) {
-        val charts = Charts(size.width, size.height, ChartContainer.LEGEND_RIGHT)
+        val charts = Charts(size.width, size.height, Charts.LEGEND_RIGHT)
         charts.add(BarChart(data, isVertical))
 
         drawIntoCanvas { canvas ->

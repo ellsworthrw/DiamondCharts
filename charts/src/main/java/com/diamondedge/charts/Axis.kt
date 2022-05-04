@@ -22,7 +22,7 @@ open class Axis protected constructor() {
      */
     var minValue: Double
         get() = minVal
-        set(value) {
+        internal set(value) {
             minVal = value
             adjustMinMax()
             calcScale()
@@ -38,7 +38,7 @@ open class Axis protected constructor() {
      */
     var maxValue: Double
         get() = maxVal
-        set(value) {
+        internal set(value) {
             maxVal = value
             adjustMinMax()
             calcScale()
@@ -238,7 +238,6 @@ open class Axis protected constructor() {
     private fun tag(): String = if (isVertical) "VertAxis" else "HorAxis"
 
     internal open fun calcScale(rangePix: Int): Double {
-        log.d(tag()) { "calcScale($rangePix)" }
         if (rangePix == 0)
             return 1.0
         val rangeVal = maxVal - minVal
@@ -249,8 +248,6 @@ open class Axis protected constructor() {
     }
 
     internal open fun calcMetrics(rangePix: Int, g: GraphicsContext, font: Font? = null) {
-        log.d { "calcMetrics($rangePix) isVertical: $isVertical " }
-
         maxValueOverride?.let { overrideValue ->
             if (overrideValue > maxValue)
                 maxValue = overrideValue
@@ -265,6 +262,7 @@ open class Axis protected constructor() {
         if (numberMinorIncrements > 0) {
             minorTickIncNum = numberMinorIncrements
         }
+        log.d(tag()) { "calcMetrics($rangePix) $this" }
     }
 
     fun draw(g: GraphicsContext) {
@@ -322,13 +320,12 @@ open class Axis protected constructor() {
 
             val maxVal = this.maxVal + roundoff     // add a small percentage for round-off error
             var majorTickInc = this.majorTickInc
-            var x = 0
             var extraLine = 0
             var tickPos = minVal
             while (tickPos <= maxVal) {
                 majorTickInc = nextMajorIncVal(tickPos, majorTickInc)
 
-                x = convertToPixel(tickPos)
+                val x = convertToPixel(tickPos)
                 if (isMajorTickShowing) {
                     g.font = this.majorTickFont
                     g.color = majorTickColor
@@ -356,10 +353,10 @@ open class Axis protected constructor() {
             }
 
             axisLabel?.let { label ->
-                val tickLabelHeight = fm.height
                 g.font = this.axisLabelFont
                 fm = g.fontMetrics
                 val strwidth = g.stringWidth(label)
+//                val tickLabelHeight = fm.height
 //                y = yAxis + majorTickLen + tickLabelHeight + fm.height
 //                if (extraLine > 0)
 //                 tick labels used 2 lines
@@ -374,8 +371,8 @@ open class Axis protected constructor() {
         return incVal
     }
 
-    internal open fun nextMajorIncVal(pos: Double, incVal: Double): Double {
-        return incVal
+    internal open fun nextMajorIncVal(pos: Double, incrementVal: Double): Double {
+        return incrementVal
     }
 
     private fun drawTick(g: GraphicsContext, x: Int, y: Int, tickLen: Int, tickStyle: TickStyle) {
@@ -392,6 +389,17 @@ open class Axis protected constructor() {
             g.drawLine(x + beginOffset, y, x - endOffset, y)
         else
             g.drawLine(x, y - beginOffset, x, y + endOffset)
+    }
+
+    internal fun extraHorLabelHeight(g: GraphicsContext, width: Int): Int {
+        calcScale(width)
+        val unitWidth = scaleData(majorTickInc)
+        val label = tickLabel(minVal)
+        val strWidth = g.stringWidth(label)
+        if (allow2LabelPositions && strWidth > unitWidth / 2) {
+            return g.fontMetrics.height
+        }
+        return 0
     }
 
     private fun drawHorLabel(
@@ -441,6 +449,7 @@ open class Axis protected constructor() {
                 x += tickLabelGap
                 y += tickLen - tickLabelGap
             }
+            else -> {}
         }
 
         g.drawString(label, x, y)
@@ -474,6 +483,7 @@ open class Axis protected constructor() {
             TickLabelPosition.TickCenter -> g.drawString(label, x - tickLen, y - fm.ascent / 2)
             TickLabelPosition.AboveTick -> g.drawString(label, x, y - tickLabelGap)
             TickLabelPosition.BelowTick -> g.drawString(label, x, y + fm.baseline)
+            else -> {}
         }
     }
 
@@ -523,16 +533,11 @@ open class Axis protected constructor() {
     }
 
     internal fun getTickLabelMaxWidth(g: GraphicsContext): Int {
-        var width = 10
-        try {
-            var s = tickLabel(maxVal)
-            if (tickLabel(0.0).length > s.length)
-                s = tickLabel(0.0)
-            width = g.stringWidth(s)
-        } catch (e: Exception) {
-        }
-
-        return width
+        calcScale()
+        var s = tickLabel(maxVal)
+        if (tickLabel(0.0).length > s.length)
+            s = tickLabel(0.0)
+        return g.stringWidth(s)
     }
 
     internal fun getThickness(g: GraphicsContext): Int {

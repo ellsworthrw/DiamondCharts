@@ -126,14 +126,14 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
     }
 
     private fun createTypeface(font: Font): Typeface {
-        val family = when (font.face) {
+        val typeface = when (font.face) {
             FontFace.Serif -> Typeface.SERIF
             FontFace.SansSerif -> Typeface.SANS_SERIF
             FontFace.Monospace -> Typeface.MONOSPACE
             FontFace.Default -> Typeface.DEFAULT
             FontFace.Native -> font.typeface as Typeface
         }
-        return Typeface.create(family, toAndroidFontStyle(font.style))
+        return Typeface.create(typeface, toAndroidFontStyle(font.style))
     }
 
     override var color: Long
@@ -402,8 +402,8 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
      */
     override fun drawImage(image: Any, x: Int, y: Int) {
         if (image is Bitmap) {
-            val image = image.asImageBitmap()
-            g.drawImage(image, Offset(x.toFloat(), y.toFloat()), paint)
+            val imageBitmap = image.asImageBitmap()
+            g.drawImage(imageBitmap, Offset(x.toFloat(), y.toFloat()), paint)
         } else if (image is Symbol) {
             image.draw(this, x, y)
         }

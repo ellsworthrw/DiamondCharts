@@ -10,7 +10,7 @@ import kotlin.math.ceil
 class Legend {
     var font = Draw.defaultFont
 
-    private var graphContainer: ChartContainer? = null
+    private var graphContainer: Charts? = null
     var orientation = VERTICAL
     var borderStyle = BORDER_SINGLE
     internal var size: Dimension? = null
@@ -29,14 +29,13 @@ class Legend {
             for (i in 0 until graphContainer!!.objectCount) {
                 val obj = graphContainer!!.get(i) as? Chart ?: continue
                 val showInLegend = obj.showInLegend
-                if (obj.data != null && showInLegend != DONT_SHOW) {
+                if (showInLegend != DONT_SHOW) {
                     val dsCount = obj.data.seriesCount
                     val dataCount = obj.data.dataCount
                     if (showInLegend and DATA_PT > 0) {
                         for (series in 0 until dsCount) {
                             for (j in 0 until dataCount) {
-                                if (obj.isLegendSymbolShowing(series, j))
-                                    count++
+                                count++
                             }
                         }
                     } else
@@ -61,23 +60,20 @@ class Legend {
             rows = count
         else
             rows = ceil(count.toDouble() / cols).toInt()
-        //System.out.println( "orient: " + orientation + " rows: " + rows + " cols: " + cols );
 
-        var label: String? = null
+        var label: String?
         g.font = font
         val fm = g.fontMetrics
         var strWidth = 0
-        var h = 0
         var x = left
         var y = 0
-        var i = 0
         val fontHeight = fm.height
         symbolWidth = fontHeight
         val fontY: Int = fm.baseline
         val rowHeight = fontHeight + fm.leading
         var row = 0
         var col = 0
-        i = 0
+        var i = 0
         while (i < graphContainer!!.objectCount) {
             val obj = graphContainer!![i]
             if (obj !is Chart) {
@@ -93,7 +89,6 @@ class Legend {
             val dsCount = data.seriesCount
             var dataCount = data.dataCount
             var showDataPoint = false
-            val showSeries = true
             if (obj.showInLegend and DATA_PT > 0)
                 showDataPoint = true
             else
@@ -109,7 +104,7 @@ class Legend {
                         y = top + margin
                     }
 
-                    var showLegendItem = true
+                    val showLegendItem: Boolean
                     if (showDataPoint) {
                         label = seriesLabel + " " + data.getDataLabel(j)
                         showLegendItem = obj.drawLegendSymbol(g, x, y, symbolWidth, fontHeight, series, j)
@@ -129,11 +124,8 @@ class Legend {
                         g.color = Color.defaultTextColor
                         g.drawString(label, x + symbolWidth + symbolGap, y + fontY)
                     }
-                    //System.out.println( "series: " + series + " data: " + j + " " + label );
 
                     y += rowHeight + rowGap
-                    if (col == 0)
-                        h = y - top + margin
 
                     if (++row >= rows) {
                         row = 0
@@ -145,16 +137,9 @@ class Legend {
             }
             i++
         }
-        // draw border
-/*
-        val w = x - left + symbolWidth + symbolGap + strWidth + margin
-        //System.out.println( "w: " + w + " " + "h: " + h + " " + getSize(g) );
-        g.color = Color.black
-        g.drawRect(left, top, w, h)
-*/
     }
 
-    internal fun setGraph(value: ChartContainer) {
+    internal fun setGraph(value: Charts) {
         graphContainer = value
         size = null
     }

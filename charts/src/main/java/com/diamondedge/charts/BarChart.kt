@@ -8,8 +8,8 @@ package com.diamondedge.charts
 class BarChart(
     data: ChartData,
     override val isVertical: Boolean = true,
-    val isStacked: Boolean = false,
-    val is100Percent: Boolean = false
+    private var isStacked: Boolean = false,
+    private val is100Percent: Boolean = false
 ) : Chart(data) {
 
     /** The space in between bars in a group as a percentage of the bar width.
@@ -23,23 +23,30 @@ class BarChart(
     var barWidth = 80
 
     init {
-        if (isVertical && vertAxis != null)
-            vertAxis!!.isZeroRequired = true
-        else if (horAxis != null)
-            horAxis!!.isZeroRequired = true
-
-        println("hor: " + horAxis)
-        println("vert: " + vertAxis)
+        if (is100Percent && !isStacked)
+            isStacked = true
     }
 
-    override fun setup(combineSeries: Boolean) {
-        super.setup(isStacked || is100Percent)
+    override fun setupData(combineSeries: Boolean) {
+        super.setupData(isStacked || is100Percent)
+    }
+
+    override fun setupAxis() {
+        super.setupAxis()
         if (isStacked || is100Percent) {
-            data.minValue = 0.0
+            if (isVertical)
+                vertAxis?.minValueOverride = 0.0
+            else
+                horAxis?.minValueOverride = 0.0
             if (is100Percent) {
-                data.maxValue = 100.0
+                if (isVertical)
+                    vertAxis?.maxValueOverride = 100.0
+                else
+                    horAxis?.maxValueOverride = 100.0
             }
         }
+        vertAxis?.isZeroRequired = true
+        horAxis?.isZeroRequired = true
     }
 
     override fun createVerticalAxis(): Axis {
@@ -61,8 +68,6 @@ class BarChart(
     }
 
     override fun draw(g: GraphicsContext) {
-        if (data == null)
-            return
         val dsCount = data.seriesCount
         val dataCount = data.dataCount
         var valueAxis = vertAxis
@@ -93,17 +98,14 @@ class BarChart(
             for (i in 0 until dataCount) {
                 var value = 0.0
                 for (series in 0 until dsCount) {
-                    value += data.getDouble(series, i)
+                    value += data.getValue(series, i)
                 }
                 total[i] = value
             }
         }
 
-        //System.out.println( "hor: " + catAxis );
-        //System.out.println( "vert: " + valueAxis );
-
-        println("bar: $barWidth iBarWidth: $iBarWidth gap: $gap")
-        println("offset: $offset unitWidth: $unitWidth")
+        log.d { "bar: $barWidth iBarWidth: $iBarWidth gap: $gap" }
+        log.d { "offset: $offset unitWidth: $unitWidth" }
         hotspots?.clear()
 
         for (i in 0 until dataCount) {
@@ -116,7 +118,7 @@ class BarChart(
             }
 
             for (series in 0 until dsCount) {
-                var dataValue = data.getDouble(series, i)
+                var dataValue = data.getValue(series, i)
                 if (total != null) {                            // then using 100 percent fill
                     dataValue = dataValue / total[i] * 100      // convert to percent of total
                 }
@@ -129,11 +131,10 @@ class BarChart(
                     Draw.drawRect(g, valPos, catPos, value, iBarWidth, gattr)
 
                 if (hotspots != null) {
-                    var rect: Rectangle? = null
-                    if (isVertical)
-                        rect = Rectangle(catPos, valPos - value, iBarWidth, value)
+                    val rect = if (isVertical)
+                        Rectangle(catPos, valPos - value, iBarWidth, value)
                     else
-                        rect = Rectangle(valPos, catPos, value, iBarWidth)
+                        Rectangle(valPos, catPos, value, iBarWidth)
                     hotspots!!.add(Hotspot(this, data, series, i, rect))
                 }
 
@@ -142,13 +143,18 @@ class BarChart(
                         valPos -= value
                     else
                         valPos += value
-                } else
+                } else {
                     catPos += gap + iBarWidth
+                }
             }
         }
     }
 
     override fun toString(): String {
         return "BarChart[gap%=" + gap + ",bar%=" + barWidth + "," + toStringParam() + "]"
+    }
+
+    companion object {
+        private val log = moduleLogging()
     }
 }

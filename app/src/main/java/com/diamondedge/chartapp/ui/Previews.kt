@@ -41,7 +41,6 @@ private fun BarChartHorizontalPreview() {
 private fun PieChartPreview() {
     PieChart(
         RandomData(DefaultData.SIMPLE_SERIES, 1),
-//            explodeIndex = 1,
         modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)

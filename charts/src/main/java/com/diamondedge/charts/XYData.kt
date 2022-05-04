@@ -11,10 +11,10 @@ abstract class XYData : ChartData {
 
     abstract fun getY(dataPtNum: Int): Double
 
-    abstract var minX: Double
-    abstract var maxX: Double
-    abstract var minY: Double
-    abstract var maxY: Double
+    abstract val minX: Double
+    abstract val maxX: Double
+    abstract val minY: Double
+    abstract val maxY: Double
 
     override val id: Any = ""
 
@@ -25,18 +25,16 @@ abstract class XYData : ChartData {
 
     override fun getGraphicAttributes(series: Int): GraphicAttributes = graphicAttributes
 
-    override fun getDouble(series: Int, dataPtNum: Int, valueNum: Int): Double {
-        return if (valueNum == ChartData.xIndex) getX(dataPtNum) else getY(dataPtNum)
+    override fun getValue(series: Int, dataPtNum: Int, valueIndex: Int): Double {
+        return if (valueIndex == ChartData.xIndex) getX(dataPtNum) else getY(dataPtNum)
     }
-
-    override fun getDataPoint(series: Int, dataPtNum: Int, createIfNull: Boolean): DataPoint? = null
 
     override fun getSeriesLabel(series: Int): String? = null
 
     override fun getDataLabel(dataPtNum: Int): String? = null
 
-    override var minValue: Double by ::minY
-    override var maxValue: Double by ::maxY
-    override var minValue2: Double by ::minX
-    override var maxValue2: Double by ::maxX
+    override val minValue: Double by ::minY
+    override val maxValue: Double by ::maxY
+    override val minValue2: Double by ::minX
+    override val maxValue2: Double by ::maxX
 }

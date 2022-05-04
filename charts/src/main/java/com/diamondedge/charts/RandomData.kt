@@ -159,9 +159,9 @@ class RandomData : DefaultData {
         else
             maxValue = maxval_set.toDouble()
         minValue = minval_set.toDouble()
-        var dataCount = (Math.random() * 60).toInt() + 40
-        dataCount = 0
-        dataCount = dataCount
+        val dataCount = (Math.random() * 60).toInt() + 40
+        this.dataCount = 0
+        this.dataCount = dataCount
         seriesCount = 1
         val average = Math.random() * (maxValue - 40) + 40
         log.d { "  dataCount: $dataCount average: $average" }
