@@ -54,7 +54,7 @@ class DateAxis : Axis() {
                     log.v { "> 1y inc: year" }
                     majorTickInc = DateUtil.ONE_YEAR
                     tickLabelDateFormat = yearFormat
-                    minorTickIncNum = 12
+                    minorTickIncNum = 4
                 }
                 range > 5 * DateUtil.ONE_MONTH -> {
                     log.v { "> 5mon inc: 2mon" }
@@ -81,8 +81,8 @@ class DateAxis : Axis() {
                     minorTickIncNum = 4
                 }
                 range > 15 * DateUtil.ONE_HOUR -> {
-                    log.v { "> 15h inc: 3h" }
-                    majorTickInc = 3 * DateUtil.ONE_HOUR
+                    log.v { "> 15h inc: 6h" }
+                    majorTickInc = 6 * DateUtil.ONE_HOUR
                     tickLabelDateFormat = hourFormat
                     minorTickIncNum = 3
                 }
@@ -90,7 +90,7 @@ class DateAxis : Axis() {
                     log.v { "> 7h inc: 2h" }
                     majorTickInc = 2 * DateUtil.ONE_HOUR
                     tickLabelDateFormat = hourFormat
-                    minorTickIncNum = 4
+                    minorTickIncNum = 2
                 }
                 range > 3 * DateUtil.ONE_HOUR -> {
                     log.v { "> 3h inc: 1h" }
@@ -98,29 +98,35 @@ class DateAxis : Axis() {
                     tickLabelDateFormat = hourFormat
                     minorTickIncNum = 2
                 }
-                range > 45 * DateUtil.ONE_MINUTE -> {
-                    log.v { "> 45m inc: 30m" }
+                range > DateUtil.ONE_HOUR -> {
+                    log.v { "> 1h inc: 30m" }
                     majorTickInc = DateUtil.HALF_HOUR
                     tickLabelDateFormat = hourMinuteFormat
                     minorTickIncNum = 3
                 }
-                range > 20 * DateUtil.ONE_MINUTE -> {
-                    log.v { "> 20m inc: 10m" }
-                    majorTickInc = 10 * DateUtil.ONE_MINUTE
+                range > 24 * DateUtil.ONE_MINUTE -> {
+                    log.v { "> 24m inc: 15m" }
+                    majorTickInc = 15 * DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat
-                    minorTickIncNum = 2
+                    minorTickIncNum = 3
                 }
-                range > 9 * DateUtil.ONE_MINUTE -> {
-                    log.v { "> 9m inc: 5m" }
+                range > 10 * DateUtil.ONE_MINUTE -> {
+                    log.v { "> 10m inc: 5m" }
                     majorTickInc = 5 * DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat
                     minorTickIncNum = 5
+                }
+                range > 5 * DateUtil.ONE_MINUTE -> {
+                    log.v { "> 5m inc: 2m" }
+                    majorTickInc = 2 * DateUtil.ONE_MINUTE
+                    tickLabelDateFormat = hourMinuteFormat
+                    minorTickIncNum = 2
                 }
                 range > DateUtil.ONE_MINUTE -> {
                     log.v { "> 1m inc: 1m" }
                     majorTickInc = DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat
-                    minorTickIncNum = 6
+                    minorTickIncNum = 2
                 }
                 range > 9 * DateUtil.ONE_SECOND -> {
                     log.v { "> 9s inc: 5s" }
