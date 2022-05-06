@@ -53,7 +53,7 @@ class LogarithmicAxis : DecimalAxis() {
     /** Return data value scaled to be in pixels
      */
     override fun scaleData(dataValue: Double): Int {
-        return (log10(dataValue) / scale).toInt()
+        return (log10(dataValue) / scale).toLong().toInt()
     }
 
     override fun scalePixel(pixelValue: Int): Double {

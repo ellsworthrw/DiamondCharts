@@ -278,7 +278,7 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
         vertAxis?.draw(g)
         horizontalAxis?.draw(g)
 
-        gridLines.draw(g, chartBounds.x, chartBounds.bottom, chartBounds.width, chartBounds.height)
+        gridLines.draw(g, chartBounds.x, chartBounds.bottom, chartBounds.width, chartBounds.height, rightMargin)
 
         for (obj in charts) {
             if (obj is Chart) {

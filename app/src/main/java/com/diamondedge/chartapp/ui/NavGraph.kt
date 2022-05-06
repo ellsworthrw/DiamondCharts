@@ -37,7 +37,7 @@ fun NavGraph(
             FunctionGraphScreen()
         }
         composable(MainDestinations.CHARTS_ROUTE) {
-            SampleGraphScreen(4)
+            SampleGraphScreen(2)
         }
     }
 }

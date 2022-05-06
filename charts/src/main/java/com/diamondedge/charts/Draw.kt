@@ -255,12 +255,20 @@ object Draw {
         return Pair(width, height)
     }
 
-    fun drawTileCentered(g: GraphicsContext, xc: Int, yc: Int, symbol: Any? = null, text: String, isDarkTheme: Boolean) {
-        val (width, height) = getTileSize(g, symbol, text)
+    fun drawTileCentered(
+        g: GraphicsContext, xc: Int, yc: Int, symbol: Any? = null, text: String, isDarkTheme: Boolean,
+        leftMargin: Float = 4f,
+        topMargin: Float = 4f,
+        rightMargin: Float = 4f,
+        bottomMargin: Float = 4f,
+        gap: Float = 4f,
+        cornerRadius: Float = 12f
+    ) {
+        val (width, height) = getTileSize(g, symbol, text, leftMargin, topMargin, rightMargin, bottomMargin, gap)
         val x = xc - width / 2
         val y = yc - height / 2
         val bg = if (isDarkTheme) Color.darkDarkGray else Color.ltGray
-        drawTile(g, x, y, width, height, symbol, text, bg, isDarkTheme)
+        drawTile(g, x, y, width, height, symbol, text, bg, isDarkTheme, leftMargin, gap, cornerRadius)
     }
 
     fun drawTile(
@@ -275,8 +283,9 @@ object Draw {
         isDarkTheme: Boolean,
         leftMargin: Float = 4f,
         gap: Float = 4f,
+        cornerRadius: Float = 12f
     ) {
-        drawTileOutline(g, x, y, width, height, tileBgColor, isDarkTheme)
+        drawTileOutline(g, x, y, width, height, tileBgColor, isDarkTheme, cornerRadius)
         var xx = x + g.dpToPixel(leftMargin)
         if (symbol != null) {
             val (symbolWidth, symbolHeight) = g.getImageSize(symbol)

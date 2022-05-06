@@ -6,6 +6,7 @@
 package com.diamondedge.charts
 
 import java.text.DecimalFormat
+import kotlin.math.max
 
 open class DecimalAxis : Axis() {
 
@@ -33,37 +34,33 @@ open class DecimalAxis : Axis() {
     override fun calcMetrics(rangePix: Int, g: GraphicsContext, font: Font?) {
         super.calcMetrics(rangePix, g, font)
 
-        // calculate best fit for data
-        var exp = 1.0
-        if (isAutoScaling) {
+        majorTickInc = 1.0
+        val tickDistance = g.dpToPixel(40f)  // make ticks about this many pixels apart (1/4 inch)
+        if (majorTickIncrement > 0) {
+            majorTickInc = majorTickIncrement
+        } else if (isAutoScaling) {
+            // calculate best fit for data
             val fm = g.getFontMetrics(font)
-            val minTick = if (isVertical)
+            var minTick = if (isVertical)
                 (fm.height * 1.5).toInt()
             else
                 getTickLabelMaxWidth(g) * 2
-            val maxTick = Math.max(80, 2 * minTick)  // max of about an inch
-            val tickDistance = 50  // make ticks about this many pixels apart
-            exp = Math.log(scalePixel(tickDistance)) / Math.log(10.0) // log base 10
-            majorTickInc = 1.0
-            if (majorTickIncrement > 0) {
-                majorTickInc = majorTickIncrement
-            } else if (exp >= 1 || exp <= -1) {
-                majorTickInc = Math.pow(10.0, Math.round(exp).toDouble())
+            minTick = maxOf(minTick, tickDistance)
+            val maxTick = max(g.dpToPixel(160f), 2 * minTick)  // max of about an inch
 
-                log.v { "exp = $exp  incval = $majorTickInc  incvalPix = ${scaleData(majorTickInc)}" }
-                log.v { "minTick = $minTick maxTick = $maxTick" }
-                if (scaleData(majorTickInc) < minTick) {
-                    majorTickInc *= when {
-                        scaleData(majorTickInc * 2) >= minTick -> 2.0
-                        scaleData(majorTickInc * 5) >= minTick -> 5.0
-                        else -> 10.0
-                    }
-                } else if (scaleData(majorTickInc) >= maxTick) {
-                    majorTickInc /= when {
-                        scaleData(majorTickInc / 2) <= maxTick -> 2.0
-                        scaleData(majorTickInc / 5) <= maxTick -> 5.0
-                        else -> 10.0
-                    }
+            log.v { "incval = $majorTickInc  incvalPix = ${scaleData(majorTickInc)}  minTick = $minTick maxTick = $maxTick" }
+
+            if (scaleData(majorTickInc) < minTick) {
+                majorTickInc *= when {
+                    scaleData(majorTickInc * 2) >= minTick -> 2.0
+                    scaleData(majorTickInc * 5) >= minTick -> 5.0
+                    else -> 10.0
+                }
+            } else if (scaleData(majorTickInc) >= maxTick) {
+                majorTickInc /= when {
+                    scaleData(majorTickInc / 2) <= maxTick -> 2.0
+                    scaleData(majorTickInc / 5) <= maxTick -> 5.0
+                    else -> 10.0
                 }
             }
 
@@ -77,14 +74,10 @@ open class DecimalAxis : Axis() {
 
             log.v { " incval = $majorTickInc incvalPix = ${scaleData(majorTickInc)}" }
             log.v { " minVal = $minValue maxVal = $maxValue rangePix = $rangePix" }
-        } else {
-            if (majorTickIncrement > 0) {
-                majorTickInc = majorTickIncrement
-            }
         }
 
         if (this.majorTickFormat == null) {
-            //double exp = Math.log( scalePixel( tickDistance ) ) / Math.log(10); // log base 10
+            val exp = Math.log(scalePixel(tickDistance)) / Math.log(10.0) // log base 10
             if (exp < 0 || majorTickInc < 1) {
                 val str = StringBuffer()
                 str.append("#.#")

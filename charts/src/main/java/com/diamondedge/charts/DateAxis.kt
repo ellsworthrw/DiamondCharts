@@ -7,6 +7,8 @@ package com.diamondedge.charts
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.time.Duration.Companion.days
 
 class DateAxis : Axis() {
@@ -33,9 +35,21 @@ class DateAxis : Axis() {
 
         if (isAutoScaling) {
             val range = maxValue - minValue
-            log.v { "calcMetrics($rangePix) range: ${range.days}" }
+            log.v { "calcMetrics($rangePix) range: ${range.days} min: $minValue max: $maxValue" }
 
             when {
+                range > 200 * DateUtil.ONE_YEAR -> {
+                    log.v { "> 200y inc: 200y" }
+                    majorTickInc = 200 * DateUtil.ONE_YEAR
+                    tickLabelDateFormat = yearFormat
+                    minorTickIncNum = 2
+                }
+                range > 30 * DateUtil.ONE_YEAR -> {
+                    log.v { "> 30y inc: 10y" }
+                    majorTickInc = 10 * DateUtil.ONE_YEAR
+                    tickLabelDateFormat = yearFormat
+                    minorTickIncNum = 2
+                }
                 range > DateUtil.ONE_YEAR -> {
                     log.v { "> 1y inc: year" }
                     majorTickInc = DateUtil.ONE_YEAR
@@ -78,8 +92,8 @@ class DateAxis : Axis() {
                     tickLabelDateFormat = hourFormat
                     minorTickIncNum = 4
                 }
-                range > 2 * DateUtil.ONE_HOUR -> {
-                    log.v { "> 2h inc: 1h" }
+                range > 3 * DateUtil.ONE_HOUR -> {
+                    log.v { "> 3h inc: 1h" }
                     majorTickInc = DateUtil.ONE_HOUR
                     tickLabelDateFormat = hourFormat
                     minorTickIncNum = 2
@@ -128,20 +142,14 @@ class DateAxis : Axis() {
                 majorTickInc = majorTickIncrement
             }
 
-            // make minVal be an exact multiple of majorTickInc just smaller than minVal
-            minValue = Math.floor(minValue / majorTickInc) * majorTickInc
-            // make maxVal be an exact multiple of majorTickInc just larger than maxVal
-            maxValue = Math.ceil(maxValue / majorTickInc) * majorTickInc
-
-/*
-            // make minVal be an exact multiple of minorTickInc just smaller than minVal
-            var tickInc = nextMinorIncVal(minValue, 1.0)
-            minValue = Math.floor(minValue / tickInc) * tickInc
-
-            // make maxVal be an exact multiple of minorTickInc just larger than maxVal
-            tickInc = nextMinorIncVal(maxValue, 1.0)
-            maxValue = Math.ceil(maxValue / tickInc) * tickInc
-*/
+            if (!startAtMinValue) {
+                // make minVal be an exact multiple of majorTickInc just smaller than minVal
+                minValue = floor(minValue / majorTickInc) * majorTickInc
+            }
+            if (!endAtMaxValue) {
+                // make maxVal be an exact multiple of majorTickInc just larger than maxVal
+                maxValue = ceil(maxValue / majorTickInc) * majorTickInc
+            }
 
             calcScale(rangePix)
         }

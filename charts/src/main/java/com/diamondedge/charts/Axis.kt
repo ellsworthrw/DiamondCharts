@@ -6,6 +6,8 @@
 package com.diamondedge.charts
 
 import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.min
 
 typealias NumberFormatter = (Double) -> String
@@ -215,6 +217,21 @@ open class Axis protected constructor() {
     internal var isAutoScaling = true
 
     /**
+     * make XYGraphs start drawing data at the y-axis.
+     * There will not be a buffer of empty space on the left side between the y-axis and the fist data poing.
+     * Also, the y-axis will not be an even multiple of the major tick lines. The first major tick line will always be labelled
+     *  but if it is too close the y-axis line, the grid line will not be drawn. Too close is governed by the value
+     *  GridLines.minDistanceToNextLineDp.
+     */
+    var startAtMinValue: Boolean = false
+
+    /**
+     * make XYGraphs draw data points all the way to the right edge of the graph.
+     * There will not be a buffer on the right side.
+     */
+    var endAtMaxValue: Boolean = false
+
+    /**
      * The position of the label relative to the major tick marks are being drawn.
      * One of: TICK_CENTER, GROUP_CENTER, RIGHT_OF_TICK, BELOW_TICK, ABOVE_TICK
      */
@@ -322,6 +339,16 @@ open class Axis protected constructor() {
             var majorTickInc = this.majorTickInc
             var extraLine = 0
             var tickPos = minVal
+            if (startAtMinValue) {
+                // make tickPos be an exact multiple of majorTickInc just larger than minVal
+                val minorTickInc = this.majorTickInc / minorTickIncNum
+                tickPos = ceil(minValue / majorTickInc) * majorTickInc
+                if ((tickPos - minVal) > minorTickInc) {
+                    // there is room to draw minor ticks before first major tick is drown
+                    val majorTickPosBeforeOrigin = floor(minValue / majorTickInc) * majorTickInc
+                    drawMinorTicks(majorTickPosBeforeOrigin, tickPos, minVal, maxVal, g, minorTickLen)
+                }
+            }
             while (tickPos <= maxVal) {
                 majorTickInc = nextMajorIncVal(tickPos, majorTickInc)
 
@@ -338,17 +365,7 @@ open class Axis protected constructor() {
                         )
                     }
                 }
-                if (isMinorTickShowing) {
-                    var minorTickInc = nextMinorIncVal(tickPos, this.majorTickInc / minorTickIncNum)
-                    var minorTickPos = tickPos + minorTickInc
-                    val nextMajorTickPos = tickPos + majorTickInc - roundoff
-                    while (minorTickPos < nextMajorTickPos && minorTickPos <= maxVal) {
-                        minorTickInc = nextMinorIncVal(minorTickPos, minorTickInc)
-                        g.color = minorTickColor
-                        drawTick(g, convertToPixel(minorTickPos), yOrigin, minorTickLen, minorTickStyle)
-                        minorTickPos += minorTickInc
-                    }
-                }
+                drawMinorTicks(tickPos, tickPos + majorTickInc - roundoff, tickPos, maxVal, g, minorTickLen)
                 tickPos += majorTickInc
             }
 
@@ -363,6 +380,27 @@ open class Axis protected constructor() {
 //                    y += tickLabelHeight - 2
                 g.color = axisLabelColor
                 g.drawString(label, this.x + width / 2 - strwidth / 2, y)
+            }
+        }
+    }
+
+    private fun drawMinorTicks(
+        startPos: Double,
+        endPos: Double,
+        minVal: Double,
+        maxVal: Double,
+        g: GraphicsContext,
+        minorTickLen: Int
+    ) {
+        if (isMinorTickShowing) {
+            g.color = minorTickColor
+            var minorTickInc = nextMinorIncVal(startPos, this.majorTickInc / minorTickIncNum)
+            var minorTickPos = startPos + minorTickInc
+            while (minorTickPos < endPos && minorTickPos <= maxVal) {
+                if (minorTickPos >= minVal)
+                    drawTick(g, convertToPixel(minorTickPos), yOrigin, minorTickLen, minorTickStyle)
+                minorTickInc = nextMinorIncVal(minorTickPos, minorTickInc)
+                minorTickPos += minorTickInc
             }
         }
     }
@@ -491,7 +529,7 @@ open class Axis protected constructor() {
      * Return the screen coordinate (in pixels) based on a data value
      */
     fun convertToPixel(dataValue: Double): Int {
-        var value = scaleData(dataValue) - scaleData(minVal)
+        var value = scaleData(dataValue - minVal)
         if (isVertical)
             value = y - value
         else
@@ -511,7 +549,8 @@ open class Axis protected constructor() {
      * Return the data value scaled to be in pixels (screen coordinates)
      */
     open fun scaleData(dataValue: Double): Int {
-        return (dataValue / scale).toInt()
+        // converting to long first causes this not to overflow to Int.MAX_VALUE
+        return (dataValue / scale).toLong().toInt()
     }
 
     protected open fun scalePixel(pixelValue: Int): Double {

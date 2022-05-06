@@ -5,6 +5,8 @@
  */
 package com.diamondedge.charts
 
+import kotlin.time.Duration.Companion.days
+
 abstract class Chart(override val data: ChartData) : ChartObject() {
 
     open val showInLegend: Int
@@ -63,6 +65,7 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
     }
 
     open fun setupAxis() {
+        log.d { "setupAxis: isVertical=$isVertical" }
         val dataCount = data.dataCount
         vertAxis?.apply {
             if (this is LabelAxis) {
@@ -74,9 +77,10 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
             if (this is LabelAxis) {
                 labels = createLabels(dataCount)
                 setDataCount(dataCount)
+            } else if (this is DateAxis) {
+                log.d { "   hor data duration ${(data.maxValue2 - data.minValue2).days}" }
             }
         }
-        log.d { "setupAxis: isVertical=$isVertical" }
         log.d { "   hor: $horAxis" }
         log.d { "   vert: $vertAxis" }
     }
