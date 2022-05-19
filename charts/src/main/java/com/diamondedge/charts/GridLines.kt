@@ -5,8 +5,10 @@
  */
 package com.diamondedge.charts
 
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.min
 
 class GridLines {
 
@@ -37,12 +39,22 @@ class GridLines {
     /** The attributes associated with drawing the vertical line that
      * is at the left of the graph.
      */
-    val leftLine = LineAttributes(visible = false)
+    val leftLine = LineAttributes(isVisible = false)
 
     /** The attributes associated with drawing the vertical line that
      * is at the right of the graph.
      */
-    val rightLine = LineAttributes(visible = false)
+    val rightLine = LineAttributes(isVisible = false)
+
+    /**
+     * Attributes for vertical line to be drawn at coordinate specified by `customLineValue`
+     */
+    var customLine = LineAttributes(isVisible = false)
+
+    /**
+     * X coordinate to draw the line with attributes specified by `customLine`
+     */
+    var customLineValue = 0.0
 
     //--------------------------------------------------------------------------
     //                          horizontal lines
@@ -66,19 +78,19 @@ class GridLines {
     /** The attributes associated with drawing the horizontal line that
      * is at the top of the graph.
      */
-    val topLine = LineAttributes(visible = false)
+    val topLine = LineAttributes(isVisible = false)
 
     /** The attributes associated with drawing the horizontal line that
      * is at the bottom of the graph.
      */
-    val bottomLine = LineAttributes(visible = false)
+    val bottomLine = LineAttributes(isVisible = false)
 
     init {
 //        majorVerticalLines.style = StrokeStyle.DOT
 //        majorHorizontalLines.style = StrokeStyle.DASH_DOT
 
-        minorVerticalLines.visible = false
-        minorHorizontalLines.visible = false
+        minorVerticalLines.isVisible = false
+        minorHorizontalLines.isVisible = false
 //         minorHorizontalLines.style = StrokeStyle.DASH_DOT_DOT
     }
 
@@ -103,26 +115,27 @@ class GridLines {
 
         val zeroVertAxis = vertAxis.convertToPixel(0.0)
         val zeroHorizAxis = horAxis.convertToPixel(0.0)
-        val right = if (extendHorizontalLinesIntoMargin) left + width + rightMargin else left + width
+        val graphRight = left + width
+        val right = if (extendHorizontalLinesIntoMargin) graphRight + rightMargin else graphRight
 
         // draw horizontal axis line
         if (vertAxis.minValue < 0 && vertAxis.maxValue > 0) {
             drawLine(g, horAxis.axisLineAttributes, left, zeroVertAxis, right, zeroVertAxis)
-        } else if (horAxis.axisLineAttributes.visible) {
+        } else if (horAxis.axisLineAttributes.isVisible) {
             drawLine(g, horAxis.axisLineAttributes, left, bottom, right, bottom)
         }
 
         // draw vertical axis line
         if (horAxis.minValue < 0 && horAxis.maxValue > 0) {
             drawLine(g, vertAxis.axisLineAttributes, zeroHorizAxis, bottom, zeroHorizAxis, bottom - height)
-        } else if (vertAxis.axisLineAttributes.visible) {
+        } else if (vertAxis.axisLineAttributes.isVisible) {
             drawLine(g, vertAxis.axisLineAttributes, left, bottom, left, bottom - height)
         }
 
         // horizontal grid lines
-        if (majorHorizontalLines.visible || isHorizontalStripesShowing || minorHorizontalLines.visible) {
-            val maxVal = vertAxis.maxValue
-            val roundoff = Math.min(maxVal * .0001, .000001)
+        if (majorHorizontalLines.isVisible || isHorizontalStripesShowing || minorHorizontalLines.isVisible) {
+            val roundoff = min(vertAxis.maxValue * .0001, .000001)
+            val maxVal = vertAxis.maxValue + roundoff
             var majorTickInc = vertAxis.majorTickInc
             var stripeDrawn = false
             val stripeColor = Color.brighter(majorHorizontalLines.color)
@@ -143,12 +156,12 @@ class GridLines {
                     stripeDrawn = false
                 }
                 if (tickPos != vertAxis.minValue && y != zeroVertAxis) {     // axis is already drawn
-                    if (majorHorizontalLines.visible)
+                    if (majorHorizontalLines.isVisible)
                         drawLine(g, majorHorizontalLines, left, y, right, y)
                     else                    // paint as a minor line if it is visible
                         drawLine(g, minorHorizontalLines, left, y, right, y)
                 }
-                if (minorHorizontalLines.visible) {
+                if (minorHorizontalLines.isVisible) {
                     g.color = minorHorizontalLines.color
                     g.setStroke(minorHorizontalLines.width, minorHorizontalLines.style)
                     val minorTickNum = vertAxis.minorTickIncNum
@@ -167,11 +180,12 @@ class GridLines {
         }
 
         // vertical grid lines
-        if (majorVerticalLines.visible || minorVerticalLines.visible) {
+        if (majorVerticalLines.isVisible || minorVerticalLines.isVisible) {
             val top = bottom - height
-            val maxVal = horAxis.maxValue
-            val minDistanceToAxis = g.dpToPixel(minDistanceToNextLineDp)
-            val roundoff = Math.min(maxVal * .0001, .000001)
+            val roundoff = min(horAxis.maxValue * .0001, .000001)
+            val maxVal = horAxis.maxValue + roundoff
+            val minDistanceToNextLine = g.dpToPixel(minDistanceToNextLineDp)
+            val lines = vertLinesToAvoid(left, right)
             var majorTickInc = horAxis.majorTickInc
             var tickPos = horAxis.minValue
             if (horAxis.startAtMinValue) {
@@ -181,7 +195,7 @@ class GridLines {
                 if ((tickPos - horAxis.minValue) > minorTickInc) {
                     // have space to draw minor ticks before first major tick is drown
                     val majorTickPosBeforeOrigin = floor(horAxis.minValue / majorTickInc) * majorTickInc
-                    drawMinorLines(majorTickPosBeforeOrigin, tickPos, horAxis.minValue, horAxis.maxValue, top, bottom, g)
+                    drawMinorLines(majorTickPosBeforeOrigin, tickPos, horAxis.minValue, horAxis.maxValue, top, bottom, left, graphRight, g)
                 }
             }
 
@@ -189,24 +203,29 @@ class GridLines {
                 majorTickInc = horAxis.nextMajorIncVal(tickPos, majorTickInc)
                 val x = horAxis.convertToPixel(tickPos)
                 if (tickPos != horAxis.minValue && x != zeroHorizAxis) {     // axis is already drawn
-                    if ((x - horAxis.x) > minDistanceToAxis) {
-                        if (majorVerticalLines.visible)
+                    if (shouldDrawLine(x, lines, minDistanceToNextLine)) {
+                        if (majorVerticalLines.isVisible)
                             drawLine(g, majorVerticalLines, x, bottom, x, top)
                         else                    // paint as a minor line if it is visible
                             drawLine(g, minorVerticalLines, x, bottom, x, top)
                     }
                 }
-                drawMinorLines(tickPos, tickPos + majorTickInc - roundoff, tickPos, maxVal, top, bottom, g)
+                drawMinorLines(tickPos, tickPos + majorTickInc - roundoff, tickPos, maxVal, top, bottom, left, graphRight, g)
 
                 tickPos += majorTickInc
+            }
+
+            if (customLine.isVisible) {
+                val x = horAxis.convertToPixel(customLineValue)
+                drawLine(g, customLine, x, bottom, x, top)
             }
         }
 
         // draw border around the graph
         drawLine(g, leftLine, left, bottom, left, bottom - height)
-        drawLine(g, rightLine, left + width, bottom, left + width, bottom - height)
-        drawLine(g, topLine, left, bottom - height, left + width, bottom - height)
-        drawLine(g, bottomLine, left, bottom, left + width, bottom)
+        drawLine(g, rightLine, graphRight, bottom, graphRight, bottom - height)
+        drawLine(g, topLine, left, bottom - height, graphRight, bottom - height)
+        drawLine(g, bottomLine, left, bottom, graphRight, bottom)
 
         g.stroke = origStroke
     }
@@ -218,33 +237,51 @@ class GridLines {
         maxVal: Double,
         top: Int,
         bottom: Int,
+        left: Int,
+        right: Int,
         g: GraphicsContext,
     ) {
         val horAxis = this.horAxis
-        if (minorVerticalLines.visible && horAxis != null) {
+        if (minorVerticalLines.isVisible && horAxis != null) {
             g.color = minorVerticalLines.color
             g.setStroke(minorVerticalLines.width, minorVerticalLines.style)
-            val minDistanceToAxis = g.dpToPixel(minDistanceToNextLineDp)
+            val minDistanceToNextLine = g.dpToPixel(minDistanceToNextLineDp)
             var minorTickInc = horAxis.nextMinorIncVal(startPos, horAxis.majorTickInc / horAxis.minorTickIncNum)
             var minorTickPos = startPos + minorTickInc
+            val lines = vertLinesToAvoid(left, right)
             while (minorTickPos < endPos && minorTickPos <= maxVal) {
                 minorTickInc = horAxis.nextMinorIncVal(minorTickPos, minorTickInc)
                 if (minorTickPos >= minVal) {
                     val x = horAxis.convertToPixel(minorTickPos)
-                    if ((x - horAxis.x) > minDistanceToAxis)
+                    if (shouldDrawLine(x, lines, minDistanceToNextLine))
                         g.drawLine(x, bottom, x, top)
                 }
                 minorTickPos += minorTickInc
             }
         }
-
     }
+
+    private fun shouldDrawLine(x: Int, lines: List<Int>, minDistanceToNextLine: Int): Boolean {
+        for (xLine in lines) {
+            if (abs(x - xLine) < minDistanceToNextLine) {
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun vertLinesToAvoid(left: Int, right: Int): List<Int> = listOfNotNull(
+        horAxis?.x,
+        if (leftLine.isVisible) left else null,
+        if (rightLine.isVisible) right else null,
+        if (customLine.isVisible) horAxis?.convertToPixel(customLineValue) else null
+    )
 
     companion object {
         var minDistanceToNextLineDp = 12f
 
         fun drawLine(g: GraphicsContext, attr: LineAttributes, x1: Int, y1: Int, x2: Int, y2: Int) {
-            if (attr.visible) {
+            if (attr.isVisible) {
                 g.color = attr.color
                 g.setStroke(attr.width, attr.style)
                 g.drawLine(x1, y1, x2, y2)

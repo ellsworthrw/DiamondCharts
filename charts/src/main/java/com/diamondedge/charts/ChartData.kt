@@ -20,9 +20,9 @@ interface ChartData {
 
     /**
      * returns the number of values for each data point.
-     * simple series = 1 (pie, bar)
-     * XY data == 2
-     * HLOC data = 5
+     * simple series = 1 (pie, bar, line, area)
+     * XY data == 2 (XYGraph)
+     * HLOC data = 5 (StockChart)
      */
     val valueCount: Int
 
@@ -51,6 +51,7 @@ interface ChartData {
     val maxValue2: Double
 
     val id: Any
+        get() = ""
 
     fun getValue(series: Int, dataPtNum: Int): Double {
         return getValue(series, dataPtNum, valueIndex)
@@ -73,10 +74,10 @@ interface ChartData {
     companion object {
         val log = moduleLogging()
 
-        // valueIndex for datasets with 1 value
+        // valueIndex for datasets with 1 value (bar,pie,line,area,radar,pareto)
         const val valueIndex = 0
 
-        // valueIndex for datasets with 2 or 3 values
+        // valueIndex for datasets with 2 or 3 values (XYGraph)
         const val xIndex = 1
         const val yIndex = 0    // 0th value so 2nd value can be dataPtNum if not supplied
         const val zIndex = 2    // index for bubble value
@@ -165,17 +166,4 @@ interface ChartData {
             }
         }
     }
-
-    /*
-data 1,2,3,4 columns of data
-  1 bar,pie,line,area,radar,pareto
-  2 xy(line,scatter,time)
-  3 xy bubble (line,scatter,time)
-  4 candle or hloc, high/low/open/close
-  ? radar
-*/
-
-    //for xyBubble getDoubleAt( ptNum, seriesNum*3 + X )
-
 }
-

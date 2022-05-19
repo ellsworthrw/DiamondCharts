@@ -15,12 +15,9 @@ typealias NumberFormatter = (Double) -> String
 open class Axis protected constructor() {
 
     /**
-     * The minimum value of the axis. This is the value of
-     * the first major tick mark. This is calculated automatically
-     * based on the minimum value of the data being displayed
-     * if AutoScaling is set to true.
-     *
-     * @see .setAutoScaling
+     * The minimum value of the axis. This is the value of the first major tick mark.
+     * If AutoScaling is set to true, this is calculated automatically
+     * based on an integral unit before minimum value of the data being displayed or the minValueOverride.
      */
     var minValue: Double
         get() = minVal
@@ -31,12 +28,9 @@ open class Axis protected constructor() {
         }
 
     /**
-     * The maximum value for the axis. This is the value of
-     * the last major tick mark. This is calculated automatically
-     * based on the maximum value of the data being displayed
-     * if AutoScaling is set to true.
-     *
-     * @see .setAutoScaling
+     * The maximum value for the axis. This is the value of the last major tick mark.
+     * If AutoScaling is set to true, this is calculated automatically
+     * based on the integral unit after maximum value of the data being displayed or the maxValueOverride.
      */
     var maxValue: Double
         get() = maxVal
@@ -239,10 +233,18 @@ open class Axis protected constructor() {
 
     var majorTickLabelColor = Color.defaultTextColor
 
+    private var drawCustomLineLabel: ((g: GraphicsContext, x: Int, y: Int, value: Double, axis: Axis) -> Unit)? = null
+    private var customLineValue = 0.0
+
+    internal fun setMinMaxData(min: Double, max: Double) {
+        minVal = min
+        maxVal = max
+        adjustMinMax()
+        calcScale()
+    }
+
     /**
-     * Set the scale, minimum, and maximum values based on the current data.
-     * This is only done one time. Use setAutoScaling() to always keep the
-     * axis scaled automatically.
+     * Calculate the scale based on the minimum and maximum values
      */
     private fun calcScale() {
         if (isVertical) {
@@ -304,10 +306,7 @@ open class Axis protected constructor() {
                     drawTick(g, xOrigin, y, majorTickLen, majorTickStyle)
 
                     if (majorTickLabelShowing) {
-                        drawVertLabel(
-                            g, tickPos, majorTickInc, majorTickLen,
-                            majorTickLabelPosition, fm, majorTickLabelColor
-                        )
+                        drawVertLabel(g, tickPos, majorTickInc, majorTickLen, majorTickLabelPosition, fm, majorTickLabelColor)
                     }
                 }
                 if (isMinorTickShowing) {
@@ -355,18 +354,28 @@ open class Axis protected constructor() {
                 val x = convertToPixel(tickPos)
                 if (isMajorTickShowing) {
                     g.font = this.majorTickFont
-                    g.color = majorTickColor
-                    drawTick(g, x, yOrigin, majorTickLen, majorTickStyle)
-
+                    var showTick = true
                     if (majorTickLabelShowing) {
-                        extraLine += drawHorLabel(
-                            g, tickPos, this.majorTickInc, majorTickLen,
-                            majorTickLabelPosition, fm, majorTickLabelColor
-                        )
+                        val ex = drawHorLabel(g, tickPos, this.majorTickInc, majorTickLen, majorTickLabelPosition, fm, majorTickLabelColor)
+                        if (ex < 0)
+                            showTick = false
+                        else
+                            extraLine += ex
                     }
+                    g.color = majorTickColor
+                    if (showTick)
+                        drawTick(g, x, yOrigin, majorTickLen, majorTickStyle)
+                    else
+                        drawTick(g, x, yOrigin, minorTickLen, majorTickStyle)
                 }
                 drawMinorTicks(tickPos, tickPos + majorTickInc - roundoff, tickPos, maxVal, g, minorTickLen)
                 tickPos += majorTickInc
+            }
+            if (drawCustomLineLabel != null) {
+                val x = convertToPixel(customLineValue)
+                g.color = majorTickColor
+                drawTick(g, x, yOrigin, majorTickLen, majorTickStyle)
+                drawHorLabel(g, customLineValue, this.majorTickInc, majorTickLen, majorTickLabelPosition, fm, majorTickLabelColor)
             }
 
             axisLabel?.let { label ->
@@ -384,14 +393,7 @@ open class Axis protected constructor() {
         }
     }
 
-    private fun drawMinorTicks(
-        startPos: Double,
-        endPos: Double,
-        minVal: Double,
-        maxVal: Double,
-        g: GraphicsContext,
-        minorTickLen: Int
-    ) {
+    private fun drawMinorTicks(startPos: Double, endPos: Double, minVal: Double, maxVal: Double, g: GraphicsContext, minorTickLen: Int) {
         if (isMinorTickShowing) {
             g.color = minorTickColor
             var minorTickInc = nextMinorIncVal(startPos, this.majorTickInc / minorTickIncNum)
@@ -490,8 +492,17 @@ open class Axis protected constructor() {
             else -> {}
         }
 
-        g.drawString(label, x, y)
-
+        if (drawCustomLineLabel != null) {
+            if (tickPos == customLineValue) {
+                drawCustomLineLabel?.invoke(g, x, y, tickPos, this)
+            } else if (abs(convertToPixel(customLineValue) - x) > g.dpToPixel(4f) + strWidth) {   // don't draw label if too close to custom label
+                g.drawString(label, x, y)
+            } else {
+                return -1
+            }
+        } else {
+            g.drawString(label, x, y)
+        }
         return extraLine
     }
 
@@ -506,8 +517,7 @@ open class Axis protected constructor() {
     }
 
     private fun drawVertLabel(
-        g: GraphicsContext, tickPos: Double, tickInc: Double, tickLen: Int,
-        align: TickLabelPosition, fm: FontMetrics, color: Long
+        g: GraphicsContext, tickPos: Double, tickInc: Double, tickLen: Int, align: TickLabelPosition, fm: FontMetrics, color: Long
     ) {
         val label = tickLabel(tickPos)
         val strWidth = g.stringWidth(label)
@@ -618,6 +628,21 @@ open class Axis protected constructor() {
         majorTickLabelPosition = value
     }
 
+    /**
+     * Draw a vertical grid line and label at the x coordinate specified by `value`. The `drawCustomLabel` lambda will be
+     * called with x, y of the baseline of where the label should be drawn.
+     */
+    fun setupCustomLine(
+        value: Double,
+        charts: Charts,
+        drawCustomLabel: (g: GraphicsContext, x: Int, y: Int, value: Double, axis: Axis) -> Unit
+    ) {
+        drawCustomLineLabel = drawCustomLabel
+        customLineValue = value
+        charts.gridLines.customLine.isVisible = true
+        charts.gridLines.customLineValue = value
+    }
+
     protected open fun toStringParam(): String {
         return "vert=$isVertical,scale=${dbl(scale)},min=${dbl(minVal)},max=${dbl(maxVal)},majorTickInc=${dbl(majorTickInc)},minorTickNum=" +
                 "$minorTickIncNum, xOrigin=$xOrigin, yOrigin=$yOrigin,axisLabel=$axisLabel,left=$x,bottom=$y,width=$width,height=$height"
@@ -666,10 +691,5 @@ enum class TickStyle {
 }
 
 enum class TickLabelPosition {
-    TickCenter,
-    GroupCenter,
-    RightOfTick,
-    BottomRightOfTick,
-    BelowTick,
-    AboveTick
+    TickCenter, GroupCenter, RightOfTick, BottomRightOfTick, BelowTick, AboveTick
 }

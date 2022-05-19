@@ -64,11 +64,14 @@ open class DecimalAxis : Axis() {
                 }
             }
 
-            // make minVal be an exact multiple of majorTickInc just smaller than minVal
-            minValue = Math.floor(minValue / majorTickInc) * majorTickInc
-            // make maxVal be an exact multiple of majorTickInc just larger than maxVal
-            maxValue = Math.ceil(maxValue / majorTickInc) * majorTickInc
-
+            if (!startAtMinValue) {
+                // make minVal be an exact multiple of majorTickInc just smaller than minVal
+                minValue = Math.floor(minValue / majorTickInc) * majorTickInc
+            }
+            if (!endAtMaxValue) {
+                // make maxVal be an exact multiple of majorTickInc just larger than maxVal
+                maxValue = Math.ceil(maxValue / majorTickInc) * majorTickInc
+            }
             adjustMinMax()
             calcScale(rangePix)
 

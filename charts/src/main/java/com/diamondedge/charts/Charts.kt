@@ -83,7 +83,7 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
                     vert = obj.createVerticalAxis()
                     if (vert is LabelAxis) {
                         vert.isMinorTickShowing = false
-                        gridLines.minorHorizontalLines.visible = false
+                        gridLines.minorHorizontalLines.isVisible = false
                     }
                 } else {
                     vert = vertAxis
@@ -97,7 +97,7 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
                     hor = obj.createHorizontalAxis()
                     if (hor is LabelAxis) {
                         hor.isMinorTickShowing = false
-                        gridLines.minorVerticalLines.visible = false
+                        gridLines.minorVerticalLines.isVisible = false
                     }
                 } else {
                     hor = horizontalAxis
@@ -108,6 +108,7 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
             // if obj has both axiis then make it the main graph object
             if (vert != null && hor != null) {
                 addVerticalAxis(vert)
+                hor.isVertical = false
                 horizontalAxis = hor
                 gridLines.setVerticalAxis(vert)
                 gridLines.setHorizontalAxis(hor)
@@ -136,12 +137,8 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
             val chart = firstWithAxis
             if (chart != null) {
                 val data = chart.data
-                vertAxis!!.minValue = data.minValue2
-                vertAxis!!.maxValue = data.maxValue2
-                if (horizontalAxis != null) {
-                    horizontalAxis!!.minValue = data.minValue
-                    horizontalAxis!!.maxValue = data.maxValue
-                }
+                vertAxis?.setMinMaxData(data.minValue2, data.maxValue2)
+                horizontalAxis?.setMinMaxData(data.minValue, data.maxValue)
             }
         } else {
             var horMin = Double.MAX_VALUE
@@ -151,38 +148,32 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
             for (axis in vertAxisList) {
                 var vertMin = Double.MAX_VALUE
                 var vertMax = Double.MIN_VALUE
-                if (axis.isAutoScaling || horizontalAxis != null && horizontalAxis!!.isAutoScaling) {
-                    for (g in 0 until nGraphs) {
-                        graph = charts[g] as? Chart ?: continue
+                for (g in 0 until nGraphs) {
+                    graph = charts[g] as? Chart ?: continue
 
-                        if (graph.vertAxis === axis) {
-                            val data = graph.data
-                            var min = data.minValue
-                            var max = data.maxValue
-                            if (min < vertMin)
-                                vertMin = min
-                            if (max > vertMax)
-                                vertMax = max
+                    if (graph.vertAxis === axis) {
+                        val data = graph.data
+                        var min = data.minValue
+                        var max = data.maxValue
+                        if (min < vertMin)
+                            vertMin = min
+                        if (max > vertMax)
+                            vertMax = max
 
-                            min = data.minValue2
-                            max = data.maxValue2
-                            if (min < horMin)
-                                horMin = min
-                            if (max > horMax)
-                                horMax = max
-                        }
+                        min = data.minValue2
+                        max = data.maxValue2
+                        if (min < horMin)
+                            horMin = min
+                        if (max > horMax)
+                            horMax = max
                     }
                 }
 
-                if (axis.isAutoScaling) {
-                    axis.minValue = vertMin
-                    axis.maxValue = vertMax
-                }
+                if (axis.isAutoScaling)
+                    axis.setMinMaxData(vertMin, vertMax)
             }
-            if (horizontalAxis != null && horizontalAxis!!.isAutoScaling) {
-                horizontalAxis!!.minValue = horMin
-                horizontalAxis!!.maxValue = horMax
-            }
+            if (horizontalAxis?.isAutoScaling == true)
+                horizontalAxis?.setMinMaxData(horMin, horMax)
         }
     }
 
@@ -198,8 +189,6 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
             if (data is CalculatedData)
                 data.recalc(false)
         }
-
-        horizontalAxis?.isVertical = false
 
         recalcAxis()
 

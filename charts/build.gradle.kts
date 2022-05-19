@@ -1,7 +1,7 @@
 plugins {
     id("com.android.library")
     kotlin("android")
-    id("org.jetbrains.dokka") version "1.6.20"
+    id("org.jetbrains.dokka") version "1.6.21"
     id("maven-publish")
 }
 
@@ -21,12 +21,13 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.1"
+        kotlinCompilerExtensionVersion = "${rootProject.extra["compose_version"]}"
     }
 
     buildFeatures {
         compose = true
     }
+    namespace = "com.diamondedge.charts"
 
 //    namespace = "com.diamondedge.charts"
 
@@ -39,8 +40,8 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.ui:ui:1.1.1")
-    implementation("androidx.compose.foundation:foundation:1.1.1")
+    implementation("androidx.compose.ui:ui:${rootProject.extra["compose_version"]}")
+    implementation("androidx.compose.foundation:foundation:${rootProject.extra["compose_version"]}")
     implementation("org.lighthousegames:logging-android:1.2.0")
 }
 
@@ -53,7 +54,7 @@ tasks {
 }
 
 extra["artifactID"] = "charts-android"
-extra["artifactVersion"] = "0.8.0"
+extra["artifactVersion"] = "0.9.0"
 extra["libraryName"] = "Diamond Charts"
 extra["libraryDescription"] = "Diamond Charts: charting library for Android Jetpack Compose"
 extra["gitUrl"] = "https://github.com/ellsworthrw/DiamondCharts"

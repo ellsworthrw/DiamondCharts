@@ -19,16 +19,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.diamondedge.chartapp.R
 import com.diamondedge.chartapp.ui.theme.AppTheme
-import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
 import java.util.Locale
-
 
 @Composable
 fun MainUI() {
@@ -61,9 +58,7 @@ private fun BottomBar(navController: NavController, tabs: Array<NavTabs>) {
 
     val routes = remember { NavTabs.values().map { it.route } }
     if (currentRoute in routes) {
-        BottomNavigation(
-            Modifier.navigationBarsHeight(additional = 56.dp)
-        ) {
+        BottomNavigation {
             tabs.forEach { tab ->
                 BottomNavigationItem(
                     icon = { Icon(imageVector = tab.icon, contentDescription = null) },
