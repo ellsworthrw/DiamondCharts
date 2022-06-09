@@ -356,6 +356,36 @@ interface GraphicsContext {
      */
     fun drawString(str: String, x: Int, y: Int)
 
+    /**
+     * Draws the text given by the specified string, using this
+     * graphics context's current font and color. The baseline of the
+     * leftmost character is at position (*x*,&nbsp;*y*) in this
+     * graphics context's coordinate system. The string will be truncated
+     * to fit inside the bounds of x and x + width.
+     * @param       str      the string to be drawn.
+     * @param       x        the *x* coordinate.
+     * @param       y        the *y* coordinate.
+     * @param       width    the space available to draw string
+     * @param       truncateSuffix    the string appended to the truncated string
+     */
+    fun drawString(str: String, x: Int, y: Int, width: Int, truncateSuffix: String = "...") {
+        var label = str
+        if (stringWidth(str) > width) {
+            label = truncate(label, width, truncateSuffix)
+        }
+        drawString(label, x, y)
+    }
+
+    private fun truncate(str: String, width: Int, suffix: String): String {
+        var s = str.substring(0, str.length - suffix.length)
+        while (stringWidth(s + suffix) > width) {
+            if (s.length <= 1)
+                return s + suffix
+            s = s.substring(0, s.length - 2)
+        }
+        return s + suffix
+    }
+
     fun drawStringVertical(str: String, xCenter: Int, yCenter: Int)
 
     /**

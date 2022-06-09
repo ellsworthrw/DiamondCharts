@@ -339,6 +339,10 @@ open class Axis protected constructor() {
             var extraLine = 0
             var tickPos = minVal
             if (startAtMinValue) {
+                if (isMajorTickShowing) {       // looks better with major tick line at origin
+                    g.color = majorTickColor
+                    drawTick(g, x, yOrigin, majorTickLen, majorTickStyle)
+                }
                 // make tickPos be an exact multiple of majorTickInc just larger than minVal
                 val minorTickInc = this.majorTickInc / minorTickIncNum
                 tickPos = ceil(minValue / majorTickInc) * majorTickInc

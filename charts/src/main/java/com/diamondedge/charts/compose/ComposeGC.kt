@@ -6,6 +6,7 @@ package com.diamondedge.charts.compose
 
 import android.graphics.Bitmap
 import android.graphics.Typeface
+import android.os.Build
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -123,17 +124,6 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
             font.typeface = t
             t
         }
-    }
-
-    private fun createTypeface(font: Font): Typeface {
-        val typeface = when (font.face) {
-            FontFace.Serif -> Typeface.SERIF
-            FontFace.SansSerif -> Typeface.SANS_SERIF
-            FontFace.Monospace -> Typeface.MONOSPACE
-            FontFace.Default -> Typeface.DEFAULT
-            FontFace.Native -> font.typeface as Typeface
-        }
-        return Typeface.create(typeface, toAndroidFontStyle(font.style))
     }
 
     override var color: Long
@@ -429,6 +419,7 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
         private fun toAndroidFontStyle(fontStyle: FontStyle): Int {
             return when (fontStyle) {
                 FontStyle.Bold -> Typeface.BOLD
+                FontStyle.SemiBold -> Typeface.BOLD
                 FontStyle.Normal -> Typeface.NORMAL
                 FontStyle.Italic -> Typeface.ITALIC
                 FontStyle.BoldItalic -> Typeface.BOLD_ITALIC
@@ -449,8 +440,29 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
         }
 
         fun createFont(family: Typeface, style: FontStyle, size: Float): Font {
-            val typeface = Typeface.create(family, toAndroidFontStyle(style))
+            val typeface = createTypeface(family, style)
             return Font.createNative(typeface, style, size)
+        }
+
+        private fun createTypeface(font: Font): Typeface {
+            val typeface = when (font.face) {
+                FontFace.Serif -> Typeface.SERIF
+                FontFace.SansSerif -> Typeface.SANS_SERIF
+                FontFace.Monospace -> Typeface.MONOSPACE
+                FontFace.Default -> Typeface.DEFAULT
+                FontFace.Native -> font.typeface as Typeface
+            }
+            return createTypeface(typeface, font.style)
+        }
+
+        private fun createTypeface(family: Typeface, style: FontStyle): Typeface {
+            var style = style
+            if (style == FontStyle.SemiBold) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
+                    return Typeface.create(family, 600, false)
+                style = FontStyle.Bold
+            }
+            return Typeface.create(family, toAndroidFontStyle(style))
         }
     }
 }

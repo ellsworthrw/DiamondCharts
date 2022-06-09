@@ -55,7 +55,7 @@ private fun FunctionGraphPreview() {
     }
 }
 
-fun createData(fn: (Double) -> Double, minX: Double, maxX: Double): ChartData {
+private fun createData(fn: (Double) -> Double, minX: Double, maxX: Double): ChartData {
 
     val data = DefaultXYData("fn")
     data.dataCount = 100

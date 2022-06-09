@@ -1,6 +1,10 @@
 package com.diamondedge.charts
 
-enum class FontStyle { Normal, Bold, Italic, BoldItalic }
+/**
+ * Style for the font. Note: SemiBold is not supported on all platforms and will be same as Bold on those platforms.
+ * SemiBold is supported on Android API 28
+ */
+enum class FontStyle { Normal, Bold, SemiBold, Italic, BoldItalic }
 
 enum class FontFace { Default, SansSerif, Serif, Monospace, Native }
 
@@ -15,12 +19,23 @@ open class Font(val face: FontFace = FontFace.Default, val style: FontStyle = Fo
     }
 
     companion object {
-        val Default = Font()
-        val Small = Font(size = 8f)
-        val Large = Font(size = 18f)
-        val XLarge = Font(size = 22f)
+        val XSmall = Font(size = 8f)
+        val Small = Font(size = 10f)
+        val Default = Font()    // 12f
+        val Medium = Font(size = 14f)
+        val Large = Font(size = 16f)
+        val XLarge = Font(size = 20f)
+        val Headline = Font(size = 32f)
+
         val Bold = Font(style = FontStyle.Bold)
-        val BoldLarge = Font(style = FontStyle.Bold, size = 18f)
+        val BoldLarge = Font(style = FontStyle.Bold, size = 16f)
+        val BoldXLarge = Font(style = FontStyle.Bold, size = 20f)
+
+        val SemiBoldXSmall = Font(style = FontStyle.SemiBold, size = 8f)
+        val SemiBoldSmall = Font(style = FontStyle.SemiBold, size = 10f)
+        val SemiBold = Font(style = FontStyle.SemiBold)
+        val SemiBoldMedium = Font(style = FontStyle.SemiBold, size = 14f)
+        val SemiBoldLarge = Font(style = FontStyle.SemiBold, size = 16f)
 
         internal fun createNative(typeface: Any, style: FontStyle, size: Float): Font {
             val f = Font(FontFace.Native, style, size)
