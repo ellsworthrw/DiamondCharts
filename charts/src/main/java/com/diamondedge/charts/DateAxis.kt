@@ -126,13 +126,19 @@ class DateAxis : Axis() {
                     log.v { "> 1m inc: 1m" }
                     majorTickInc = DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat
-                    minorTickIncNum = 2
+                    minorTickIncNum = 6
                 }
-                range > 9 * DateUtil.ONE_SECOND -> {
-                    log.v { "> 9s inc: 5s" }
-                    majorTickInc = 5 * DateUtil.ONE_SECOND
-                    tickLabelDateFormat = hourMinuteFormat
-                    minorTickIncNum = 5
+                range > 30 * DateUtil.ONE_SECOND -> {
+                    log.v { "> 30s inc: 20s" }
+                    majorTickInc = 20 * DateUtil.ONE_SECOND
+                    tickLabelDateFormat = hourMinuteSecondFormat
+                    minorTickIncNum = 4
+                }
+                range > 2 * DateUtil.ONE_SECOND -> {
+                    log.v { "> 2s inc: 10s" }
+                    majorTickInc = 10 * DateUtil.ONE_SECOND
+                    tickLabelDateFormat = hourMinuteSecondFormat
+                    minorTickIncNum = 2
                 }
                 else -> {
                     log.v { "inc: 1s" }
@@ -182,7 +188,7 @@ class DateAxis : Axis() {
         private val minorDayFormat = SimpleDateFormat("d")
         private val hourFormat = SimpleDateFormat("ha")
         private val hourMinuteFormat = SimpleDateFormat("h:mma")
-        private val minuteFormat = SimpleDateFormat("m")
+        private val hourMinuteSecondFormat = SimpleDateFormat("h:mm:ssa")
         private val secondFormat = SimpleDateFormat("s")
     }
 }
