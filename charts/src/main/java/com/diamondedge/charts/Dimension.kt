@@ -1,3 +1,3 @@
 package com.diamondedge.charts
 
-class Dimension(var width: Int, var height: Int)
+class Dimension(val width: Int, val height: Int)

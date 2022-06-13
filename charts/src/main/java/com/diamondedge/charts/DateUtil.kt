@@ -18,62 +18,51 @@ object DateUtil {
     const val ONE_DAY = 1.0
     const val ONE_WEEK = 7.0
     const val ONE_MONTH = 30.417
-    const val ONE_YEAR = 365.0
+    const val ONE_YEAR = 365.25
 
-    private var zoneOffset = 0
-    private val cal = Calendar.getInstance()
     private const val millisPerDay = (24 * 60 * 60 * 1000).toDouble()
 
     fun now(): Double {
         return toDouble(Date())
     }
 
-    /** returns a double representing the number of days since Jan 1, 1970
-     * Note: the fractional part represents the time of day in relation to
-     * current timezone.
+    /** returns a double representing the number of days since "the epoch" i.e. Jan 1, 1970
+     * Note: the fractional part represents the time of day in relation to GMT.
      */
     fun toDouble(date: Date?): Double {
-        return if (date == null) 0.0 else (date.time + zoneOffset) / millisPerDay
-        // Jan 1, 1970 = 0
+        return if (date == null) 0.0 else (date.time) / millisPerDay
     }
 
     /** returns a double representing the number of days since Jan 1, 1970
-     * Note: the fractional part represents the time of day in relation to
-     * current timezone.
+     * Note: the fractional part represents the time of day in relation to GMT.
      */
     fun toDouble(c: Calendar?): Double {
         return if (c == null) 0.0 else toDouble(c.time)
-        // Jan 1, 1970 = 25569 in VB and 0 in Java
     }
 
     /** returns a double representing the number of days since Jan 1, 1970
-     * Note: the fractional part represents the time of day in relation to
-     * current timezone.
+     * Note: the fractional part represents the time of day in relation to GMT.
      */
     fun toDouble(timeMillis: Long): Double {
-        return (timeMillis + zoneOffset) / millisPerDay
+        return timeMillis / millisPerDay
     }
 
     /** returns a date for the given day since Jan 1, 1970
-     * Note: the fractional part represents the time of day in relation to
-     * current timezone.
+     * Note: the fractional part represents the time of day in relation to GMT.
      */
     fun toDate(days: Double): Date {
         // date = 0 days since Jan 1, 1970
-        return Date(Math.round(days * millisPerDay - zoneOffset))
+        return Date(Math.round(days * millisPerDay))
     }
 
-    /** returns a date for the given day since Jan 1, 1970
-     * Note: the fractional part represents the time of day in relation to
-     * current timezone.
+    /** returns number of milliseconds since the standard base time known as "the epoch", namely January 1, 1970, 00:00:00 GMT.
      */
     fun toMillis(date: Double): Long {
-        // date = 0 days since Jan 1, 1970
         return (date * millisPerDay).toLong()
     }
 
     fun setCalendar(cal: Calendar, days: Double) {
-        cal.timeInMillis = Math.round(days * millisPerDay - zoneOffset)
+        cal.timeInMillis = Math.round(days * millisPerDay)
     }
 
     fun clearCalBelow(cal: Calendar, calendarField: Int) {
@@ -113,11 +102,6 @@ object DateUtil {
     }
 
     fun durationString(duration: Double): String {
-//        val millis = toMillis(duration)
         return duration.days.toString()
-    }
-
-    init {
-        zoneOffset = cal.get(Calendar.ZONE_OFFSET) + cal.get(Calendar.DST_OFFSET)
     }
 }

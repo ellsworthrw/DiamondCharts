@@ -6,11 +6,7 @@
 package com.diamondedge.charts
 
 class Annotation(val text: String, val x: Int, val y: Int) : ChartObject() {
-    private var foreground = Color.defaultTextColor
-
-    fun setForeground(c: Long) {
-        foreground = c
-    }
+    var foreground = Color.defaultTextColor
 
     override fun draw(g: GraphicsContext) {
         val fm = g.fontMetrics

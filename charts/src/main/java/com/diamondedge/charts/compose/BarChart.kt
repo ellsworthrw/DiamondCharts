@@ -12,12 +12,13 @@ import com.diamondedge.charts.Charts
 @Composable
 fun BarChart(
     data: ChartData,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     isVertical: Boolean = true,
+    legendPosition: Int = Charts.LEGEND_NONE,
 ) {
     val density = LocalDensity.current
     Canvas(modifier = modifier) {
-        val charts = Charts(size.width, size.height, Charts.LEGEND_RIGHT)
+        val charts = Charts(size.width, size.height, legendPosition)
         charts.add(BarChart(data, isVertical))
 
         drawIntoCanvas { canvas ->

@@ -7,7 +7,7 @@ package com.diamondedge.charts
 
 open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE) {
 
-    internal val objectCount: Int
+    val count: Int
         get() = charts.size
 
     private val firstWithAxis: Chart?
@@ -23,12 +23,15 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
 
     var backgroundColor = Color.defaultBackgroundColor
     var legend: Legend? = null
+        internal set
 
     var legendPosition: Int = 0
     var vertAxis: Axis? = null
+        internal set
     var horizontalAxis: Axis? = null
-    var charts = ArrayList<ChartObject>()
-    var gridLines: GridLines = GridLines()
+        internal set
+    private val charts = ArrayList<ChartObject>()
+    val gridLines = GridLines()
     private val rolloverLabel: Annotation? = null
     private val rolloverSpot: Hotspot? = null
 
@@ -62,11 +65,6 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
             obj.setupData()
             installAxes(obj)
             obj.setupAxis()
-        }
-        //todo remove
-        if (obj is Chart) {
-            //            setupHotspots();
-            obj.isHotspotsAvailable = true
         }
         return obj
     }
@@ -208,8 +206,7 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
         log.d { "chartWidth: ${chartBounds.width} contWidth: ${d.width} leftMargin: $leftMargin rightMargin: $rightMargin vertAxisWidth: $vertAxisWidth vertAxis2Width: $vertAxis2Width" }
         if (legendPosition != LEGEND_NONE) {
             if (legend == null)
-                legend = Legend()
-            legend!!.setGraph(this)
+                legend = Legend(this)
             val legendSize = legend!!.getSize(g)
             if (legendPosition == LEGEND_RIGHT)
                 chartBounds.width -= legendSize!!.width + 5

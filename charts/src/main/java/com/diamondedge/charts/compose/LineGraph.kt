@@ -12,12 +12,15 @@ import com.diamondedge.charts.LineGraph
 
 @Composable
 fun LineGraph(
-    data: ChartData, drawLine: Boolean = true, fillArea: Boolean = false,
+    data: ChartData,
     modifier: Modifier,
+    drawLine: Boolean = true,
+    fillArea: Boolean = false,
+    legendPosition: Int = Charts.LEGEND_NONE,
 ) {
     val density = LocalDensity.current
     Canvas(modifier = modifier) {
-        val charts = Charts(size.width, size.height, Charts.LEGEND_RIGHT)
+        val charts = Charts(size.width, size.height, legendPosition)
         charts.add(LineGraph(data, drawLine, fillArea))
         drawIntoCanvas { canvas ->
             charts.draw(ComposeGC(canvas, density))

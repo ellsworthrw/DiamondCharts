@@ -14,6 +14,7 @@ import kotlin.time.Duration.Companion.days
 class DateAxis : Axis() {
 
     var tickLabelDateFormat: DateFormat = dateFormat
+        internal set
 
     /** Applies the given pattern to the SimpleDateFormat object used in formatting the
      * labels next to each major tick mark.

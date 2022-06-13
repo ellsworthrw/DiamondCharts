@@ -12,7 +12,4 @@ class GraphicAttributes(
     var fill: Boolean = true,
     var drawBorder: Boolean = true,
     var borderColor: Long = Color.defaultTextColor
-) {
-    var draw3D: Boolean = false
-    internal var flags = 0
-}
+)

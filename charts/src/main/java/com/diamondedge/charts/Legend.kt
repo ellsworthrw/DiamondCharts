@@ -7,10 +7,9 @@ package com.diamondedge.charts
 
 import kotlin.math.ceil
 
-class Legend {
+class Legend(private val charts: Charts) {
     var font = Draw.defaultFont
 
-    private var graphContainer: Charts? = null
     var orientation = VERTICAL
     var borderStyle = BORDER_SINGLE
     internal var size: Dimension? = null
@@ -26,8 +25,8 @@ class Legend {
     private val itemCount: Int
         get() {
             var count = 0
-            for (i in 0 until graphContainer!!.objectCount) {
-                val obj = graphContainer!!.get(i) as? Chart ?: continue
+            for (i in 0 until charts.count) {
+                val obj = charts[i] as? Chart ?: continue
                 val showInLegend = obj.showInLegend
                 if (showInLegend != DONT_SHOW) {
                     val dsCount = obj.data.seriesCount
@@ -46,8 +45,6 @@ class Legend {
         }
 
     fun draw(g: GraphicsContext) {
-        if (graphContainer == null)
-            return
         val count = itemCount
         val rows: Int
         var cols: Int
@@ -74,8 +71,8 @@ class Legend {
         var row = 0
         var col = 0
         var i = 0
-        while (i < graphContainer!!.objectCount) {
-            val obj = graphContainer!![i]
+        while (i < charts.count) {
+            val obj = charts[i]
             if (obj !is Chart) {
                 i++
                 continue
@@ -139,26 +136,19 @@ class Legend {
         }
     }
 
-    internal fun setGraph(value: Charts) {
-        graphContainer = value
-        size = null
-    }
-
     fun setLocation(left: Int, top: Int) {
         this.left = left
         this.top = top
     }
 
     fun getSize(g: GraphicsContext): Dimension? {
-        if (graphContainer == null)
-            return null
         if (size == null) {
             // estimate max size
             var maxLabel = 0
             var aveLabel = 0
             val labelWidth: Int
-            for (i in 0 until graphContainer!!.objectCount) {
-                val obj = graphContainer!![i] as? Chart ?: continue
+            for (i in 0 until charts.count) {
+                val obj = charts[i] as? Chart ?: continue
                 if (!obj.data.isEmpty()) {
                     var width: Int2D? = null
                     val showInLegend = obj.showInLegend

@@ -2,6 +2,7 @@ package com.diamondedge.chartapp.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,7 +42,8 @@ private fun BarChartHorizontalPreview() {
         RandomData(DefaultData.SIMPLE_SERIES, 3),
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp),
+            .height(300.dp)
+            .padding(horizontal = 8.dp),
         isVertical = false
     )
 }

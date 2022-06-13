@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.diamondedge.charts.Charts
 import com.diamondedge.charts.DefaultData
 import com.diamondedge.charts.RandomData
 import com.diamondedge.charts.compose.BarChart
@@ -32,7 +33,8 @@ private fun BarChartHorizontalPreview() {
         modifier = Modifier
             .fillMaxWidth()
             .height(300.dp),
-        isVertical = false
+        isVertical = false,
+        legendPosition = Charts.LEGEND_RIGHT
     )
 }
 

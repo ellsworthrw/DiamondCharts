@@ -25,7 +25,7 @@ abstract class Chart(override val data: ChartData) : ChartObject() {
      *
      * @see .setLabelType
      */
-    var isHotspotsAvailable: Boolean
+    private var isHotspotsAvailable: Boolean
         get() = hotspots != null
         set(createHotspots) = if (createHotspots)
             hotspots = ArrayList()

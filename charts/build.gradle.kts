@@ -54,7 +54,7 @@ tasks {
 }
 
 extra["artifactID"] = "charts-android"
-extra["artifactVersion"] = "0.9.2"
+extra["artifactVersion"] = "1.0.0"
 extra["libraryName"] = "Diamond Charts"
 extra["libraryDescription"] = "Diamond Charts: charting library for Android Jetpack Compose"
 extra["gitUrl"] = "https://github.com/ellsworthrw/DiamondCharts"

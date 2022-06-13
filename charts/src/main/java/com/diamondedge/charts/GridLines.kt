@@ -14,7 +14,6 @@ class GridLines {
 
     private var vertAxis: Axis? = null
     private var horAxis: Axis? = null
-    var background = Color.none
 
     /** Show horizontal strips that fills the region between 2 consecutive major tick marks
      * on the vertical axis. The colors alternate between background color and a shade
@@ -30,6 +29,11 @@ class GridLines {
      * line up with the major tick marks on the horizontal axis.
      */
     val majorVerticalLines = LineAttributes()
+
+    /** The attributes associated with drawing the vertical lines that
+     * line up with the major tick marks on the horizontal axis.
+     */
+    var customMajorVerticalLines: ((Double) -> LineAttributes)? = null
 
     /** The attributes associated with drawing the vertical lines that
      * line up with the minor tick marks on the horizontal axis.
@@ -103,10 +107,6 @@ class GridLines {
     }
 
     fun draw(g: GraphicsContext, left: Int, bottom: Int, width: Int, height: Int, rightMargin: Int) {
-        if (background >= 0) {
-            g.color = background
-            g.fillRect(left + 1, bottom - height + 1, width, height - 1)
-        }
         val origStroke = g.stroke
         val vertAxis = this.vertAxis
         val horAxis = this.horAxis
@@ -138,7 +138,7 @@ class GridLines {
             val maxVal = vertAxis.maxValue + roundoff
             var majorTickInc = vertAxis.majorTickInc
             var stripeDrawn = false
-            val stripeColor = Color.brighter(majorHorizontalLines.color)
+            val stripeColor = majorHorizontalLines.color.brighter
             var tickPos = vertAxis.minValue
             while (tickPos <= maxVal) {
                 majorTickInc = vertAxis.nextMajorIncVal(tickPos, majorTickInc)
@@ -204,10 +204,9 @@ class GridLines {
                 val x = horAxis.convertToPixel(tickPos)
                 if (tickPos != horAxis.minValue && x != zeroHorizAxis) {     // axis is already drawn
                     if (shouldDrawLine(x, lines, minDistanceToNextLine)) {
-                        if (majorVerticalLines.isVisible)
-                            drawLine(g, majorVerticalLines, x, bottom, x, top)
-                        else                    // paint as a minor line if it is visible
-                            drawLine(g, minorVerticalLines, x, bottom, x, top)
+                        val vertLine = customMajorVerticalLines?.invoke(tickPos) ?: majorVerticalLines
+                        if (vertLine.isVisible)
+                            drawLine(g, vertLine, x, bottom, x, top)
                     }
                 }
                 drawMinorLines(tickPos, tickPos + majorTickInc - roundoff, tickPos, maxVal, top, bottom, left, graphRight, g)

@@ -12,7 +12,7 @@ abstract class ChartObject {
 
     abstract fun draw(g: GraphicsContext)
 
-    open fun hitTest(x: Int, y: Int): Hotspot? {
+    internal open fun hitTest(x: Int, y: Int): Hotspot? {
         return null
     }
 }

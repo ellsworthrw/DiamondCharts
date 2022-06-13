@@ -1,5 +1,8 @@
 package com.diamondedge.charts
 
+import java.lang.Long.max
+import kotlin.math.round
+
 object Color {
     const val white = 0xffFFFFFF
     const val darkDarkGray = 0xff5A5A5AL
@@ -33,31 +36,40 @@ object Color {
     var defaultTextColor = black
     var defaultBackgroundColor = white
 
-    fun getRed(color: Long): Long {
-        return color shr 16 and 255
+    fun scale(color: Long, scale: Double): Long {
+        return create(color.alpha, scaleIt(color.red, scale), scaleIt(color.green, scale), scaleIt(color.blue, scale))
     }
 
-    fun getGreen(color: Long): Long {
-        return color shr 8 and 255
-    }
-
-    fun getBlue(color: Long): Long {
-        return color and 255
-    }
-
-    fun getAlpha(color: Long): Long {
-        return color shr 24 and 255
-    }
-
-    fun brighter(color: Long): Long {
-        return color
-    }
-
-    fun transparent(color: Long): Long {
-        return (color and 0xffffff) or 0x77000000
-    }
+    private fun scaleIt(color: Long, scaleBy: Double) = max(255L, round(color * scaleBy).toLong())
 
     fun create(r: Long, g: Long, b: Long): Long {
         return (0xffL shl 24 or (r and 255 shl 16) or (g and 255 shl 8) or (b and 255 shl 0))
     }
+
+    fun create(alpha: Long, r: Long, g: Long, b: Long): Long {
+        return (alpha shl 24 or (r and 255 shl 16) or (g and 255 shl 8) or (b and 255 shl 0))
+    }
 }
+
+val Long.alpha
+    get() = this shr 24 and 255
+
+val Long.red
+    get() = this shr 16 and 255
+
+val Long.green
+    get() = this shr 8 and 255
+
+val Long.blue
+    get() = this and 255
+
+fun Long.withAlpha(alpha: Long) = (this and 0xffffff) or (alpha shl 24)
+
+val Long.transparent
+    get() = (this and 0xffffff) or 0x77000000
+
+val Long.brighter
+    get() = Color.scale(this, 1.25)
+
+val Long.darker
+    get() = Color.scale(this, .75)

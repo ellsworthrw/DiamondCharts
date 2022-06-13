@@ -13,13 +13,14 @@ import com.diamondedge.charts.Charts
 @Composable
 fun StackedBarChart(
     data: ChartData,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
     is100Percent: Boolean = false,
     isVertical: Boolean = true,
+    legendPosition: Int = Charts.LEGEND_NONE,
 ) {
     val density = LocalDensity.current
     Canvas(modifier = modifier) {
-        val charts = Charts(size.width, size.height, Charts.LEGEND_RIGHT)
+        val charts = Charts(size.width, size.height, legendPosition)
         charts.add(BarChart(data, isVertical, isStacked = true, is100Percent = is100Percent))
 
         drawIntoCanvas { canvas ->

@@ -10,7 +10,7 @@ object Draw {
     private var colors: ArrayList<Long>? = null
     internal var defaultFont = Font.Default
 
-    internal fun setFillAttributes(g: GraphicsContext, attr: GraphicAttributes?) {
+    private fun setFillAttributes(g: GraphicsContext, attr: GraphicAttributes?) {
         if (attr == null)
             return
         if (attr.fill) {
@@ -18,7 +18,7 @@ object Draw {
         }
     }
 
-    internal fun setBorderAttributes(g: GraphicsContext, attr: GraphicAttributes?): Boolean {
+    private fun setBorderAttributes(g: GraphicsContext, attr: GraphicAttributes?): Boolean {
         if (attr == null)
             return false
         if (attr.drawBorder) {
@@ -399,7 +399,6 @@ object Draw {
   }
 */
 
-    @JvmStatic
     fun getColor(index: Int): Long {
         val c: Long
         val nColors: Int

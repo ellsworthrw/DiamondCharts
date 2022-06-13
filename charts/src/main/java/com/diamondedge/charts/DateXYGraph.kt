@@ -13,6 +13,6 @@ class DateXYGraph(data: ChartData, drawLine: Boolean = true, fillArea: Boolean =
     }
 
     override fun toString(): String {
-        return "DateGraph[" + toStringParam() + "]"
+        return "DateXYGraph[" + toStringParam() + "]"
     }
 }

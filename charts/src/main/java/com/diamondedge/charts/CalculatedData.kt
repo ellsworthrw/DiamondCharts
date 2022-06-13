@@ -9,6 +9,9 @@ import com.diamondedge.fn.Statistics
 
 import java.util.Calendar
 
+/**
+ * Beta: subject to change.
+ */
 class CalculatedData(functionType: Int = 0, periodStyle: Int = ALL_POINTS, private val ddata: ChartData) :
     DefaultData(functionType, XY_SERIES) {
 

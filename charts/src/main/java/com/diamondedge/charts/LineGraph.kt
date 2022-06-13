@@ -80,7 +80,7 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
                     if (isBubble3D) {
                         g.applyGradient(
                             Gradient.create(
-                                listOf(gattr.color, Color.brighter(gattr.color)),
+                                listOf(gattr.color, gattr.color.brighter),
                                 RectangleF(x.toFloat(), y.toFloat(), bubble.toFloat(), bubble.toFloat()),
                                 GradientType.Radial
                             )
@@ -111,7 +111,7 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
                 xPts[dataCount + 1] = lastX
                 yPts[dataCount + 1] = y0
                 if (gradient == null)
-                    g.color = Color.transparent(gattr.color)
+                    g.color = gattr.color.transparent
                 else
                     g.applyGradient(gradient, 0.2f)
                 g.fillPolygon(xPts, yPts, dataCount + 2)

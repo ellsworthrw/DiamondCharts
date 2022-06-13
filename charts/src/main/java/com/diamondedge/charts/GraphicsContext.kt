@@ -357,7 +357,7 @@ interface GraphicsContext {
     fun drawString(str: String, x: Int, y: Int)
 
     /**
-     * Draws the text given by the specified string, using this
+     * Draws the text given by the specified string inside the bounding box specified by *width*, using this
      * graphics context's current font and color. The baseline of the
      * leftmost character is at position (*x*,&nbsp;*y*) in this
      * graphics context's coordinate system. The string will be truncated
@@ -404,7 +404,15 @@ interface GraphicsContext {
      */
     fun getImageSize(image: Any): Pair<Int, Int>
 
+    /**
+     * The `gradient` object will be used to stroke a
+     * path or fill a shape during the rendering process
+     */
     fun applyGradient(gradient: Gradient, alpha: Float = 1f)
+
+    /**
+     * Remove the previously applied `gradient`
+     */
     fun clearGradient()
 
     fun save()

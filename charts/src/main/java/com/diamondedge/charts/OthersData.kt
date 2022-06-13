@@ -5,7 +5,7 @@
  */
 package com.diamondedge.charts
 
-class OthersData(private val otherData: ChartData, val seriesNumber: Int = 0) : DefaultData("Others", SIMPLE_SERIES) {
+internal class OthersData(private val otherData: ChartData, val seriesNumber: Int = 0) : DefaultData("Others", SIMPLE_SERIES) {
     var othersPercent = 5
     private var dataPointNumbers = ArrayList<Int>()
 

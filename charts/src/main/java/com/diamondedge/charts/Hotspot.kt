@@ -5,7 +5,7 @@
  */
 package com.diamondedge.charts
 
-class Hotspot(
+internal class Hotspot(
     var graph: Chart, /* Returns the data set associated with this hotspot */
     var graphData: ChartData, /* Returns the series number associated with this hotspot */
     var series: Int, /* Returns the data point number associated with this hotspot */

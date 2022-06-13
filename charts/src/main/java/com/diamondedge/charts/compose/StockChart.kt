@@ -13,11 +13,12 @@ import com.diamondedge.charts.StockChart
 @Composable
 fun StockChart(
     data: ChartData,
-    modifier: Modifier = Modifier,
+    modifier: Modifier,
+    legendPosition: Int = Charts.LEGEND_NONE,
 ) {
     val density = LocalDensity.current
     Canvas(modifier = modifier) {
-        val charts = Charts(size.width, size.height, Charts.LEGEND_RIGHT)
+        val charts = Charts(size.width, size.height, legendPosition)
         charts.add(StockChart(data))
 
         drawIntoCanvas { canvas ->
