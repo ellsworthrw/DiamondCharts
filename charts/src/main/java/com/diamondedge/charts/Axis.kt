@@ -73,6 +73,11 @@ open class Axis protected constructor() {
 
     var numberFormatter: NumberFormatter? = null
 
+    /**
+     * The minimum margin between the min/max value and the edge of the axis. This value is in the units of the data.
+     */
+    var minDataMargin = 0.0
+
     private val majorTickLabelShowing = true
     private var minVal = 0.0
     private var maxVal = 100.0
@@ -472,10 +477,10 @@ open class Axis protected constructor() {
 
         g.color = color
 
-        val maxStrWidth = unitWidth * 3 / 2
+        val maxStrWidth = if (showAltHeight < 0) unitWidth else unitWidth * 3 / 2
         if (strWidth > maxStrWidth) {
-            label = truncate(g, label, maxStrWidth) + "..."
-            strWidth = g.stringWidth(label)
+            val s = g.truncate(label, maxStrWidth)
+            strWidth = g.stringWidth(s)
         }
 
         when (align) {
@@ -500,24 +505,14 @@ open class Axis protected constructor() {
             if (tickPos == customLineValue) {
                 drawCustomLineLabel?.invoke(g, x, y, tickPos, this)
             } else if (abs(convertToPixel(customLineValue) - x) > g.dpToPixel(4f) + strWidth) {   // don't draw label if too close to custom label
-                g.drawString(label, x, y)
+                g.drawString(label, x, y, maxStrWidth)
             } else {
                 return -1
             }
         } else {
-            g.drawString(label, x, y)
+            g.drawString(label, x, y, maxStrWidth)
         }
         return extraLine
-    }
-
-    private fun truncate(g: GraphicsContext, str: String, width: Int): String {
-        var s = str
-        while (g.stringWidth(s) >= width) {
-            if (s.length <= 1)
-                return s
-            s = s.substring(0, s.length - 2)
-        }
-        return s
     }
 
     private fun drawVertLabel(

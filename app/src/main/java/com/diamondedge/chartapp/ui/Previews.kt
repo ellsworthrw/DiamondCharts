@@ -107,3 +107,16 @@ private fun StockChartPreview() {
             .height(300.dp)
     )
 }
+
+@Preview
+@Composable
+private fun FunctionGraphPreview() {
+    FunctionGraph(
+        { x -> (x + 1) * (x - 2) * (x - 2) },
+        -1.5,
+        3.5,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp)
+    )
+}

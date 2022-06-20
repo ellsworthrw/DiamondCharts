@@ -6,6 +6,8 @@
 package com.diamondedge.charts
 
 import java.text.DecimalFormat
+import kotlin.math.ceil
+import kotlin.math.floor
 import kotlin.math.max
 
 open class DecimalAxis : Axis() {
@@ -63,21 +65,21 @@ open class DecimalAxis : Axis() {
                     else -> 10.0
                 }
             }
-
-            if (!startAtMinValue) {
-                // make minVal be an exact multiple of majorTickInc just smaller than minVal
-                minValue = Math.floor(minValue / majorTickInc) * majorTickInc
-            }
-            if (!endAtMaxValue) {
-                // make maxVal be an exact multiple of majorTickInc just larger than maxVal
-                maxValue = Math.ceil(maxValue / majorTickInc) * majorTickInc
-            }
-            adjustMinMax()
-            calcScale(rangePix)
-
-            log.v { " incval = $majorTickInc incvalPix = ${scaleData(majorTickInc)}" }
-            log.v { " minVal = $minValue maxVal = $maxValue rangePix = $rangePix" }
         }
+
+        if (!startAtMinValue) {
+            // make minVal be an exact multiple of majorTickInc just smaller than minVal
+            minValue = floor((minValue - minDataMargin) / majorTickInc) * majorTickInc
+        }
+        if (!endAtMaxValue) {
+            // make maxVal be an exact multiple of majorTickInc just larger than maxVal
+            maxValue = ceil((maxValue + minDataMargin) / majorTickInc) * majorTickInc
+        }
+        adjustMinMax()
+        calcScale(rangePix)
+
+        log.v { " incval = $majorTickInc incvalPix = ${scaleData(majorTickInc)}" }
+        log.v { " minVal = $minValue maxVal = $maxValue rangePix = $rangePix" }
 
         if (this.majorTickFormat == null) {
             val exp = Math.log(scalePixel(tickDistance)) / Math.log(10.0) // log base 10

@@ -81,20 +81,26 @@ class DateAxis : Axis() {
                     tickLabelDateFormat = majorDayFormat
                     minorTickIncNum = 4
                 }
-                range > 15 * DateUtil.ONE_HOUR -> {
-                    log.v { "> 15h inc: 6h" }
+                range > 12 * DateUtil.ONE_HOUR -> {
+                    log.v { "> 12h inc: 6h" }
                     majorTickInc = 6 * DateUtil.ONE_HOUR
                     tickLabelDateFormat = hourFormat
                     minorTickIncNum = 3
                 }
-                range > 7 * DateUtil.ONE_HOUR -> {
-                    log.v { "> 7h inc: 2h" }
+                range > 8 * DateUtil.ONE_HOUR -> {
+                    log.v { "> 8h inc: 3h" }
+                    majorTickInc = 3 * DateUtil.ONE_HOUR
+                    tickLabelDateFormat = hourFormat
+                    minorTickIncNum = 3
+                }
+                range > 4 * DateUtil.ONE_HOUR -> {
+                    log.v { "> 4h inc: 2h" }
                     majorTickInc = 2 * DateUtil.ONE_HOUR
                     tickLabelDateFormat = hourFormat
                     minorTickIncNum = 2
                 }
-                range > 3 * DateUtil.ONE_HOUR -> {
-                    log.v { "> 3h inc: 1h" }
+                range > 2 * DateUtil.ONE_HOUR -> {
+                    log.v { "> 2h inc: 1h" }
                     majorTickInc = DateUtil.ONE_HOUR
                     tickLabelDateFormat = hourFormat
                     minorTickIncNum = 2
