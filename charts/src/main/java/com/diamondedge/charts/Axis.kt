@@ -74,14 +74,21 @@ open class Axis protected constructor() {
     var numberFormatter: NumberFormatter? = null
 
     /**
-     * The minimum margin between the min/max value and the edge of the axis. This value is in the units of the data.
+     * The minimum margin between the max value and the edge of the axis. This value is in the units of the data.
      */
-    var minDataMargin = 0.0
+    var upperDataMargin = 0.0
+
+    /**
+     * The minimum margin between the min value and the edge of the axis. This value is in the units of the data.
+     */
+    var lowerDataMargin = 0.0
 
     private val majorTickLabelShowing = true
     private var minVal = 0.0
     private var maxVal = 100.0
     protected var scale = 1.0
+    protected var minDataVal = 0.0
+    protected var maxDataVal = 100.0
 
     /**
      * Set this to a value if the distance between major tick marks should be different from what is calculated based on the data.
@@ -242,6 +249,8 @@ open class Axis protected constructor() {
     private var customLineValue = 0.0
 
     internal fun setMinMaxData(min: Double, max: Double) {
+        minDataVal = min
+        maxDataVal = max
         minVal = min
         maxVal = max
         adjustMinMax()

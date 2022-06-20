@@ -9,6 +9,7 @@ import java.text.DecimalFormat
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
+import kotlin.math.min
 
 open class DecimalAxis : Axis() {
 
@@ -69,11 +70,11 @@ open class DecimalAxis : Axis() {
 
         if (!startAtMinValue) {
             // make minVal be an exact multiple of majorTickInc just smaller than minVal
-            minValue = floor((minValue - minDataMargin) / majorTickInc) * majorTickInc
+            minValue = floor(min(minValue, minDataVal - lowerDataMargin) / majorTickInc) * majorTickInc
         }
         if (!endAtMaxValue) {
             // make maxVal be an exact multiple of majorTickInc just larger than maxVal
-            maxValue = ceil((maxValue + minDataMargin) / majorTickInc) * majorTickInc
+            maxValue = ceil(max(maxValue, maxDataVal + upperDataMargin) / majorTickInc) * majorTickInc
         }
         adjustMinMax()
         calcScale(rangePix)
