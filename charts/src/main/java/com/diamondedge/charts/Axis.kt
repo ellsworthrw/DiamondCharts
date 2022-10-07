@@ -245,8 +245,8 @@ open class Axis protected constructor() {
 
     var majorTickLabelColor = Color.defaultTextColor
 
-    private var drawCustomLineLabel: ((g: GraphicsContext, x: Int, y: Int, value: Double, axis: Axis) -> Unit)? = null
     private var customLineValue = 0.0
+    private var customLineLabel: String? = null
 
     internal fun setMinMaxData(min: Double, max: Double) {
         minDataVal = min
@@ -389,7 +389,7 @@ open class Axis protected constructor() {
                 drawMinorTicks(tickPos, tickPos + majorTickInc - roundoff, tickPos, maxVal, g, minorTickLen)
                 tickPos += majorTickInc
             }
-            if (drawCustomLineLabel != null) {
+            if (customLineLabel != null) {
                 val x = convertToPixel(customLineValue)
                 g.color = majorTickColor
                 drawTick(g, x, yOrigin, majorTickLen, majorTickStyle)
@@ -467,6 +467,8 @@ open class Axis protected constructor() {
         var extraLine = 0
         val unitWidth = scaleData(tickInc)
         var label = tickLabel(tickPos)
+        if (tickPos == customLineValue && customLineLabel != null)
+            label = customLineLabel.toString()
         var strWidth = g.stringWidth(label)
         val tickLabelGap = g.dpToPixel(labelGap)
         var x = convertToPixel(tickPos)
@@ -510,13 +512,22 @@ open class Axis protected constructor() {
             else -> {}
         }
 
-        if (drawCustomLineLabel != null) {
+        if (customLineLabel != null) {
             if (tickPos == customLineValue) {
-                drawCustomLineLabel?.invoke(g, x, y, tickPos, this)
-            } else if (abs(convertToPixel(customLineValue) - x) > g.dpToPixel(4f) + strWidth) {   // don't draw label if too close to custom label
-                g.drawString(label, x, y, maxStrWidth)
+                g.drawString(customLineLabel.toString(), x, y)
             } else {
-                return -1
+                var customLabelLeft = convertToPixel(customLineValue)
+                if (align == TickLabelPosition.TickCenter)
+                    customLabelLeft -= g.stringWidth(customLineLabel.toString()) / 2
+                val customLabelRight = customLabelLeft + g.stringWidth(customLineLabel.toString()) + g.dpToPixel(4f)
+                val labelWidth = strWidth + g.dpToPixel(4f)
+                if (x > customLabelRight) {
+                    g.drawString(label, x, y, maxStrWidth)
+                } else if (x + labelWidth < customLabelLeft) {
+                    g.drawString(label, x, y, maxStrWidth)
+                } else {
+                    return -1
+                }
             }
         } else {
             g.drawString(label, x, y, maxStrWidth)
@@ -642,11 +653,11 @@ open class Axis protected constructor() {
      */
     fun setupCustomLine(
         value: Double,
-        charts: Charts,
-        drawCustomLabel: (g: GraphicsContext, x: Int, y: Int, value: Double, axis: Axis) -> Unit
+        label: String?,
+        charts: Charts
     ) {
-        drawCustomLineLabel = drawCustomLabel
         customLineValue = value
+        customLineLabel = label
         charts.gridLines.customLine.isVisible = true
         charts.gridLines.customLineValue = value
     }
