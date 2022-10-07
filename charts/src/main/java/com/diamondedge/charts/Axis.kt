@@ -519,6 +519,8 @@ open class Axis protected constructor() {
                 var customLabelLeft = convertToPixel(customLineValue)
                 if (align == TickLabelPosition.TickCenter)
                     customLabelLeft -= g.stringWidth(customLineLabel.toString()) / 2
+                else
+                    customLabelLeft += tickLabelGap
                 val customLabelRight = customLabelLeft + g.stringWidth(customLineLabel.toString()) + g.dpToPixel(4f)
                 val labelWidth = strWidth + g.dpToPixel(4f)
                 if (x > customLabelRight) {
