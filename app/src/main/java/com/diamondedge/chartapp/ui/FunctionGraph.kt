@@ -26,9 +26,14 @@ fun FunctionGraph(
 ) {
     val density = LocalDensity.current
     Canvas(modifier = modifier) {
+        // create an instance of the Charts container
         val charts = Charts(size.width, size.height, margins, Charts.LEGEND_NONE)
+
+        // add the desired charts and graphs to the container
+        // if multiple are added they will be drawn on top of each other
         charts.add(XYGraph(createData(fn, minX, maxX)))
 
+        // make any desired changes to the vertical and horizontal axis
         charts.vertAxis?.apply {
             majorTickLabelPosition = TickLabelPosition.BelowTick
         }
@@ -36,6 +41,8 @@ fun FunctionGraph(
             majorTickLabelPosition = TickLabelPosition.RightOfTick
         }
 
+        // do the drawing of chart
+        // you can add custom drawing on top of the charts to provide even more customizations
         drawIntoCanvas { canvas ->
             val g = ComposeGC(canvas, density)
             charts.draw(g)
