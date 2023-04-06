@@ -5,7 +5,7 @@
  */
 package com.diamondedge.charts
 
-open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE) {
+open class Charts(width: Float, height: Float, val margins: Margins = Margins.default, var legendPosition: Int = LEGEND_NONE) {
 
     val count: Int
         get() = charts.size
@@ -25,7 +25,6 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
     var legend: Legend? = null
         internal set
 
-    var legendPosition: Int = 0
     var vertAxis: Axis? = null
         internal set
     var horizontalAxis: Axis? = null
@@ -34,11 +33,6 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
     val gridLines = GridLines()
     private val rolloverLabel: Annotation? = null
     private val rolloverSpot: Hotspot? = null
-
-    var leftMargin = 5f
-    var bottomMargin = 5f
-    var topMargin = 5f
-    var rightMargin = 5f
 
     val size = Dimension(width.toInt(), height.toInt())
 
@@ -50,10 +44,6 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
         }
 
     private val vertAxisList = ArrayList<Axis>(1)
-
-    init {
-        this.legendPosition = legendPosition
-    }
 
     operator fun get(objIndex: Int): ChartObject {
         return charts[objIndex]
@@ -195,10 +185,10 @@ open class Charts(width: Float, height: Float, legendPosition: Int = LEGEND_NONE
         val vertAxisWidth = vertAxis?.getThickness(g) ?: 0
         val vertAxis2Width = 0 //vertAxis2?.getThickness(g) ?: 0
         val horAxisHeight = horizontalAxis?.getThickness(g)?.plus(horizontalAxis?.extraHorLabelHeight(g, size.width) ?: 0) ?: 0
-        val leftMargin = g.dpToPixel(this.leftMargin)
-        val bottomMargin = g.dpToPixel(this.bottomMargin)
-        val topMargin = g.dpToPixel(this.topMargin)
-        val rightMargin = g.dpToPixel(this.rightMargin)
+        val leftMargin = g.dpToPixel(margins.left)
+        val bottomMargin = g.dpToPixel(margins.bottom)
+        val topMargin = g.dpToPixel(margins.top)
+        val rightMargin = g.dpToPixel(margins.right)
         val chartTitleHeight = 0
 
         chartBounds.width = d.width - leftMargin - rightMargin - vertAxisWidth - vertAxis2Width

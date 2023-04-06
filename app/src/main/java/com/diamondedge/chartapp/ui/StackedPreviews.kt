@@ -2,12 +2,12 @@ package com.diamondedge.chartapp.ui
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.diamondedge.charts.DefaultData
+import com.diamondedge.charts.Margins
 import com.diamondedge.charts.RandomData
 import com.diamondedge.charts.compose.StackedAreaGraph
 import com.diamondedge.charts.compose.StackedBarChart
@@ -19,7 +19,8 @@ private fun BarChartPreview() {
         RandomData(DefaultData.SIMPLE_SERIES, 3),
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(200.dp),
+        margins = Margins.medium
     )
 }
 
@@ -31,7 +32,8 @@ private fun BarChart100PercentPreview() {
         is100Percent = true,
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(200.dp),
+        margins = Margins.medium
     )
 }
 
@@ -42,9 +44,9 @@ private fun BarChartHorizontalPreview() {
         RandomData(DefaultData.SIMPLE_SERIES, 3),
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)
-            .padding(horizontal = 8.dp),
-        isVertical = false
+            .height(300.dp),
+        isVertical = false,
+        margins = Margins.wide
     )
 }
 
@@ -52,9 +54,11 @@ private fun BarChartHorizontalPreview() {
 @Composable
 private fun StackedAreaGraphPreview() {
     StackedAreaGraph(
-        RandomData(DefaultData.SIMPLE_SERIES, 5), modifier = Modifier
+        RandomData(DefaultData.SIMPLE_SERIES, 5),
+        modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(200.dp),
+        margins = Margins.wideRight
     )
 }
 
@@ -62,8 +66,10 @@ private fun StackedAreaGraphPreview() {
 @Composable
 private fun Stacked100PercentAreaGraphPreview() {
     StackedAreaGraph(
-        RandomData(DefaultData.SIMPLE_SERIES, 5), is100Percent = true, modifier = Modifier
+        RandomData(DefaultData.SIMPLE_SERIES, 5), is100Percent = true,
+        modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(200.dp),
+        margins = Margins.wideRight
     )
 }

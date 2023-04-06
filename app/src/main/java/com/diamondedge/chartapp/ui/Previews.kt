@@ -8,6 +8,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.diamondedge.charts.Charts
 import com.diamondedge.charts.DefaultData
+import com.diamondedge.charts.Margins
 import com.diamondedge.charts.RandomData
 import com.diamondedge.charts.compose.BarChart
 import com.diamondedge.charts.compose.LineGraph
@@ -21,7 +22,8 @@ private fun BarChartPreview() {
         RandomData(DefaultData.SIMPLE_SERIES, 3),
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(200.dp),
+        margins = Margins.medium
     )
 }
 
@@ -34,6 +36,7 @@ private fun BarChartHorizontalPreview() {
             .fillMaxWidth()
             .height(300.dp),
         isVertical = false,
+        margins = Margins.wide,
         legendPosition = Charts.LEGEND_RIGHT
     )
 }
@@ -45,7 +48,9 @@ private fun PieChartPreview() {
         RandomData(DefaultData.SIMPLE_SERIES, 1),
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(200.dp),
+        margins = Margins.wide,
+        legendPosition = Charts.LEGEND_RIGHT
     )
 }
 
@@ -63,18 +68,27 @@ private fun PieChartOthersPreview() {
 @Preview
 @Composable
 private fun PieChartMultiPreview() {
-    PieChart(RandomData(DefaultData.SIMPLE_SERIES), modifier = Modifier
-        .fillMaxWidth()
-        .height(500.dp))
+    PieChart(
+        RandomData(DefaultData.SIMPLE_SERIES),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(500.dp),
+        margins = Margins.wide,
+        legendPosition = Charts.LEGEND_RIGHT
+    )
 }
 
 
 @Preview
 @Composable
 private fun LineGraphPreview() {
-    LineGraph(RandomData(DefaultData.SIMPLE_SERIES, 1), fillArea = true, modifier = Modifier
-        .fillMaxWidth()
-        .height(200.dp)
+    LineGraph(
+        RandomData(DefaultData.SIMPLE_SERIES, 1),
+        fillArea = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp),
+        margins = Margins.wideRight
     )
 }
 
@@ -82,9 +96,11 @@ private fun LineGraphPreview() {
 @Composable
 private fun LineGraphMultiPreview() {
     LineGraph(
-        RandomData(DefaultData.SIMPLE_SERIES), modifier = Modifier
+        RandomData(DefaultData.SIMPLE_SERIES, 2),
+        modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(200.dp),
+        margins = Margins.wideRight
     )
 }
 
@@ -92,9 +108,12 @@ private fun LineGraphMultiPreview() {
 @Composable
 private fun ScatterGraphPreview() {
     LineGraph(
-        RandomData(DefaultData.SIMPLE_SERIES, 7), drawLine = false, modifier = Modifier
+        RandomData(DefaultData.SIMPLE_SERIES, 7),
+        drawLine = false,
+        modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(200.dp),
+        margins = Margins.wideRight
     )
 }
 
@@ -102,9 +121,11 @@ private fun ScatterGraphPreview() {
 @Composable
 private fun StockChartPreview() {
     StockChart(
-        RandomData(DefaultData.HLOC_SERIES, 5), modifier = Modifier
+        RandomData(DefaultData.HLOC_SERIES, 2),
+        modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)
+            .height(300.dp),
+        margins = Margins(10f, 10f, 30f, 10f)
     )
 }
 
@@ -112,11 +133,13 @@ private fun StockChartPreview() {
 @Composable
 private fun FunctionGraphPreview() {
     FunctionGraph(
-        { x -> (x + 1) * (x - 2) * (x - 2) },
         -1.5,
         3.5,
         modifier = Modifier
             .fillMaxWidth()
-            .height(300.dp)
-    )
+            .height(300.dp),
+        margins = Margins.wideRight
+    ) { x ->
+        (x + 1) * (x - 2) * (x - 2)
+    }
 }

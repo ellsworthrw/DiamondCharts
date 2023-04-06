@@ -8,17 +8,19 @@ import androidx.compose.ui.platform.LocalDensity
 
 import com.diamondedge.charts.ChartData
 import com.diamondedge.charts.Charts
+import com.diamondedge.charts.Margins
 import com.diamondedge.charts.StockChart
 
 @Composable
 fun StockChart(
     data: ChartData,
     modifier: Modifier,
+    margins: Margins = Margins.default,
     legendPosition: Int = Charts.LEGEND_NONE,
 ) {
     val density = LocalDensity.current
     Canvas(modifier = modifier) {
-        val charts = Charts(size.width, size.height, legendPosition)
+        val charts = Charts(size.width, size.height, margins, legendPosition)
         charts.add(StockChart(data))
 
         drawIntoCanvas { canvas ->

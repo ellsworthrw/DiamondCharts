@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.LocalDensity
 import com.diamondedge.charts.ChartData
 import com.diamondedge.charts.Charts
 import com.diamondedge.charts.DateXYGraph
+import com.diamondedge.charts.Margins
 
 @Composable
 fun DateXYGraph(
@@ -16,11 +17,12 @@ fun DateXYGraph(
     modifier: Modifier,
     drawLine: Boolean = true,
     fillArea: Boolean = false,
+    margins: Margins = Margins.default,
     legendPosition: Int = Charts.LEGEND_NONE,
 ) {
     val density = LocalDensity.current
     Canvas(modifier = modifier) {
-        val charts = Charts(size.width, size.height, legendPosition)
+        val charts = Charts(size.width, size.height, margins, legendPosition)
         charts.add(DateXYGraph(data, drawLine, fillArea))
         drawIntoCanvas { canvas ->
             charts.draw(ComposeGC(canvas, density))
