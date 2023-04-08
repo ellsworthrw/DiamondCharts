@@ -40,6 +40,8 @@ private fun LineGraphMultiPreview() {
 }
 ```
 
+![line](https://user-images.githubusercontent.com/1443778/230458138-969ff1a7-b5ad-4504-99c4-90a39bb8874a.png)
+
 More builtin samples can be [found here](Samples.md)
 
 ### Custom Composable
@@ -76,8 +78,7 @@ fun FunctionGraph(
         // do the drawing of chart
         // you can add custom drawing on top of the charts to provide even more customizations
         drawIntoCanvas { canvas ->
-            val g = ComposeGC(canvas, density)
-            charts.draw(g)
+            charts.draw(ComposeGC(canvas, density))
         }
     }
 }
@@ -96,15 +97,17 @@ private fun createData(fn: (Double) -> Double, minX: Double, maxX: Double): Char
 @Preview
 @Composable
 private fun FunctionGraphPreview() {
-    Surface {
-        FunctionGraph(
-            minX = -2.0,
-            maxX = 4.0,
-            modifier = Modifier.fillMaxSize(),
-            margins = Margins.wideRight
-        ) { x ->
-            (x + 1) * (x - 1) * (x - 3)
-        }
+    FunctionGraph(
+        -1.5,
+        3.5,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp),
+        margins = Margins.wideRight
+    ) { x ->
+        (x + 1) * (x - 2) * (x - 2)
     }
 }
 ```
+
+![function](https://user-images.githubusercontent.com/1443778/230459075-0113b77a-1a0d-421e-bca4-8e7f1b9ca8e1.png)
