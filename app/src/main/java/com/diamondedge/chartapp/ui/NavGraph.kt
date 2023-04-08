@@ -11,16 +11,17 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 object MainDestinations {
-    const val HOME_ROUTE = "home"
-    const val CHART1_ROUTE = "chart1"
-    const val CHARTS_ROUTE = "charts"
+    const val BAR_CHART_ROUTE = "bar"
+    const val AREA_CHART_ROUTE = "area_chart"
+    const val PIE_CHART_ROUTE = "charts"
+    const val SCRUBBING_ROUTE = "scrub"
 }
 
 @Composable
 fun NavGraph(
     navController: NavHostController = rememberNavController(),
     innerPadding: PaddingValues,
-    startDestination: String = MainDestinations.HOME_ROUTE,
+    startDestination: String = MainDestinations.BAR_CHART_ROUTE,
 ) {
     val actions = remember(navController) { MainActions(navController) }
 
@@ -29,15 +30,17 @@ fun NavGraph(
         startDestination = startDestination,
         Modifier.padding(innerPadding)
     ) {
-        composable(MainDestinations.HOME_ROUTE) {
-            SampleGraphScreen()
-//            CookSessionScreen()
+        composable(MainDestinations.BAR_CHART_ROUTE) {
+            SampleGraphScreen(3)
         }
-        composable(MainDestinations.CHART1_ROUTE) {
-            FunctionGraphScreen()
+        composable(MainDestinations.AREA_CHART_ROUTE) {
+            SampleGraphScreen(4)
         }
-        composable(MainDestinations.CHARTS_ROUTE) {
-            SampleGraphScreen(2)
+        composable(MainDestinations.PIE_CHART_ROUTE) {
+            SampleGraphScreen(5)
+        }
+        composable(MainDestinations.SCRUBBING_ROUTE) {
+            ScrubbingScreen()
         }
     }
 }

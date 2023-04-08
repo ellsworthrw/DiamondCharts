@@ -2,9 +2,10 @@
     <string name="app_name">Compose Chart App</string>
 
     <!-- Bottom Nav Tabs -->
-    <string name="home_tab">Home</string>
-    <string name="chart1_tab">Chart 1</string>
-    <string name="charts_tab">More</string>
+    <string name="bar_tab">Bar</string>
+    <string name="area_chart_tab">Area</string>
+    <string name="scrubbing_tab">Scrubbing</string>
+    <string name="pie_chart_tab">Pie</string>
 
     <string name="now">Now</string>
 

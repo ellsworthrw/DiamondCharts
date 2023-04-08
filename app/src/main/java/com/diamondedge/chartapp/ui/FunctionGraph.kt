@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import com.diamondedge.charts.ChartData
 import com.diamondedge.charts.Charts
+import com.diamondedge.charts.Color
 import com.diamondedge.charts.DefaultXYData
 import com.diamondedge.charts.Margins
 import com.diamondedge.charts.TickLabelPosition
@@ -50,15 +51,20 @@ fun FunctionGraph(
     }
 }
 
-private fun createData(fn: (Double) -> Double, minX: Double, maxX: Double): ChartData {
+fun createData(fn: (Double) -> Double, minX: Double, maxX: Double, id: Any = "fn", color: Long = Color.blue): ChartData {
 
-    val data = DefaultXYData("fn")
+    val data = object : DefaultXYData(id) {
+        override fun getSeriesLabel(series: Int): String {
+            return id.toString()
+        }
+    }
     data.dataCount = 100
     val xInc = (maxX - minX) / data.dataCount
     for (i in 0 until data.dataCount) {
         val x = minX + (i + 1) * xInc
         data.setValue(i, x, fn(x))
     }
+    data.graphicAttributes.color = color
     return data
 }
 
