@@ -78,8 +78,7 @@ fun FunctionGraph(
         // do the drawing of chart
         // you can add custom drawing on top of the charts to provide even more customizations
         drawIntoCanvas { canvas ->
-            val g = ComposeGC(canvas, density)
-            charts.draw(g)
+            charts.draw(ComposeGC(canvas, density))
         }
     }
 }
