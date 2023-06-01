@@ -377,6 +377,9 @@ interface GraphicsContext {
     }
 
     fun truncate(str: String, width: Int, suffix: String = "..."): String {
+        if (str.length <= suffix.length) {
+            return str
+        }
         var s = str.substring(0, str.length - suffix.length)
         while (stringWidth(s + suffix) > width) {
             if (s.length <= 1)

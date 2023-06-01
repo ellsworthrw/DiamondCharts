@@ -456,13 +456,13 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
         }
 
         private fun createTypeface(family: Typeface, style: FontStyle): Typeface {
-            var style = style
-            if (style == FontStyle.SemiBold) {
+            var fontStyle = style
+            if (fontStyle == FontStyle.SemiBold) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
                     return Typeface.create(family, 600, false)
-                style = FontStyle.Bold
+                fontStyle = FontStyle.Bold
             }
-            return Typeface.create(family, toAndroidFontStyle(style))
+            return Typeface.create(family, toAndroidFontStyle(fontStyle))
         }
     }
 }
