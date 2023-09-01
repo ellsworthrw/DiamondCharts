@@ -36,6 +36,12 @@ android {
         compose = true
     }
 
+    configurations.configureEach {
+        resolutionStrategy {
+            force("androidx.emoji2:emoji2:1.3.0")
+        }
+    }
+
     composeOptions {
         kotlinCompilerExtensionVersion = rootProject.extra["compose_compiler"] as String
     }
