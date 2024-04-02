@@ -35,6 +35,12 @@ android {
             withJavadocJar()
         }
     }
+    configurations.configureEach {
+        resolutionStrategy {
+            // https://issuetracker.google.com/issues/295457468
+            force("androidx.emoji2:emoji2:1.3.0")
+        }
+    }
 }
 
 dependencies {
@@ -53,7 +59,7 @@ tasks {
 }
 
 extra["artifactID"] = "charts-android"
-extra["artifactVersion"] = "1.3.3"
+extra["artifactVersion"] = "1.3.4"
 extra["libraryName"] = "Diamond Charts"
 extra["libraryDescription"] = "Diamond Charts: charting library for Android Jetpack Compose"
 extra["gitUrl"] = "https://github.com/ellsworthrw/DiamondCharts"
