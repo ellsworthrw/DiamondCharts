@@ -290,20 +290,25 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
         g.drawPath(createPath(xPoints, yPoints, nPoints, false), paint)
     }
 
+    override fun drawPolyline(xPoints: IntArray, yPoints: IntArray, startIndex: Int, nPoints: Int) {
+        paint.style = PaintingStyle.Stroke
+        g.drawPath(createPath(xPoints, yPoints, nPoints, false, startIndex), paint)
+    }
+
     override fun fillPolygon(xPoints: IntArray, yPoints: IntArray, nPoints: Int) {
         paint.style = PaintingStyle.Fill
         val path = createPath(xPoints, yPoints, nPoints, true)
         g.drawPath(path, paint)
     }
 
-    private fun createPath(xPoints: IntArray, yPoints: IntArray, nPoints: Int, closeShape: Boolean): Path {
+    private fun createPath(xPoints: IntArray, yPoints: IntArray, nPoints: Int, closeShape: Boolean, startIndex: Int = 0): Path {
         val path = Path()
-        path.moveTo(xPoints[0].toFloat(), yPoints[0].toFloat())
-        for (i in 1 until nPoints) {
+        path.moveTo(xPoints[startIndex].toFloat(), yPoints[startIndex].toFloat())
+        for (i in startIndex + 1 until nPoints) {
             path.lineTo(xPoints[i].toFloat(), yPoints[i].toFloat())
         }
         if (closeShape) {
-            path.lineTo(xPoints[0].toFloat(), yPoints[0].toFloat())
+            path.lineTo(xPoints[startIndex].toFloat(), yPoints[startIndex].toFloat())
         }
         return path
     }
@@ -351,23 +356,23 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
 //        drawString(str, xCenter, yCenter, 270)
 //    }
 
-/*
-    private fun drawString(str: String, xCenter: Int, yCenter: Int, degrees: Int) {
-        if (degrees != 0) {
-            val fm = g2.getFontMetrics()
-            val orig = g2.getTransform()
-            // add to existing transform if exists
-            val at = AffineTransform(orig)
-            val theta = Math.PI / 180 * degrees
-            at.rotate(theta, xCenter, yCenter)
-            g2.setTransform(at)
-            g2.drawString(str, xCenter - fm.stringWidth(str) / 2, yCenter)
-            g2.setTransform(orig)
-        } else {
-            g2.drawString(str, xCenter, yCenter)
+    /*
+        private fun drawString(str: String, xCenter: Int, yCenter: Int, degrees: Int) {
+            if (degrees != 0) {
+                val fm = g2.getFontMetrics()
+                val orig = g2.getTransform()
+                // add to existing transform if exists
+                val at = AffineTransform(orig)
+                val theta = Math.PI / 180 * degrees
+                at.rotate(theta, xCenter, yCenter)
+                g2.setTransform(at)
+                g2.drawString(str, xCenter - fm.stringWidth(str) / 2, yCenter)
+                g2.setTransform(orig)
+            } else {
+                g2.drawString(str, xCenter, yCenter)
+            }
         }
-    }
-*/
+    */
 
     /**
      * Draws the given [ImageBitmap] into the canvas with its top-left corner at the

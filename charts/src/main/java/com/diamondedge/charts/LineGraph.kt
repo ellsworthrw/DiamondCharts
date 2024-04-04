@@ -31,15 +31,14 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
         val dsCount = data.seriesCount
         val dataCount = data.dataCount
         var bubbleIndex = -1
-        var xPts: IntArray? = null
-        var yPts: IntArray? = null
+        val xPts = IntArray(dataCount + 2)
+        val yPts = IntArray(dataCount + 2)
         if (data.valueCount == 3)
             bubbleIndex = ChartData.zIndex
         var gattr: GraphicAttributes
         var x: Int
         var y: Int
         var lastX = 0
-        var lastY = 0
         // center the bars in the area
         val offset = 0 //unitWidth / 2;
         hotspots?.clear()
@@ -47,10 +46,6 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
         val origStroke = g.stroke
         val stroke = g.createStroke(lineWidth)
         val symbolStroke = g.createStroke(0.5f)
-        if (fillArea) {
-            xPts = IntArray(dataCount + 2)
-            yPts = IntArray(dataCount + 2)
-        }
         g.stroke = stroke
 
         for (series in 0 until dsCount) {
@@ -65,14 +60,8 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
             for (i in 0 until dataCount) {
                 x = horAxis!!.convertToPixel(getX(series, i)) + offset
                 y = vertAxis!!.convertToPixel(getY(series, i))
-                if (i > 0 && drawLine) {
-                    g.stroke = stroke
-                    g.drawLine(lastX, lastY, x, y)
-                }
-                if (xPts != null && yPts != null) {
-                    xPts[i + 1] = x
-                    yPts[i + 1] = y
-                }
+                xPts[i + 1] = x
+                yPts[i + 1] = y
                 var ptSize = g.dpToPixel(symbolSize)
                 if (bubbleIndex >= 0 && showBubble) {
                     val bubble = vertAxis!!.scaleData(data.getValue(series, i, bubbleIndex))
@@ -102,9 +91,12 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
                     hotspots!!.add(Hotspot(this, data, series, i, rect))
                 }
                 lastX = x
-                lastY = y
             }
-            if (xPts != null && yPts != null) {
+            if (drawLine) {
+                g.stroke = stroke
+                g.drawPolyline(xPts, yPts, startIndex = 1, xPts.size - 2)
+            }
+            if (fillArea) {
                 val y0 = horAxis!!.yOrigin
                 xPts[0] = xPts[1]
                 yPts[0] = y0

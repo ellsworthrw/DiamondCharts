@@ -243,7 +243,7 @@ object Draw {
     ): Pair<Int, Int> {
         var width = g.dpToPixel(leftMargin) + g.dpToPixel(rightMargin)
         var height = g.fontMetrics.height
-        width += g.stringWidth(text)
+        width += g.stringWidth(text) + g.dpToPixel(gap)
         if (symbol != null) {
             val (symbolWidth, symbolHeight) = g.getImageSize(symbol)
             width += symbolWidth + g.dpToPixel(gap)

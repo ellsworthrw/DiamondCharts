@@ -194,7 +194,7 @@ class DateAxis : Axis() {
                     log.v { "> 90s inc: 1m" }
                     majorTickInc = DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat
-                    minorTickIncNum = 6
+                    minorTickIncNum = 4
                 }
                 range > 30 * DateUtil.ONE_SECOND -> {
                     log.v { "> 30s inc: 20s" }

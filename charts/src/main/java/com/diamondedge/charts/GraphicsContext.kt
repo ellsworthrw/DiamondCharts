@@ -5,7 +5,6 @@
  */
 package com.diamondedge.charts
 
-
 /**
  * The `Graphics` class is the base class for
  * all graphics contexts that allow an application to draw onto
@@ -294,6 +293,19 @@ interface GraphicsContext {
      * @param       nPoints the total number of points
      */
     fun drawPolyline(xPoints: IntArray, yPoints: IntArray, nPoints: Int)
+
+    /**
+     * Draws a sequence of connected lines defined by
+     * arrays of *x* and *y* coordinates.
+     * Each pair of (*x*,&nbsp;*y*) coordinates defines a point.
+     * The figure is not closed if the first point
+     * differs from the last point.
+     * @param       xPoints an array of *x* points
+     * @param       yPoints an array of *y* points
+     * @param       startIndex the index into x/yPoints of first point
+     * @param       nPoints the total number of points
+     */
+    fun drawPolyline(xPoints: IntArray, yPoints: IntArray, startIndex: Int, nPoints: Int)
 
     /**
      * Draws a closed polygon defined by
