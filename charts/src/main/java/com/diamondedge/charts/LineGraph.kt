@@ -50,7 +50,7 @@ open class LineGraph(
         hotspots?.clear()
 
         val origStroke = g.stroke
-        val stroke = g.createStroke(lineWidth, curveSmoothing = curveSmothing)
+        val stroke = g.createStroke(lineWidth, curveSmoothing = curveSmothing, cornerRadius = cornerRadius)
         val symbolStroke = g.createStroke(0.5f)
         g.stroke = stroke
 
@@ -134,5 +134,12 @@ open class LineGraph(
 
     override fun toString(): String {
         return "LineGraph[" + toStringParam() + "]"
+    }
+
+    companion object {
+        /**
+         * Corner radius for [PathEffect.cornerPathEffect] used when curveSmothing is turned on
+         */
+        var cornerRadius = 1f
     }
 }

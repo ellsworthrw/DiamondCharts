@@ -350,7 +350,12 @@ interface GraphicsContext {
     /**
      * Creates a `Stroke` object that can be used to set the stroke.
      */
-    fun createStroke(lineWidth: Float, lineStyle: StrokeStyle = StrokeStyle.Solid, curveSmoothing: Boolean = false): Any
+    fun createStroke(
+        lineWidth: Float,
+        lineStyle: StrokeStyle = StrokeStyle.Solid,
+        curveSmoothing: Boolean = false,
+        cornerRadius: Float = 1f
+    ): Any
 
     /**
      * Creates and sets the `stroke` for the graphics context.

@@ -13,6 +13,8 @@ import kotlin.time.Duration.Companion.days
 
 class DateAxis : Axis() {
 
+    var useFewerLabels: Boolean = false
+
     var tickLabelDateFormat: DateFormat = dateFormat
         internal set
 
@@ -37,7 +39,6 @@ class DateAxis : Axis() {
         if (isAutoScaling) {
             val range = maxValue - minValue
             log.v { "calcMetrics($rangePix) range: ${range.days} min: $minValue max: $maxValue" }
-            val isSmall = rangePix < 500
 
             when {
                 range > 1000 * DateUtil.ONE_YEAR -> {
@@ -156,11 +157,11 @@ class DateAxis : Axis() {
                 }
                 range > 50 * DateUtil.ONE_MINUTE -> {
                     log.v { "> 50m inc: 15/20m" }
-                    majorTickInc = (if (isSmall) 20 else 15) * DateUtil.ONE_MINUTE
+                    majorTickInc = (if (useFewerLabels) 20 else 15) * DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat
-                    minorTickIncNum = if (isSmall) 4 else 3
+                    minorTickIncNum = if (useFewerLabels) 4 else 3
                 }
-                range > 30 * DateUtil.ONE_MINUTE -> {
+                range > 30 * DateUtil.ONE_MINUTE && useFewerLabels -> {
                     log.v { "> 30m inc: 15m" }
                     majorTickInc = 15 * DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat
@@ -172,7 +173,7 @@ class DateAxis : Axis() {
                     tickLabelDateFormat = hourMinuteFormat
                     minorTickIncNum = 5
                 }
-                range > 10 * DateUtil.ONE_MINUTE -> {
+                range > 10 * DateUtil.ONE_MINUTE && useFewerLabels -> {
                     log.v { "> 10m inc: 5m" }
                     majorTickInc = 5 * DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat
@@ -184,7 +185,7 @@ class DateAxis : Axis() {
                     tickLabelDateFormat = hourMinuteFormat
                     minorTickIncNum = 3
                 }
-                range > 4 * DateUtil.ONE_MINUTE && isSmall -> {
+                range > 4 * DateUtil.ONE_MINUTE && useFewerLabels -> {
                     log.v { "> 4m inc: 2m" }
                     majorTickInc = 2 * DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat
