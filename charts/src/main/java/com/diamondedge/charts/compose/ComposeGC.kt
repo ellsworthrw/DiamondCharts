@@ -146,9 +146,14 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
         stroke = createStroke(lineWidth, lineStyle)
     }
 
-    override fun createStroke(lineWidth: Float, lineStyle: StrokeStyle): Any {
+    override fun createStroke(lineWidth: Float, lineStyle: StrokeStyle, curveSmoothing: Boolean): Any {
         return when (lineStyle) {
-            StrokeStyle.Solid -> Stroke(dpToPx(lineWidth))
+            StrokeStyle.Solid -> {
+                if (curveSmoothing)
+                    Stroke(dpToPx(lineWidth), pathEffect = PathEffect.cornerPathEffect(1f))
+                else
+                    Stroke(dpToPx(lineWidth))
+            }
             StrokeStyle.Dash -> Stroke(dpToPx(lineWidth), pathEffect = dashEffect)
             StrokeStyle.Dot -> Stroke(dpToPx(lineWidth), pathEffect = dotEffect)
             StrokeStyle.DashDot -> Stroke(dpToPx(lineWidth), pathEffect = dashDotEffect)

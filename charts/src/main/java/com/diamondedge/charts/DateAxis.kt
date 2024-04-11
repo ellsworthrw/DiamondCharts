@@ -160,7 +160,7 @@ class DateAxis : Axis() {
                     tickLabelDateFormat = hourMinuteFormat
                     minorTickIncNum = if (isSmall) 4 else 3
                 }
-                range > 30 * DateUtil.ONE_MINUTE && isSmall -> {
+                range > 30 * DateUtil.ONE_MINUTE -> {
                     log.v { "> 30m inc: 15m" }
                     majorTickInc = 15 * DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat
@@ -172,7 +172,7 @@ class DateAxis : Axis() {
                     tickLabelDateFormat = hourMinuteFormat
                     minorTickIncNum = 5
                 }
-                range > 10 * DateUtil.ONE_MINUTE && isSmall -> {
+                range > 10 * DateUtil.ONE_MINUTE -> {
                     log.v { "> 10m inc: 5m" }
                     majorTickInc = 5 * DateUtil.ONE_MINUTE
                     tickLabelDateFormat = hourMinuteFormat

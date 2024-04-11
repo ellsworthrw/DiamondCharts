@@ -5,7 +5,13 @@
  */
 package com.diamondedge.charts
 
-open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea: Boolean = false, val showBubble: Boolean = false) :
+open class LineGraph(
+    data: ChartData,
+    val drawLine: Boolean = true,
+    val fillArea: Boolean = false,
+    val showBubble: Boolean = false,
+    val curveSmothing: Boolean = false
+) :
     Chart(data) {
 
     /** The size that the symbol on each data point is drawn.
@@ -44,7 +50,7 @@ open class LineGraph(data: ChartData, val drawLine: Boolean = true, val fillArea
         hotspots?.clear()
 
         val origStroke = g.stroke
-        val stroke = g.createStroke(lineWidth)
+        val stroke = g.createStroke(lineWidth, curveSmoothing = curveSmothing)
         val symbolStroke = g.createStroke(0.5f)
         g.stroke = stroke
 
