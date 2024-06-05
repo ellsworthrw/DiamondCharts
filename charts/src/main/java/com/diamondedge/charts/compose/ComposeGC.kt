@@ -309,7 +309,7 @@ class ComposeGC(private val g: Canvas, private val density: Density) : GraphicsC
     private fun createPath(xPoints: IntArray, yPoints: IntArray, nPoints: Int, closeShape: Boolean, startIndex: Int = 0): Path {
         val path = Path()
         path.moveTo(xPoints[startIndex].toFloat(), yPoints[startIndex].toFloat())
-        for (i in startIndex + 1 until nPoints) {
+        for (i in startIndex + 1 until startIndex + nPoints) {
             path.lineTo(xPoints[i].toFloat(), yPoints[i].toFloat())
         }
         if (closeShape) {

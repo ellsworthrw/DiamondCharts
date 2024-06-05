@@ -58,10 +58,10 @@ fun createData(fn: (Double) -> Double, minX: Double, maxX: Double, id: Any = "fn
             return id.toString()
         }
     }
-    data.dataCount = 100
-    val xInc = (maxX - minX) / data.dataCount
+    data.dataCount = 101
+    val xInc = (maxX - minX) / (data.dataCount - 1)
     for (i in 0 until data.dataCount) {
-        val x = minX + (i + 1) * xInc
+        val x = minX + i * xInc
         data.setValue(i, x, fn(x))
     }
     data.graphicAttributes.color = color

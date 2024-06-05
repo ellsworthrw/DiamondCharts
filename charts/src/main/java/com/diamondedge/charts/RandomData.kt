@@ -20,9 +20,10 @@ class RandomData : DefaultData {
         seriesCount_set = seriesCount
     }
 
-    constructor(seriesType: Int, minval: Double, maxval: Double) : super("Random", seriesType) {
-        maxval_set = maxval.toInt()
-        minval_set = minval.toInt()
+    constructor(seriesType: Int, seriesCount: Int, minval: Int, maxval: Int) : super("Random", seriesType) {
+        seriesCount_set = seriesCount
+        maxval_set = maxval
+        minval_set = minval
     }
 
     override fun recalc(combineSeries: Boolean) {
