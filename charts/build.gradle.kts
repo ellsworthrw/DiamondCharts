@@ -1,12 +1,14 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     id("com.android.library")
     kotlin("android")
     id("org.jetbrains.dokka")
-    id("maven-publish")
+    id("com.vanniktech.maven.publish") version "0.29.0"
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 34
     defaultConfig {
         minSdk = 21
         consumerProguardFiles("proguard.txt")
@@ -17,7 +19,6 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
-//        useIR = true
     }
 
     composeOptions {
@@ -29,12 +30,6 @@ android {
     }
     namespace = "com.diamondedge.charts"
 
-    publishing {
-        singleVariant("release") {
-            withSourcesJar()
-            withJavadocJar()
-        }
-    }
     configurations.configureEach {
         resolutionStrategy {
             // https://issuetracker.google.com/issues/295457468
@@ -44,10 +39,10 @@ android {
 }
 
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2023.08.00"))
+    implementation(platform("androidx.compose:compose-bom:2024.06.00"))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.foundation:foundation")
-    implementation("org.lighthousegames:logging-android:1.3.0")
+    implementation("org.lighthousegames:logging-android:1.5.0")
 }
 
 tasks {
@@ -58,10 +53,74 @@ tasks {
     }
 }
 
-extra["artifactID"] = "charts-android"
-extra["artifactVersion"] = "1.5.2"
+extra["artifactId"] = "charts-android"
+extra["artifactVersion"] = "1.5.3"
 extra["libraryName"] = "Diamond Charts"
 extra["libraryDescription"] = "Diamond Charts: charting library for Android Jetpack Compose"
 extra["gitUrl"] = "https://github.com/ellsworthrw/DiamondCharts"
 
-apply(from = "publish.gradle.kts")
+// Publishing
+// defined in project's gradle.properties
+val groupId: String by project
+val licenseName: String by project
+val licenseUrl: String by project
+// optional properties
+val orgId: String? by project
+val orgName: String? by project
+val orgUrl: String? by project
+val developerName: String? by project
+val developerId: String? by project
+
+val artifactId: String by extra
+val artifactVersion: String by extra
+val libraryName: String by extra
+val libraryDescription: String by extra
+val gitUrl: String by extra
+
+project.group = groupId
+project.version = artifactVersion
+
+mavenPublishing {
+    coordinates(groupId = groupId, artifactId = artifactId, version = artifactVersion)
+    pom {
+        name.set(libraryName)
+        description.set(libraryDescription)
+        url.set(gitUrl)
+
+        licenses {
+            license {
+                name.set(licenseName)
+                url.set(licenseUrl)
+            }
+        }
+        scm {
+            url.set(gitUrl)
+        }
+        developers {
+            if (!developerId.isNullOrEmpty()) {
+                developer {
+                    id.set(developerId)
+                    name.set(developerName)
+                }
+            }
+            if (!orgId.isNullOrEmpty()) {
+                developer {
+                    id.set(orgId)
+                    name.set(orgName)
+                    organization.set(orgName)
+                    organizationUrl.set(orgUrl)
+                }
+            }
+        }
+        if (!orgName.isNullOrEmpty()) {
+            organization {
+                name.set(orgName)
+                if (!orgUrl.isNullOrEmpty())
+                    url.set(orgUrl)
+            }
+        }
+    }
+
+    publishToMavenCentral(SonatypeHost.S01)
+    signAllPublications()
+}
