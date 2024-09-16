@@ -78,6 +78,18 @@ private fun PieChartMultiPreview() {
     )
 }
 
+@Preview
+@Composable
+private fun LineGraphFillToMinimumPreview() {
+    LineGraph(
+        RandomData(DefaultData.SIMPLE_SERIES, 1),
+        fillAreaToMinimum = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(200.dp),
+        margins = Margins.wideRight
+    )
+}
 
 @Preview
 @Composable

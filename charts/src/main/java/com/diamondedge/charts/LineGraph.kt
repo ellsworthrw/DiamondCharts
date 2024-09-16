@@ -5,12 +5,24 @@
  */
 package com.diamondedge.charts
 
+/**
+ * `LineGraph` provides functionality to display data as a line graph.
+ * The horizontal axis is a label axis.
+ *
+ * @param data The [ChartData] object containing the data to be displayed.
+ * @param drawLine Determines whether to draw the line connecting data points (default is true).
+ * @param fillArea Determines whether to fill the area under the line (default is false).
+ * @param showBubble Determines whether to display bubbles at data points (default is false).
+ * @param curveSmothing Determines whether to apply curve smoothing to the line (default is false).
+ * @param fillAreaToMinimum Determines whether to fill the area between the line and the minimum y value (default is false).
+ */
 open class LineGraph(
     data: ChartData,
     val drawLine: Boolean = true,
     val fillArea: Boolean = false,
     val showBubble: Boolean = false,
-    val curveSmothing: Boolean = false
+    val curveSmothing: Boolean = false,
+    val fillAreaToMinimum: Boolean = false,
 ) :
     Chart(data) {
 
@@ -113,7 +125,23 @@ open class LineGraph(
                 else
                     g.applyGradient(gradient, 0.2f)
                 g.fillPolygon(xPts, yPts, dataCount + 2)
+            } else if (fillAreaToMinimum) {
+                val yMin = vertAxis!!.convertToPixel(data.minValue)
+                xPts[0] = xPts[1]
+                yPts[0] = yMin
+                xPts[dataCount + 1] = lastX
+                yPts[dataCount + 1] = yMin
+                if (gradient == null) {
+                    val yMax = vertAxis!!.convertToPixel(data.maxValue)
+                    val gradBounds = RectangleF(xPts[0].toFloat(), yMax.toFloat(), (lastX - xPts[0]).toFloat(), (yMin - yMax).toFloat())
+                    val grad = Gradient(listOf(0f to gattr.color, 1f to (gattr.color and 0xffffff)), gradBounds, GradientType.TopToBottom)
+                    g.applyGradient(grad, 0.3f)
+                } else {
+                    g.applyGradient(gradient, 0.2f)
+                }
+                g.fillPolygon(xPts, yPts, dataCount + 2)
             }
+
         }
         g.stroke = origStroke
         g.clearGradient()
