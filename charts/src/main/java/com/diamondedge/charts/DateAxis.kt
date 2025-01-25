@@ -12,10 +12,11 @@ import kotlin.math.floor
 import kotlin.time.Duration.Companion.days
 
 class DateAxis : Axis() {
+    private val majorDayFormat = DateFormat.getDateInstance()
 
     var useFewerLabels: Boolean = false
 
-    var tickLabelDateFormat: DateFormat = dateFormat
+    var tickLabelDateFormat: DateFormat = majorDayFormat
         internal set
 
     /** Applies the given pattern to the SimpleDateFormat object used in formatting the
@@ -44,73 +45,73 @@ class DateAxis : Axis() {
                 range > 1000 * DateUtil.ONE_YEAR -> {
                     log.v { "> 1000y inc: 500y" }
                     majorTickInc = 500 * DateUtil.ONE_YEAR
-                    tickLabelDateFormat = yearFormat
+                    tickLabelDateFormat = dateFormat(yearFormat)
                     minorTickIncNum = 5
                 }
                 range > 500 * DateUtil.ONE_YEAR -> {
                     log.v { "> 500y inc: 200y" }
                     majorTickInc = 200 * DateUtil.ONE_YEAR
-                    tickLabelDateFormat = yearFormat
+                    tickLabelDateFormat = dateFormat(yearFormat)
                     minorTickIncNum = 2
                 }
                 range > 250 * DateUtil.ONE_YEAR -> {
                     log.v { "> 250y inc: 100y" }
                     majorTickInc = 100 * DateUtil.ONE_YEAR
-                    tickLabelDateFormat = yearFormat
+                    tickLabelDateFormat = dateFormat(yearFormat)
                     minorTickIncNum = 5
                 }
                 range > 100 * DateUtil.ONE_YEAR -> {
                     log.v { "> 100y inc: 50y" }
                     majorTickInc = 50 * DateUtil.ONE_YEAR
-                    tickLabelDateFormat = yearFormat
+                    tickLabelDateFormat = dateFormat(yearFormat)
                     minorTickIncNum = 5
                 }
                 range > 50 * DateUtil.ONE_YEAR -> {
                     log.v { "> 50y inc: 20y" }
                     majorTickInc = 20 * DateUtil.ONE_YEAR
-                    tickLabelDateFormat = yearFormat
+                    tickLabelDateFormat = dateFormat(yearFormat)
                     minorTickIncNum = 4
                 }
                 range > 30 * DateUtil.ONE_YEAR -> {
                     log.v { "> 30y inc: 10y" }
                     majorTickInc = 10 * DateUtil.ONE_YEAR
-                    tickLabelDateFormat = yearFormat
+                    tickLabelDateFormat = dateFormat(yearFormat)
                     minorTickIncNum = 2
                 }
                 range > 10 * DateUtil.ONE_YEAR -> {
                     log.v { "> 10y inc: 5y" }
                     majorTickInc = 5 * DateUtil.ONE_YEAR
-                    tickLabelDateFormat = yearFormat
+                    tickLabelDateFormat = dateFormat(yearFormat)
                     minorTickIncNum = 5
                 }
                 range > 5 * DateUtil.ONE_YEAR -> {
                     log.v { "> 5y inc: 2y" }
                     majorTickInc = 2 * DateUtil.ONE_YEAR
-                    tickLabelDateFormat = yearFormat
+                    tickLabelDateFormat = dateFormat(yearFormat)
                     minorTickIncNum = 2
                 }
                 range > 2 * DateUtil.ONE_YEAR -> {
                     log.v { "> 2y inc: year" }
                     majorTickInc = DateUtil.ONE_YEAR
-                    tickLabelDateFormat = yearFormat
+                    tickLabelDateFormat = dateFormat(yearFormat)
                     minorTickIncNum = 4
                 }
                 range > DateUtil.ONE_YEAR -> {
                     log.v { "> 1y inc: 6mon" }
                     majorTickInc = 6 * DateUtil.ONE_MONTH
-                    tickLabelDateFormat = majorMonthFormat
+                    tickLabelDateFormat = dateFormat(majorMonthFormat)
                     minorTickIncNum = 6
                 }
                 range > 5 * DateUtil.ONE_MONTH -> {
                     log.v { "> 5mon inc: 2mon" }
                     majorTickInc = 2 * DateUtil.ONE_MONTH
-                    tickLabelDateFormat = majorMonthFormat
+                    tickLabelDateFormat = dateFormat(majorMonthFormat)
                     minorTickIncNum = 2
                 }
                 range > DateUtil.ONE_MONTH -> {
                     log.v { "> 1mon inc: mon" }
                     majorTickInc = DateUtil.ONE_MONTH
-                    tickLabelDateFormat = majorMonthFormat
+                    tickLabelDateFormat = dateFormat(majorMonthFormat)
                     minorTickIncNum = 4
                 }
                 range > 8 * DateUtil.ONE_DAY -> {
@@ -128,91 +129,91 @@ class DateAxis : Axis() {
                 range > 12 * DateUtil.ONE_HOUR -> {
                     log.v { "> 12h inc: 6h" }
                     majorTickInc = 6 * DateUtil.ONE_HOUR
-                    tickLabelDateFormat = hourFormat
+                    tickLabelDateFormat = dateFormat(hourFormat)
                     minorTickIncNum = 3
                 }
                 range > 8 * DateUtil.ONE_HOUR -> {
                     log.v { "> 8h inc: 3h" }
                     majorTickInc = 3 * DateUtil.ONE_HOUR
-                    tickLabelDateFormat = hourFormat
+                    tickLabelDateFormat = dateFormat(hourFormat)
                     minorTickIncNum = 3
                 }
                 range > 4 * DateUtil.ONE_HOUR -> {
                     log.v { "> 4h inc: 2h" }
                     majorTickInc = 2 * DateUtil.ONE_HOUR
-                    tickLabelDateFormat = hourFormat
+                    tickLabelDateFormat = dateFormat(hourFormat)
                     minorTickIncNum = 2
                 }
                 range > 2 * DateUtil.ONE_HOUR -> {
                     log.v { "> 2h inc: 1h" }
                     majorTickInc = DateUtil.ONE_HOUR
-                    tickLabelDateFormat = hourFormat
+                    tickLabelDateFormat = dateFormat(hourFormat)
                     minorTickIncNum = 2
                 }
                 range > DateUtil.ONE_HOUR -> {
                     log.v { "> 1h inc: 30m" }
                     majorTickInc = DateUtil.HALF_HOUR
-                    tickLabelDateFormat = hourMinuteFormat
+                    tickLabelDateFormat = dateFormat(hourMinuteFormat)
                     minorTickIncNum = 3
                 }
                 range > 50 * DateUtil.ONE_MINUTE -> {
                     log.v { "> 50m inc: 15/20m" }
                     majorTickInc = (if (useFewerLabels) 20 else 15) * DateUtil.ONE_MINUTE
-                    tickLabelDateFormat = hourMinuteFormat
+                    tickLabelDateFormat = dateFormat(hourMinuteFormat)
                     minorTickIncNum = if (useFewerLabels) 4 else 3
                 }
                 range > 30 * DateUtil.ONE_MINUTE && useFewerLabels -> {
                     log.v { "> 30m inc: 15m" }
                     majorTickInc = 15 * DateUtil.ONE_MINUTE
-                    tickLabelDateFormat = hourMinuteFormat
+                    tickLabelDateFormat = dateFormat(hourMinuteFormat)
                     minorTickIncNum = 3
                 }
                 range > 16 * DateUtil.ONE_MINUTE -> {
                     log.v { "> 16m inc: 10m" }
                     majorTickInc = 10 * DateUtil.ONE_MINUTE
-                    tickLabelDateFormat = hourMinuteFormat
+                    tickLabelDateFormat = dateFormat(hourMinuteFormat)
                     minorTickIncNum = 5
                 }
                 range > 10 * DateUtil.ONE_MINUTE && useFewerLabels -> {
                     log.v { "> 10m inc: 5m" }
                     majorTickInc = 5 * DateUtil.ONE_MINUTE
-                    tickLabelDateFormat = hourMinuteFormat
+                    tickLabelDateFormat = dateFormat(hourMinuteFormat)
                     minorTickIncNum = 5
                 }
                 range > 6 * DateUtil.ONE_MINUTE -> {
                     log.v { "> 6m inc: 3m" }
                     majorTickInc = 3 * DateUtil.ONE_MINUTE
-                    tickLabelDateFormat = hourMinuteFormat
+                    tickLabelDateFormat = dateFormat(hourMinuteFormat)
                     minorTickIncNum = 3
                 }
                 range > 4 * DateUtil.ONE_MINUTE && useFewerLabels -> {
                     log.v { "> 4m inc: 2m" }
                     majorTickInc = 2 * DateUtil.ONE_MINUTE
-                    tickLabelDateFormat = hourMinuteFormat
+                    tickLabelDateFormat = dateFormat(hourMinuteFormat)
                     minorTickIncNum = 2
                 }
                 range > 90 * DateUtil.ONE_SECOND -> {
                     log.v { "> 90s inc: 1m" }
                     majorTickInc = DateUtil.ONE_MINUTE
-                    tickLabelDateFormat = hourMinuteFormat
+                    tickLabelDateFormat = dateFormat(hourMinuteFormat)
                     minorTickIncNum = 4
                 }
                 range > 30 * DateUtil.ONE_SECOND -> {
                     log.v { "> 30s inc: 20s" }
                     majorTickInc = 20 * DateUtil.ONE_SECOND
-                    tickLabelDateFormat = hourMinuteSecondFormat
+                    tickLabelDateFormat = dateFormat(hourMinuteSecondFormat)
                     minorTickIncNum = 4
                 }
                 range > 4 * DateUtil.ONE_SECOND -> {
                     log.v { "> 4s inc: 10s" }
                     majorTickInc = 10 * DateUtil.ONE_SECOND
-                    tickLabelDateFormat = hourMinuteSecondFormat
+                    tickLabelDateFormat = dateFormat(hourMinuteSecondFormat)
                     minorTickIncNum = 2
                 }
                 else -> {
                     log.v { "inc: 1s" }
                     majorTickInc = DateUtil.ONE_SECOND
-                    tickLabelDateFormat = secondFormat
+                    tickLabelDateFormat = dateFormat(secondFormat)
                     minorTickIncNum = 4
                 }
             }
@@ -244,20 +245,20 @@ class DateAxis : Axis() {
         return "DateAxis[" + toStringParam() + "]"
     }
 
+    private fun dateFormat(pattern: String): DateFormat {
+        return SimpleDateFormat(pattern)
+    }
+
     companion object {
         private val log = moduleLogging()
 
-        private val dateFormat = DateFormat.getDateInstance()
-        private val timeFormat = DateFormat.getTimeInstance()
-        private val yearFormat = SimpleDateFormat("yyyy")
-        private val debugMonthFormat = SimpleDateFormat("M-d")
-        private val majorMonthFormat = SimpleDateFormat("MMM yyyy")
-        private val minorMonthFormat = SimpleDateFormat("MMM")
-        private val majorDayFormat = dateFormat
-        private val minorDayFormat = SimpleDateFormat("d")
-        private val hourFormat = SimpleDateFormat("ha")
-        private val hourMinuteFormat = SimpleDateFormat("h:mma")
-        private val hourMinuteSecondFormat = SimpleDateFormat("h:mm:ssa")
-        private val secondFormat = SimpleDateFormat("s")
+        private val yearFormat = "yyyy"
+        private val majorMonthFormat = "MMM yyyy"
+        private val minorMonthFormat = "MMM"
+        private val minorDayFormat = "d"
+        private val hourFormat = "ha"
+        private val hourMinuteFormat = "h:mma"
+        private val hourMinuteSecondFormat = "h:mm:ssa"
+        private val secondFormat = "s"
     }
 }

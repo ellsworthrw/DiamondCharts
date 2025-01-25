@@ -1,6 +1,7 @@
 plugins {
-    id("com.android.application")
-    id("kotlin-android")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -42,25 +43,21 @@ android {
         }
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = rootProject.extra["compose_compiler"] as String
-    }
     namespace = "com.diamondedge.chartapp"
 }
 
 dependencies {
 
     implementation(project(":charts"))
-    implementation("androidx.core:core-ktx:1.13.1")
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("androidx.activity:activity-compose:1.9.2")
-    implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("com.google.accompanist:accompanist-insets:0.30.1")
-    implementation(platform("androidx.compose:compose-bom:2024.09.01"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.material:material")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.compose.ui:ui-tooling")
-    implementation("org.lighthousegames:logging-android:1.5.0")
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.foundation)
+    implementation(libs.compose.tooling)
+    implementation(libs.compose.material)
+    implementation(libs.compose.iconsextended)
+
+    implementation(libs.appcompat)
+    implementation(libs.activity.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.logging)
 }

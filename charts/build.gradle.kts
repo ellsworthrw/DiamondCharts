@@ -1,9 +1,10 @@
 import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
-    id("com.android.library")
-    kotlin("android")
-    id("org.jetbrains.dokka")
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.compose.compiler)
     id("com.vanniktech.maven.publish") version "0.29.0"
 }
 
@@ -21,10 +22,6 @@ android {
         jvmTarget = "1.8"
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "${rootProject.extra["compose_compiler"]}"
-    }
-
     buildFeatures {
         compose = true
     }
@@ -39,10 +36,10 @@ android {
 }
 
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2024.09.01"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("org.lighthousegames:logging-android:1.5.0")
+    implementation(platform(libs.compose.bom))
+    implementation(libs.compose.ui)
+    implementation(libs.compose.foundation)
+    implementation(libs.logging)
 }
 
 tasks {
@@ -54,7 +51,7 @@ tasks {
 }
 
 extra["artifactId"] = "charts-android"
-extra["artifactVersion"] = "1.6.2"
+extra["artifactVersion"] = "1.7.0"
 extra["libraryName"] = "Diamond Charts"
 extra["libraryDescription"] = "Diamond Charts: charting library for Android Jetpack Compose"
 extra["gitUrl"] = "https://github.com/ellsworthrw/DiamondCharts"
