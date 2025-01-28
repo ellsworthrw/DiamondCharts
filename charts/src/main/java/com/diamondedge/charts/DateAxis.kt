@@ -7,23 +7,27 @@ package com.diamondedge.charts
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.time.Duration.Companion.days
 
 class DateAxis : Axis() {
-    private val majorDayFormat = DateFormat.getDateInstance()
+    private var locale = Locale.getDefault(Locale.Category.FORMAT)
+    private var timeZone = TimeZone.getDefault()
+    private val dateFormats = mutableMapOf<String, DateFormat>()
 
     var useFewerLabels: Boolean = false
 
-    var tickLabelDateFormat: DateFormat = majorDayFormat
+    var tickLabelDateFormat: DateFormat = DateFormat.getDateInstance()
         internal set
 
     /** Applies the given pattern to the SimpleDateFormat object used in formatting the
      * labels next to each major tick mark.
      * A pattern is a short-hand specification for the various formatting properties.
      * These properties can also be changed individually through the various setter methods.
-     * @see DateFormat.applyPattern
+     * @see SimpleDateFormat.applyPattern
      *
      * @see .getTickLabelDecimalFormat
      */
@@ -117,13 +121,13 @@ class DateAxis : Axis() {
                 range > 8 * DateUtil.ONE_DAY -> {
                     log.v { "> 8d inc: week" }
                     majorTickInc = DateUtil.ONE_WEEK
-                    tickLabelDateFormat = majorDayFormat
+                    tickLabelDateFormat = dateFormat(majorDayFormat)
                     minorTickIncNum = 7
                 }
                 range > DateUtil.ONE_DAY -> {
                     log.v { "> 1d inc: day" }
                     majorTickInc = DateUtil.ONE_DAY
-                    tickLabelDateFormat = majorDayFormat
+                    tickLabelDateFormat = dateFormat(majorDayFormat)
                     minorTickIncNum = 4
                 }
                 range > 12 * DateUtil.ONE_HOUR -> {
@@ -246,19 +250,39 @@ class DateAxis : Axis() {
     }
 
     private fun dateFormat(pattern: String): DateFormat {
-        return SimpleDateFormat(pattern)
+        updateLocalization()
+        return dateFormats[pattern] ?: run {
+            val format = when (pattern) {
+                hourMinuteFormat -> DateFormat.getTimeInstance(DateFormat.SHORT, locale)
+                hourMinuteSecondFormat -> DateFormat.getTimeInstance(DateFormat.MEDIUM, locale)
+                majorDayFormat -> DateFormat.getDateInstance(DateFormat.MEDIUM, locale)
+                else -> SimpleDateFormat(pattern, locale)
+            }
+            dateFormats[pattern] = format
+            format
+        }
+    }
+
+    private fun updateLocalization() {
+        if (hasLocalizationChanged(locale, timeZone)) {
+            locale = Locale.getDefault(Locale.Category.FORMAT)
+            timeZone = TimeZone.getDefault()
+            dateFormats.clear()
+        }
     }
 
     companion object {
         private val log = moduleLogging()
 
-        private val yearFormat = "yyyy"
-        private val majorMonthFormat = "MMM yyyy"
-        private val minorMonthFormat = "MMM"
-        private val minorDayFormat = "d"
-        private val hourFormat = "ha"
-        private val hourMinuteFormat = "h:mma"
-        private val hourMinuteSecondFormat = "h:mm:ssa"
-        private val secondFormat = "s"
+        private const val yearFormat = "yyyy"
+        private const val majorMonthFormat = "MMM yyyy"
+        private const val majorDayFormat = "M d, yyyy"          // DateFormat.getDateInstance(DateFormat.MEDIUM)
+        private const val hourMinuteFormat = "h:mm"             // DateFormat.getTimeInstance(DateFormat.SHORT)
+        private const val hourFormat = hourMinuteFormat
+        private const val hourMinuteSecondFormat = "h:mm:ss"    // DateFormat.getTimeInstance(DateFormat.MEDIUM)
+        private const val secondFormat = "s"
+
+        private fun hasLocalizationChanged(locale: Locale, zone: TimeZone): Boolean =
+            locale != Locale.getDefault(Locale.Category.FORMAT) || zone != TimeZone.getDefault()
     }
 }

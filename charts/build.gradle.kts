@@ -11,7 +11,7 @@ plugins {
 android {
     compileSdk = 34
     defaultConfig {
-        minSdk = 21
+        minSdk = 24
         consumerProguardFiles("proguard.txt")
     }
     compileOptions {
@@ -51,7 +51,7 @@ tasks {
 }
 
 extra["artifactId"] = "charts-android"
-extra["artifactVersion"] = "1.7.0"
+extra["artifactVersion"] = "1.7.2"
 extra["libraryName"] = "Diamond Charts"
 extra["libraryDescription"] = "Diamond Charts: charting library for Android Jetpack Compose"
 extra["gitUrl"] = "https://github.com/ellsworthrw/DiamondCharts"
