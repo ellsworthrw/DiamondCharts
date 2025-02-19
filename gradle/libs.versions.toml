@@ -12,7 +12,7 @@ dokka = "2.0.0"
 kotlinCoreKtx = "1.13.1"
 kotlinVersion = "2.0.20"
 kspVersion = "2.0.20-1.0.24"
-loggingVersion = "1.5.0"
+loggingVersion = "2.0.3"
 materialAndroid = "1.7.6"
 navigationCompose = "2.5.3"
 serialization = "1.7.1"
@@ -40,7 +40,7 @@ constraintlayout-compose = { group = "androidx.constraintlayout", name = "constr
 kotlin-core = { group = "androidx.core", name = "core-ktx", version.ref = "kotlinCoreKtx" }
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "serialization" }
 ksp-processing = { group = "com.google.devtools.ksp", name = "symbol-processing-api", version.ref = "kspVersion" }
-logging = { group = "org.lighthousegames", name = "logging-android", version.ref = "loggingVersion" }
+logging = { module = "com.diamondedge:logging", version.ref = "loggingVersion" }
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]

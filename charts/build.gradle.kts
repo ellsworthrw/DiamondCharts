@@ -15,11 +15,11 @@ android {
         consumerProguardFiles("proguard.txt")
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     buildFeatures {
@@ -51,7 +51,7 @@ tasks {
 }
 
 extra["artifactId"] = "charts-android"
-extra["artifactVersion"] = "1.7.2"
+extra["artifactVersion"] = "1.7.4"
 extra["libraryName"] = "Diamond Charts"
 extra["libraryDescription"] = "Diamond Charts: charting library for Android Jetpack Compose"
 extra["gitUrl"] = "https://github.com/ellsworthrw/DiamondCharts"
