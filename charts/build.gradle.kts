@@ -1,25 +1,24 @@
-import com.vanniktech.maven.publish.SonatypeHost
+import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.dokka)
     alias(libs.plugins.compose.compiler)
-    id("com.vanniktech.maven.publish") version "0.29.0"
+    id("com.vanniktech.maven.publish") version "0.34.0"
 }
 
 android {
-    compileSdk = 34
+    compileSdk = 36
     defaultConfig {
         minSdk = 24
         consumerProguardFiles("proguard.txt")
     }
+
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    kotlinOptions {
-        jvmTarget = "11"
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
@@ -35,6 +34,12 @@ android {
     }
 }
 
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_17
+    }
+}
+
 dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
@@ -42,16 +47,8 @@ dependencies {
     implementation(libs.logging)
 }
 
-tasks {
-    create<Jar>("javadocJar") {
-        archiveClassifier.set("javadoc")
-        dependsOn(dokkaHtml)
-        from(dokkaHtml.get().outputDirectory)
-    }
-}
-
 extra["artifactId"] = "charts-android"
-extra["artifactVersion"] = "1.7.4"
+extra["artifactVersion"] = "1.8.0"
 extra["libraryName"] = "Diamond Charts"
 extra["libraryDescription"] = "Diamond Charts: charting library for Android Jetpack Compose"
 extra["gitUrl"] = "https://github.com/ellsworthrw/DiamondCharts"
@@ -78,6 +75,7 @@ project.group = groupId
 project.version = artifactVersion
 
 mavenPublishing {
+    configure(AndroidSingleVariantLibrary(variant = "release", sourcesJar = true, publishJavadocJar = true))
     coordinates(groupId = groupId, artifactId = artifactId, version = artifactVersion)
     pom {
         name.set(libraryName)
@@ -117,7 +115,4 @@ mavenPublishing {
             }
         }
     }
-
-    publishToMavenCentral(SonatypeHost.S01)
-    signAllPublications()
 }
