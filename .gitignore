@@ -5,3 +5,11 @@ local.properties
 .DS_Store
 build
 notes.txt
+.kotlin
+kotlin-js-store
+
+# Xcode (sampleApp/iosApp) — track the project, ignore user/build state
+xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.xcuserstate

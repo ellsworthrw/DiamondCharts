@@ -1,6 +1,0 @@
-<resources>
-
-    <style name="Theme.ChartApp" parent="android:ThemeOverlay.Material.Dark.ActionBar">
-        <item name="colorPrimary">@color/purple_200</item>
-    </style>
-</resources>

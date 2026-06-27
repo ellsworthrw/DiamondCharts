@@ -1,0 +1,12 @@
+<resources>
+
+    <style name="Theme.ChartApp" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="colorPrimary">@color/purple_500</item>
+    </style>
+
+    <style name="Theme.ChartApp.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+</resources>

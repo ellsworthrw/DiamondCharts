@@ -112,7 +112,13 @@ private fun FunctionGraphPreview() {
 
 ![function](https://user-images.githubusercontent.com/1443778/230459075-0113b77a-1a0d-421e-bca4-8e7f1b9ca8e1.png)
 
-## Compose and Kotlin version support
+## Kotlin Multiplatform version support
+
+| Charts version | Compose Multiplatform version | Kotlin version |
+|----------------|-------------------------------|----------------|
+| 2.0.0          | 1.10.3                        | 2.4.0          |
+
+## Android only version support
 
 | Charts version | Compose BOM version | Kotlin version |
 |----------------|---------------------|----------------|

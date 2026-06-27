@@ -1,29 +1,57 @@
 [versions]
-activityComposeVersion = "1.11.0"
-androidGradlePlugin = "8.13.0"
+androidGradlePlugin = "9.0.1"
+kotlinVersion = "2.4.0"
+composeMultiplatform = "1.10.3"
+androidxCoreKtx = "1.18.0"
+activityComposeVersion = "1.13.0"
+dokka = "2.2.0"
+kotlinxDatetime = "0.8.0"
+icu4j = "78.3"
+navigation3 = "1.1.1"
+lifecycleViewmodelNav3 = "2.10.0"
+# Android-only (app androidMain)
 appcompat = "1.7.1"
-composeBom = "2025.09.01"
-dokka = "2.0.0"
-kotlinVersion = "2.2.20"
-loggingVersion = "2.0.3"
-materialAndroid = "1.9.2"
-navigationCompose = "2.9.5"
+loggingVersion = "2.1.1"
+robolectric = "4.16.1"
+logback = "1.5.35"
+slf4jApi = "2.0.18"
 
 [libraries]
+# Multiplatform
+kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlinVersion" }
+kotlin-test-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit", version.ref = "kotlinVersion" }
+# Android host (JVM) unit tests: runs the common suite against the real Android framework classes
+# (e.g. android.text.format.DateFormat.getBestDateTimePattern), which the bare android.jar stubs can't.
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+logging = { module = "com.diamondedge:logging", version.ref = "loggingVersion" }
+compose-runtime = { group = "org.jetbrains.compose.runtime", name = "runtime", version.ref = "composeMultiplatform" }
+compose-foundation = { group = "org.jetbrains.compose.foundation", name = "foundation", version.ref = "composeMultiplatform" }
+compose-ui = { group = "org.jetbrains.compose.ui", name = "ui", version.ref = "composeMultiplatform" }
+compose-material = { group = "org.jetbrains.compose.material", name = "material", version.ref = "composeMultiplatform" }
+compose-tooling = { group = "org.jetbrains.compose.ui", name = "ui-tooling", version.ref = "composeMultiplatform" }
+compose-tooling-preview = { group = "org.jetbrains.compose.ui", name = "ui-tooling-preview", version.ref = "composeMultiplatform" }
+# JVM desktop-only (charts jvmMain) — CLDR skeleton pattern generation
+icu4j = { group = "com.ibm.icu", name = "icu4j", version.ref = "icu4j" }
+# Navigation 3. navigation3-runtime is fully multiplatform on Google Maven, but navigation3-ui
+# (the NavDisplay composable) ships Android-only there — its multiplatform build (desktop/iOS) lives
+# in JetBrains' org.jetbrains.androidx.* fork, which keeps the same androidx.navigation3.* packages.
+#navigation3-runtime = { group = "androidx.navigation3", name = "navigation3-runtime", version.ref = "navigation3" }
+navigation3-ui = { group = "org.jetbrains.androidx.navigation3", name = "navigation3-ui", version.ref = "navigation3" }
+lifecycle-viewmodel-navigation3 = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel-navigation3", version.ref = "lifecycleViewmodelNav3" }
+# Android-only (app androidMain)
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityComposeVersion" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
-compose-iconsextended = { group = "androidx.compose.material", name = "material-icons-extended" }
-compose-material = { group = "androidx.compose.material", name = "material-android", version.ref = "materialAndroid" }
-compose-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
-compose-ui = { group = "androidx.compose.ui", name = "ui" }
-logging = { module = "com.diamondedge:logging", version.ref = "loggingVersion" }
-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidxCoreKtx" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4jApi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "androidGradlePlugin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlinVersion" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinVersion" }
+compose-multiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
