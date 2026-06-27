@@ -1,11 +1,12 @@
 # Diamond Charts
 
-[![ver](https://img.shields.io/maven-central/v/com.diamondedge/charts-android)](https://repo1.maven.org/maven2/com/diamondedge/charts-android/)
-[![Kotlin](https://img.shields.io/badge/Kotlin-1.8.10-blue.svg?logo=kotlin)](http://kotlinlang.org)
-[![Kotlin](https://img.shields.io/badge/Compose-1.4.4-blue.svg)](https://developer.android.com/jetpack/androidx/releases/compose-ui)
+[![ver](https://img.shields.io/maven-central/v/com.diamondedge/charts)](https://repo1.maven.org/maven2/com/diamondedge/charts/)
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.40-blue.svg?logo=kotlin)](http://kotlinlang.org)
+[![Kotlin](https://img.shields.io/badge/Kotlin-Multiplatform-magenta.svg)](https://kotlinlang.org/multiplatform/)
+[![Kotlin](https://img.shields.io/badge/Compose-blue.svg)](https://developer.android.com/jetpack/androidx/releases/compose-ui)
 [![License](https://img.shields.io/badge/License-Apache--2.0-green)](http://www.apache.org/licenses/LICENSE-2.0)
 
-Diamond Charts is a charting library for Android Jetpack Compose.
+Diamond Charts is a charting library for Jetpack Compose on Android or Kotlin Multiplatform.
 
 ## Setup
 
@@ -14,11 +15,19 @@ of ![ver](https://img.shields.io/maven-central/v/com.diamondedge/charts-android)
 
 build.gradle(.kts):
 
+Android: 
 ```kotlin
     dependencies {
         api("com.diamondedge:charts-android:$charts_version")
     }
 ```
+Kotlin Multiplatform:
+```kotlin
+    dependencies {
+        implementation("com.diamondedge:charts:$charts_version")
+    }
+```
+
 
 ## Sample Usage
 
