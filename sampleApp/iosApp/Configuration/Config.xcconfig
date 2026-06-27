@@ -1,0 +1,5 @@
+// Project configuration. Set TEAM_ID to your Apple Developer Team ID to run on a physical device
+// (leave empty for simulator builds). BUNDLE_ID / APP_NAME are referenced from the Xcode project.
+TEAM_ID=
+BUNDLE_ID=com.diamondedge.chartapp
+APP_NAME=Diamond Charts
